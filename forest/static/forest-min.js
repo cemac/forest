@@ -24,6 +24,3 @@ window.forest = require('./forest')
 
 
 },{"./forest":1}]},{},[2]);
-
-
-console.log('Forest is running.')
