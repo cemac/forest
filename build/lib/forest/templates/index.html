@@ -1,0 +1,131 @@
+{% extends base %}
+
+<!-- Note: roots.attname raises ValueError if attname not found
+           see bokeh.embed.util.RenderRoots.__getitem__
+-->
+{% macro safe_embed(name) %}
+    {% for root in roots %}
+        {% if root.name == name %}
+           {{ embed(roots | attr(name)) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block postamble %}
+<link rel="stylesheet" href="forest/static/style.css" type="text/css" media="all">
+<script src="forest/static/script.js" charset="utf-8"></script>
+<script src="forest/static/forest-min.js" charset="utf-8"></script>
+{% endblock %}
+
+{% block contents %}
+    <div id="sidenav" class="sidenav">
+            <button type="button" onclick="closeId('sidenav')">Close</button>
+            {{ safe_embed('controls') }}
+    </div>
+    <div id="diagrams" class="diagrams">
+            <button type="button" onclick="closeId('diagrams')">Close</button>
+            {{ safe_embed('series') }}
+    </div>
+
+    <nav>
+        <div class="display-inline-block float-left">
+            {{ safe_embed('sidenav_button') }}
+        </div>
+        <div class="margin-left-110 display-inline-block float-left">
+            {{ safe_embed('headline') }}
+        </div>
+        <!-- Embed optional button -->
+        <div class="float-right">
+            {{ safe_embed('diagrams_button') }}
+        </div>
+    </nav>
+
+    <!-- Add modal container -->
+    <div id="modal" class="modal-outer">
+        <div class="modal-inner">
+            {{ safe_embed('modal') }}
+        </div>
+    </div>
+
+    <!-- Layout figure row -->
+    <div id="figures">
+        {{ safe_embed('figures') }}
+    </div>
+
+    <!-- Layout footer widgets -->
+    <div id="colorbar-parent" class="colorbar-parent">
+        <div id="colorbar" class="colorbar">
+            {{ safe_embed('colorbar') }}
+        </div>
+    </div>
+    <footer>
+        <div id="time" class="time">
+            {{ safe_embed('time') }}
+        </div>
+    </footer>
+
+    <!-- Bokeh document roots -->
+    {% for doc in docs %}
+        {% for root in doc.roots %}
+            <div class="display-none">
+            {{ embed(root) }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <script>
+// Re-attach roots if WebSocket request served by different machine
+let reattachRoots = function() {
+    // TODO: Correct this method to work with new layout
+    return
+
+    // Find template roots
+    let classNames = ["control-panel", "series-panel", "time-panel", "colorbar-panel"];
+    let parents = classNames.reduce(function(data, className) {
+        data[className] = document.getElementsByClassName(className)[0];
+        return data
+    }, {})
+    if (parents[classNames[0]].children[0].innerHTML !== "") {
+        // First template root populated correctly
+        return
+    }
+
+    // Find orphan roots
+    let roots = document.getElementsByClassName('bk-root')
+    let orphans = [...roots].filter((r) => !('data-root-id' in r.attributes))
+    if (orphans.length === 0) {
+        // No orphans to re-home
+        return
+    }
+
+    // NOTE: Order important since orphaned roots have no data-root-id attr
+    parents['control-panel'].appendChild(orphans[0])
+    parents['series-panel'].appendChild(orphans[1])
+    parents['time-panel'].appendChild(orphans[2])
+    parents['colorbar-panel'].appendChild(orphans[3])
+}
+
+// Trigger KeyPress.hidden_button if present
+let triggerHiddenButton = function() {
+    let els = document.getElementsByClassName('keypress-hidden-btn')
+    if (els.length > 0) {
+        btns = els[0].getElementsByTagName('button')
+        btns[0].click()
+    }
+}
+
+oldLog = console.log;
+console.log = function(message) {
+    if (typeof message.localeCompare === "undefined") {
+        return oldLog.apply(null, arguments);
+    }
+    if (message.localeCompare('Bokeh items were rendered successfully') == 0) {
+        console.log = oldLog;
+        reattachRoots();
+        triggerHiddenButton();
+    } else {
+        oldLog.apply(null, arguments);
+    }
+}
+    </script>
+{% endblock %}

@@ -106,6 +106,7 @@ def combine_variables(os_environ, args_variables):
     variables = dict(os_environ)
     if args_variables is not None:
         variables.update(dict(args_variables))
+    print(variables)
     return variables
 
 

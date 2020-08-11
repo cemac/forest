@@ -1,0 +1,8 @@
+files:
+    - label: NWCSAF
+      pattern: ${HOME}/work/forest-test-data/NWCPY3/test-data/CTTH/S_NWC_CTTH_MSG4_GuineaCoast-VISIR_*
+      file_type: saf
+features:
+    time_series: true  
+    profile: true
+    BARC: true

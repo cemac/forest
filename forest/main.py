@@ -2,6 +2,7 @@ import bokeh.plotting
 import bokeh.models
 import bokeh.events
 import bokeh.colors
+from bokeh.core.properties import value
 import os
 from forest import _profile as profile
 from forest import (
@@ -24,6 +25,7 @@ from forest import (
         parse_args)
 import forest.app
 import forest.actions
+from forest.barc.toolbar import BARC
 import forest.components
 import forest.components.borders
 import forest.components.title
@@ -80,6 +82,14 @@ def main(argv=None):
     x_range, y_range = geo.web_mercator(
         viewport.lon_range,
         viewport.lat_range)
+    '''figure = bokeh.plotting.figure(
+        x_range=x_range,
+        y_range=y_range,
+        #output_backend = "svg",
+        x_axis_type="mercator",
+        y_axis_type="mercator",
+        active_scroll="wheel_zoom")'''
+
     figure = map_figure(x_range, y_range)
     figures = [figure]
     for _ in range(2):
@@ -101,6 +111,57 @@ def main(argv=None):
         datasets[group.label] = dataset
         datasets_by_pattern[group.pattern] = dataset
         label_to_pattern[group.label] = group.pattern
+        
+        
+        
+    # print('\n\n\n\n', datasets, '\n\n\n\n')
+
+    '''# Lakes
+    for figure in figures:
+        add_feature(figure, data.LAKES, color="lightblue")
+
+    features = []
+    for figure in figures:
+        render2 = add_feature(figure, data.LAKES, color="lightblue")
+        features += [
+            add_feature(figure, data.COASTLINES),
+            add_feature(figure, data.BORDERS)]
+
+    # Disputed borders
+    for figure in figures:
+        add_feature(figure, data.DISPUTED, color="red")
+    '''
+
+
+
+    toggle = bokeh.models.CheckboxGroup(
+            labels=["Coastlines"],
+            active=[0],
+            width=135)
+
+    def on_change(attr, old, new):
+        if len(new) == 1:
+            for feature in features:
+                feature.visible = True
+        else:
+            for feature in features:
+                feature.visible = False
+
+    toggle.on_change("active", on_change)
+
+    dropdown = bokeh.models.Dropdown(
+            label="Color",
+            menu=[
+                ("Black", "black"),
+                ("White", "white")],
+            width=50)
+    autolabel(dropdown)
+
+    def on_change(event):
+        for feature in features:
+            feature.glyph.line_color = new
+
+    dropdown.on_click(on_change)
 
     layers_ui = layers.LayersUI()
 
@@ -168,13 +229,19 @@ def main(argv=None):
 
     display_names = {
             "time_series": "Display Time Series",
-            "profile": "Display Profile"
+            "profile": "Display Profile",
+            "barc": "BARC Toolkit"
         }
     available_features = {k: display_names[k]
                           for k in display_names.keys() if data.FEATURE_FLAGS[k]}
 
     tools_panel = tools.ToolsPanel(available_features)
     tools_panel.connect(store)
+
+    #barc_toolbar=bokeh.models.tools.Toolbar(tools=barc_tools,logo=None)
+    if data.FEATURE_FLAGS["BARC"]:
+         barc = BARC(figures)
+         tools_panel.layout.children.append(barc.ToolBar())
 
     # Navbar components
     navbar = Navbar(show_diagram_button=len(available_features) > 0)
@@ -195,6 +262,7 @@ def main(argv=None):
         tile_picker = forest.components.TilePicker()
         for figure in figures:
             tile_picker.add_figure(figure)
+            
         tile_picker.connect(store)
 
     if not data.FEATURE_FLAGS["multiple_colorbars"]:
@@ -388,14 +456,17 @@ class Navbar:
         # Add button to control right drawer
         key = "diagrams_button"
         self.buttons[key] = bokeh.models.Button(
-            label="Diagrams",
-            css_classes=["float-right"],
+            label = '',# label="Diagrams",# now contains the barc logo
+            css_classes=["float-right",'barc_btn'],
             name=key)
+            
         custom_js = bokeh.models.CustomJS(code="""
-            openId("diagrams");
+         document.getElementById('diagrams').style.width='310px';
+         hide_menus();
         """)
+        
         self.buttons[key].js_on_click(custom_js)
-
+        
         roots = [
             self.buttons["sidenav_button"],
             self.headline.layout,

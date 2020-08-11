@@ -196,6 +196,7 @@ class FigureUI(Observable):
             width=350,
         )
         self.select.on_change("value", self.on_change)
+        self.select.js_on_change("value", self.js_on_change())
         self.layout = bokeh.layouts.column(
             self.select,
         )
@@ -215,6 +216,17 @@ class FigureUI(Observable):
         """Emit action to set number of figures in state"""
         n = self.labels.index(new) + 1  # Select 0-indexed
         self.notify(set_figures(n))
+        
+    def js_on_change(self):
+        """Js to execute on figure change - update number of canvas elements"""
+        js = bokeh.models.CustomJS(args=dict(labels=self.labels),
+         code=""" 
+         document.n = labels.indexOf(document.querySelector('div#sidenav .bk.bk-input-group select.bk.bk-input').value) + 1;
+         console.log('Updated # figures')
+         get_figures(); 
+         """)
+        return js
+
 
 
 class FigureRow:
