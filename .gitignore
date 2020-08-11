@@ -13,3 +13,4 @@ apps/ux-improvements/static/css
 apps/ux-improvements/static/js
 apps/ux-improvements/node_modules
 .DS_Store
+build/
