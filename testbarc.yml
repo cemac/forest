@@ -1,0 +1,8 @@
+files:
+    - label: barctest
+      pattern: forest/tutorial/rdt_201904171245.json
+      file_type: rdt
+features:
+    time_series: true  
+    profile: true
+    BARC: true
