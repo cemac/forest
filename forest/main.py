@@ -43,6 +43,7 @@ def map_figure(x_range, y_range):
         y_range=y_range,
         x_axis_type="mercator",
         y_axis_type="mercator",
+        css_classes=["forestfig"],
         active_scroll="wheel_zoom")
     figure.axis.visible = False
     figure.toolbar.logo = None
@@ -82,13 +83,6 @@ def main(argv=None):
     x_range, y_range = geo.web_mercator(
         viewport.lon_range,
         viewport.lat_range)
-    '''figure = bokeh.plotting.figure(
-        x_range=x_range,
-        y_range=y_range,
-        #output_backend = "svg",
-        x_axis_type="mercator",
-        y_axis_type="mercator",
-        active_scroll="wheel_zoom")'''
 
     figure = map_figure(x_range, y_range)
     figures = [figure]
