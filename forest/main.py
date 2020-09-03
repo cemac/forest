@@ -105,22 +105,20 @@ def main(argv=None):
         datasets[group.label] = dataset
         datasets_by_pattern[group.pattern] = dataset
         label_to_pattern[group.label] = group.pattern
-        
-        
-        
+
+
+
     # print('\n\n\n\n', datasets, '\n\n\n\n')
 
     '''# Lakes
     for figure in figures:
         add_feature(figure, data.LAKES, color="lightblue")
-
     features = []
     for figure in figures:
         render2 = add_feature(figure, data.LAKES, color="lightblue")
         features += [
             add_feature(figure, data.COASTLINES),
             add_feature(figure, data.BORDERS)]
-
     # Disputed borders
     for figure in figures:
         add_feature(figure, data.DISPUTED, color="red")
@@ -256,7 +254,7 @@ def main(argv=None):
         tile_picker = forest.components.TilePicker()
         for figure in figures:
             tile_picker.add_figure(figure)
-            
+
         tile_picker.connect(store)
 
     if not data.FEATURE_FLAGS["multiple_colorbars"]:
@@ -453,14 +451,14 @@ class Navbar:
             label = '',# label="Diagrams",# now contains the barc logo
             css_classes=["float-right",'barc_btn'],
             name=key)
-            
+
         custom_js = bokeh.models.CustomJS(code="""
          document.getElementById('diagrams').style.width='310px';
          hide_menus();
         """)
-        
+
         self.buttons[key].js_on_click(custom_js)
-        
+
         roots = [
             self.buttons["sidenav_button"],
             self.headline.layout,
