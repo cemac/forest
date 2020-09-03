@@ -196,3 +196,142 @@ footer {
 .bk.custom {
     font-size: 1.4rem;
 }
+.modal-outer {
+    visibility: hidden;
+    z-index: 80;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-inner {
+    z-index: 90;
+    width: 30%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    padding: 0.5rem;
+    background-color: #F1F1F1;
+    border-radius: 0.2rem;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+/* barc button */
+div.barc_btn{
+    width:50pt!important
+}
+div.barc_btn div button{
+    /* reads from static folder as first level dir */
+    background-image: url("barclogo.png")!important;
+    background-size : 50pt!important;
+    height:30pt!important;
+}
+
+/* barc sidebar */
+div.diagrams{
+    background-color: #333!important;
+}
+
+div.barc_p div p{
+    color:whitesmoke!important;
+}
+
+div#diagrams.diagrams div.barc-button {
+    border: solid 1px fuchsia;
+    display: inline-block;
+}
+
+div#diagrams.diagrams div.barc-button.barc-windbarb-button button {
+    background-image: url("barb.png");
+    color: transparent!important;
+}
+div#diagrams.diagrams div.barc-button button {
+    color: black;
+    background-size: 100%;
+    width:100%;
+    font-size: larger;
+}
+
+/* wrap toolbar */
+.bk-root .bk-toolbar.bk-below .bk-toolbar-button, .bk .bk-toolbar   { 
+  -webkit-flex-wrap: wrap!important;
+  flex-wrap: wrap!important;
+  display:flex!important;
+} 
+
+root .bk-toolbar,.bk-root .bk-toolbar *{box-sizing:border-box;margin:0;padding:0}
+
+.bk-root .bk-toolbar,.bk-root .bk-button-bar{display:flex;display:-webkit-flex;flex-wrap:nowrap;-webkit-flex-wrap:nowrap;align-items:center;-webkit-align-items:center;user-select:none;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none}
+
+.bk-root .bk-toolbar-above,.bk-root .bk-toolbar-below{flex-direction:row;-webkit-flex-direction:row;justify-content:flex-end;-webkit-justify-content:flex-end}
+
+.bk-root .bk-toolbar-above .bk-button-bar,.bk-root .bk-toolbar-below .bk-button-bar{display:flex;display:-webkit-flex;flex-direction:row;-webkit-flex-direction:row}
+
+
+.bk-root .bk-toolbar-left,.bk-root .bk-toolbar-right{flex-direction:column;-webkit-flex-direction:column;justify-content:flex-start;-webkit-justify-content:flex-start}
+.bk-root .bk-toolbar-left .bk-button-bar,.bk-root .bk-toolbar-right .bk-button-bar{display:flex;display:-webkit-flex;flex-direction:column;-webkit-flex-direction:column}
+
+
+/* BARC Font */
+@font-face {
+  font-family: BARC;
+  src: url('BARC.woff') format('woff');
+}
+
+svg textPath, svg text {
+    font-family: 'BARC', sans-serif !important;
+    font-size: 14em !important;
+  }
+
+.barc-button {
+    font-family: 'BARC', 'Open Sans', Helvetica, "Nimbus Sans", Ariel, sans-serif !important;
+  }
+
+svg path {
+    stroke-width:1px!important;
+    fill:none;
+}
+
+svg {
+    pointer-events: none!important;
+    display:block;
+}
+
+textPath.warm {
+  fill: tomato!important;
+}
+textPath.cold {
+  fill: steelblue!important;
+}
+textPath.occluded {
+  fill: magenta!important;
+}
+textPath.stationary {
+  fill: green!important;
+}
+
+svg path.warm {
+  stroke: tomato!important;
+}
+svg path.cold {
+  stroke: steelblue!important;
+}
+svg path.occluded {
+  stroke: magenta!important;
+}
+svg path.stationary {
+  stroke: green!important;
+}
+
+
+
+
+/* remove logo */
+.bk-logo {
+    display:none !important;
+}
