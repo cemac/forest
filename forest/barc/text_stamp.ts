@@ -1,15 +1,8 @@
 import {XYGlyph} from "models/glyphs/xy_glyph"
 import {Text, TextView, TextData} from "models/glyphs/text"
 import {TextVector} from "core/property_mixins"
-//import {PointGeometry} from "core/geometry"
-//import * as hittest from "core/hittest"
-//import {Arrayable} from "core/types"
 import * as visuals from "core/visuals"
 import * as p from "core/properties"
-//import {measure_font} from "core/util/text"
-//import {Context2d} from "core/util/canvas"
-//import {assert} from "core/util/assert"
-//import {Selection} from "../selections/selection"
 
 export interface TextStampData extends TextData {
 }
