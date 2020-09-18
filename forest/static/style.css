@@ -258,11 +258,12 @@ div#diagrams.diagrams div.barc-button button {
 }
 
 /* wrap toolbar */
-.bk-root .bk-toolbar.bk-below .bk-toolbar-button, .bk .bk-toolbar   { 
+.bk-root .bk-toolbar.bk-below .bk-toolbar-button, .bk .bk-toolbar   {
   -webkit-flex-wrap: wrap!important;
   flex-wrap: wrap!important;
   display:flex!important;
-} 
+  background-color: #F1F1F1
+}
 
 root .bk-toolbar,.bk-root .bk-toolbar *{box-sizing:border-box;margin:0;padding:0}
 
