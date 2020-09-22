@@ -93,6 +93,7 @@ class KeyPress(Observable):
                 document.onkeydown = throttle(onkeydown, interval)
 
                 // Global to prevent multiple onkeydown callbacks
+                var keyPressOn = true
                 window.keyPressOn = true
             }
         """)
