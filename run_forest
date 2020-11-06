@@ -1,0 +1,8 @@
+source /home/lecjlg/anaconda3/etc/profile.d/conda.sh
+conda activate barc
+
+
+
+
+forest --config-file /home/lecjlg/forest-barc/sea.yml --show
+
