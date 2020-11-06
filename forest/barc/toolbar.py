@@ -130,8 +130,7 @@ class BARC:
         elif str(new) == "Group9 - Thunderstorms":
             self.glyphs = glyphcodes[90:100]
         elif str(new) == "Group10 - Hurricanes and Typhoons":
-            # coming soon
-            self.glyphs =  glyphcodes[90:100]
+            self.glyphs =  glyphcodes[100:110]
 
     def call(self, attr, old, new):
         """Call back from dropdown click
