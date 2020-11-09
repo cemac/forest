@@ -1,6 +1,6 @@
 files:
     - label: um
-      pattern: /data/barc/SEA/20180915T0000Z_SEA4*
+      pattern: /data/barc/SEA/20180914T1200Z_SEA4_n1280_ga6_16203_0.nc
       file_type: unified_model
 features:
     time_series: false

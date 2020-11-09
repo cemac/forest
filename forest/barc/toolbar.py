@@ -39,7 +39,7 @@ class BARC:
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
                                "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
-                               "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Typhoons"]
+                               "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
         self.dropDown = Select(title="Meteorological symbols", width=350,
                                value="Group0 - General meteorological symbols",
                                options=self.stamp_categories)
@@ -87,11 +87,11 @@ class BARC:
                        "983283":71,"983313":72,"983314":73,"983315":74,"983316":75,"983317":76,"983318":77,"983319":78,"983320":79,"983321":80,
                        "983322":81,"983352":82,"983353":83,"983354":84,"983355":85,"983356":86,"983357":87,"983358":88,"983359":89,"983360":90,
                        "983361":91,"983391":92,"983392":93,"983393":94,"983394":95,"983395":96,"983396":97,"983397":98,"983398":99,"983399":100,
-                       "983400":101}
+                       "983508":101,"983509":102,"983510":103,"983511":104,"983512":105,"983513":106,"9834547":107,"9834548":108,"9834549":109,"9834550":110}
         glyphcodes = list(map(int, list(glyphIndexMap.keys())))
         self.allglyphs = glyphcodes
         self.set_glyphs()
-        icons = ["pw-%03d" % i for i in range(100)]
+        icons = ["pw-%03d" % i for i in range(103)]
 
         self.icons = dict(zip(self.allglyphs, icons))
         # Make one ColumnDataSource per glyph
@@ -129,9 +129,8 @@ class BARC:
             self.glyphs = glyphcodes[80:90]
         elif str(new) == "Group9 - Thunderstorms":
             self.glyphs = glyphcodes[90:100]
-        elif str(new) == "Group10 - Typhoons":
-            # coming soon
-            self.glyphs =  glyphcodes[90:100]
+        elif str(new) == "Group10 - Hurricanes and Typhoons":
+            self.glyphs =  glyphcodes[100:110]
 
     def call(self, attr, old, new):
         """Call back from dropdown click
