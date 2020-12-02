@@ -747,6 +747,11 @@ root .bk-toolbar, .bk-root .bk-toolbar * {
   display: flex;
   width: 350px
 }
+
+.bk-root .bk-input-group-sm {
+  display: flex;
+  width: 50px
+}
 /* BARC Font */
 @font-face {
   font-family: BARC;

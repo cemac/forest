@@ -71,7 +71,7 @@ class BARC:
             start=1.0, value=self.starting_width)
         # colour bar picker
         self.colourPicker = bokeh.models.widgets.ColorPicker(
-            title='Select stamp colour:', width=350, name="barc_colours",
+            title='Stamp colour:', width=50, css_classes=["bk-input-group-sm"],  name="barc_colours",
             color=self.starting_colour)
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
@@ -105,7 +105,7 @@ class BARC:
                                    )
 
         self.saveButton = bokeh.models.widgets.Button(
-            name="barc_save", width=350, label="Save")
+            name="barc_save", width=50, label="\U0001f4be")
         self.saveButton.js_on_click(
             bokeh.models.CustomJS(args=dict(sources=self.source,
                                             saveArea=self.saveArea), code="""
@@ -634,7 +634,7 @@ class BARC:
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
         self.barcTools.children.extend(
-            [self.colourPicker, self.widthPicker, self.saveButton, self.saveArea])
+            [self.widthPicker, self.colourPicker, self.saveButton, self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
