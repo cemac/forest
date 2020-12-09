@@ -22,10 +22,12 @@ import bokeh.models
 from os.path import basename
 
 from bokeh.models import ColumnDataSource, Paragraph, Select
+from bokeh.models import CustomJS, TextInput
 from bokeh.models.glyphs import Text
 from bokeh.core.properties import value
 from bokeh.models.tools import PolyDrawTool, PolyEditTool, BoxEditTool
 from bokeh.models.tools import PointDrawTool, ToolbarBox, FreehandDrawTool
+from bokeh.layouts import widgetbox
 from bokeh.events import ButtonClick
 from forest import wind, data, tools, redux
 import forest.middlewares as mws
@@ -47,11 +49,21 @@ class BARCLab:
         self.document = bokeh.plotting.curdoc()
         self.barcBook = bokeh.models.layouts.Column(name="barcBook")
         # initalise sources
+        self.text_banner = Paragraph(text='User Title', width=300)
 
+    def my_text_input_handler(self, attr, old, new):
+        myMessage="{0}".format(new)
+        self.text_banner.text=myMessage # this changes the browser display
+
+
+    def Title(self):
+        text_input = TextInput(value="", title="Title:")
+        text_input.on_change("value", self.my_text_input_handler)
+        return self.text_banner
 
     def LabBook(self):
         """Barc Lab Book
         """
-        self.barcBook.children.append(bokeh.models.Div(text="lab div:"))
+        self.barcBook.children.append(self.Title())
         print('testlab book')
         return self.barcBook

@@ -39,7 +39,7 @@ class BARCReport:
 
      It is attached to to the main FOREST instance in the :py:func:`forest.main.main()` function of :py:mod:`forest.main`.
     '''
-    barc = None
+    barcReport = None
     source = {}
 
     def __init__(self, figures):
@@ -47,11 +47,17 @@ class BARCReport:
         self.document = bokeh.plotting.curdoc()
         self.barcReport = bokeh.models.layouts.Column(name="barcReport")
         # initalise sources
+        self.LoadButton = bokeh.models.widgets.Button(
+            name="barc_load", width=50, label="Load")
+        self.searchButton = bokeh.models.widgets.Button(
+            name="barc_search", width=50, label="Search")
+
 
 
     def Report(self):
         """Barc Report
         """
-        self.barcReport.children.append(bokeh.models.Div(text="report div:"))
+        UserInput=bokeh.models.Div(text="Test")
+        self.barcReport.children.append(UserInput)
         print('test Report')
         return self.barcReport
