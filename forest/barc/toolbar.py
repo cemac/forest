@@ -472,7 +472,7 @@ class BARC:
 
         return tool4
 
-    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid"):
+    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10):
         '''
         The weatherfront function of BARC. This draws a Bézier curve and repeats the symbol(s) along it.
 
@@ -494,11 +494,12 @@ class BARC:
         :param text_baseline: Valid :py:data:`TextBaseline <bokeh.core.enums.TextBaseline>` or list of TextBaselines
         :param str css_class: name of a css class to apply to the button. Defaults to ``barc-<name>-button``, where <name> is the ``name`` parameter.
         :param line_dash: A :py:class:`DashPattern <bokeh.core.properties.DashPattern>` specification.
+        :param integer starting_font_size: Initial size of the text stamp. Default 10px.
 
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
 
-        starting_font_size=10
+        
         #add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button") 
         if not hasattr(self, 'frontbuttons'):
@@ -747,13 +748,14 @@ class BARC:
                 self.weatherFront(name='cold', colour="blue", symbols=chr(983430)),
                 self.weatherFront(name='occluded', colour="purple", symbols=chr(983431)+chr(983430)),
                 self.weatherFront(name='stationary', text_baseline=['bottom','top'], colour=['#ff0000','#0000ff'], symbols=chr(983431)+chr(983432)),
-                self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", line2_colour="fuchsia", symbols='▮'),
+                self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
                 self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
                 self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
                 self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="middle", symbols=chr(983593)),
                 self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="middle", line_colour="red", symbols=chr(983590)),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
                 self.weatherFront(name='lowleveljet', colour="olive", text_baseline="middle", line_colour="olive", symbols=chr(983552)),
+                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586)),
             )
 
             for glyph in self.allglyphs:
