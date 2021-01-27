@@ -509,7 +509,7 @@ class BARC:
         if not 'bezier'+name in self.source:
             self.source['bezier'+name] = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
         if not 'bezier2'+name in self.source:
-            self.source['bezier2'+name] = ColumnDataSource(data=dict(xs=[], ys=[]))
+            self.source['bezier2'+name] = ColumnDataSource(data=dict(xs=[], ys=[], dx=[], dy=[]))
         if not 'fronts'+name in self.source:
             self.source['fronts'+name] = ColumnDataSource(data=dict(xs=[], ys=[]))
 
@@ -538,7 +538,8 @@ class BARC:
                 render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(col), text=value(each), source=self.source['text'+name+each], tags=['text_stamp','fig'+str(self.figures.index(figure))]))
 
                 self.source['bezier'+name].js_on_change('data', 
-                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each],
+                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
+                  front_ds= self.source['fronts'+name],
                   starting_font_size=starting_font_size, figure=self.figures[0],
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
@@ -556,6 +557,24 @@ class BARC:
                              datasource.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
                          }
                      }
+
+                     //offset 2nd curve by datasize
+                     let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
+                     let gap_in_data_coordinates = datasource.data['datasize'][0]; //they should all be the same
+                     for(var h = 0; h < bez2_ds.data['xs'][bez2_ds.data['xs'].length-1].length; h++)
+                     {
+                       if(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h])
+                       {
+                        let magnitude = Math.sqrt(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]**2 +bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]**2)/gap_in_data_coordinates;
+                        bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] = bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] - bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]/magnitude;
+                        bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] = bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] + bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]/magnitude;
+                        //only do it once
+                        bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h] =null;
+                        bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h] =null;
+                       }
+
+                     }
+                     bez2_ds.change.emit();
                      """)
                 )
                 self.figures[0].y_range.js_on_change('start',
