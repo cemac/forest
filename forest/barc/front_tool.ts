@@ -17,10 +17,22 @@ export interface HasPolyGlyph {
 
 export class FrontDrawToolView extends PolyDrawToolView {
   model: FrontDrawTool
+
+  connect_signals(): void {
+    super.connect_signals()
+    //const bez = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("bezier") > -1); })
+    //const bez_ds = bez[0].data_source
+    const text_stamps = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("text_stamp") > -1); })
+    const text_ds = text_stamps[0].data_source
+    this.connect(this.model.renderers[0].data_source.change, () => text_ds.change.emit())
+  }
+
   _draw(ev: UIEvent, mode: string, emit: boolean = false): void {
     const renderer = this.model.renderers[0]
     const bez = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("bezier") > -1); })
     const bez_ds = bez[0].data_source
+    const bez2 = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("bezier2") > -1); })
+    const bez2_ds = bez2[0].data_source
     const point = this._map_drag(ev.sx, ev.sy, renderer)
 
     if (!this._initialized)
@@ -43,15 +55,18 @@ export class FrontDrawToolView extends PolyDrawToolView {
       this._pop_glyphs(cds, this.model.num_objects)
       if (xkey) cds.get_array(xkey).push([x, x])
       if (ykey) cds.get_array(ykey).push([y, y])
-      if (x0key) bez_ds.get_array(x0key).push(null)
-      if (y0key) bez_ds.get_array(y0key).push(null)
-      if (cx0key) bez_ds.get_array(cx0key).push(null)
-      if (cy0key) bez_ds.get_array(cy0key).push(null)
-      if (cx1key) bez_ds.get_array(cx1key).push(null)
-      if (cy1key) bez_ds.get_array(cy1key).push(null)
-      if (x1key) bez_ds.get_array(x1key).push(null)
-      if (y1key) bez_ds.get_array(y1key).push(null)
+      if (xkey) bez2_ds.get_array(xkey).push([])
+      if (ykey) bez2_ds.get_array(ykey).push([])
+      if (x0key) bez_ds.get_array(x0key).push([null])
+      if (y0key) bez_ds.get_array(y0key).push([null])
+      if (cx0key) bez_ds.get_array(cx0key).push([null])
+      if (cy0key) bez_ds.get_array(cy0key).push([null])
+      if (cx1key) bez_ds.get_array(cx1key).push([null])
+      if (cy1key) bez_ds.get_array(cy1key).push([null])
+      if (x1key) bez_ds.get_array(x1key).push([null])
+      if (y1key) bez_ds.get_array(y1key).push([null])
       this._pad_empty_columns(cds, [xkey, ykey])
+      this._pad_empty_columns(bez2_ds, [xkey, ykey])
     } else if (mode == 'edit') {
       if (xkey) {
         const xs = cds.data[xkey][cds.data[xkey].length-1]
@@ -92,34 +107,55 @@ export class FrontDrawToolView extends PolyDrawToolView {
       }
      }
      this._emit_cds_changes(bez_ds, true, false, emit)
+     this._emit_cds_changes(bez2_ds, true, false, emit)
+     //bez_ds.change.emit()
      this._emit_cds_changes(cds, true, false, emit)
+     //cds.change.emit()
   }
 
   _drawFront(mode: string): void {
     const renderer = this.model.renderers[0]
     const glyph: any = renderer.glyph
     const bez = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("bezier") > -1); })
+    const bez2 = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("bezier2") > -1); })
     const cds = renderer.data_source
     const bez_ds = bez[0].data_source
+    const bez2_ds = bez2[0].data_source
     const bez_glyph: any = bez[0].glyph
     const [xkey, ykey] = [glyph.xs.field, glyph.ys.field]
     const [x0key, y0key] = [bez_glyph.x0.field, bez_glyph.y0.field]
     const [cx0key, cy0key] = [bez_glyph.cx0.field, bez_glyph.cy0.field]
     const [cx1key, cy1key] = [bez_glyph.cx1.field, bez_glyph.cy1.field]
     const [x1key, y1key] = [bez_glyph.x1.field, bez_glyph.y1.field]
-    const xidx = cds.data[xkey].length-1
     let offset = 0
     if(mode =="add") {
         offset = 1;
     }
+    let xidx = cds.data[xkey].length-1
     const xlen = cds.data[xkey][xidx].length - offset
+    //let xlen = 0
+    //xlen = cds.data[xkey][xidx].length - offset
     if(xlen > 3)
     {
        if(xlen ==4 || (xlen-1) % 3 == 0 || (!this._drawing && xlen % 3 == 0) ) //last clause should catch closing double-taps
        {
+        for(var i=0; i < (xlen/3); i+=1) {
+          const beznumber = Math.floor((xlen/3) - 1) //integer. using Floor because xlen=4 for the first one.
+          //const beznumber = i //integer. using Floor because xlen=4 for the first one.
           //xs and ys are one longer than in the 'edit' stanza
           const xs = cds.data[xkey][cds.data[xkey].length-1]
           const ys = cds.data[ykey][cds.data[ykey].length-1]
+
+          let bezlength = 0;
+          cds.get_array(xkey).forEach(
+            function(each: []) { 
+                  if(each != cds.data[xkey][xidx])
+                  {
+                     bezlength += Math.floor((each.length /3)) // i.e. the same as xlen but for all of them except the current one
+                  }
+               }
+          );
+
           const x0 = bez_ds.get_array<number>(x0key)
           const y0 = bez_ds.get_array<number>(y0key)
           const cx0 = bez_ds.get_array<number>(cx0key)
@@ -128,36 +164,38 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const cy1 = bez_ds.get_array<number>(cy1key)
           const x1 = bez_ds.get_array<number>(x1key)
           const y1 = bez_ds.get_array<number>(y1key)
+        
+          let beztot = beznumber + bezlength
          
-        for(var i=0; i < (xlen/3); i+=1) {
-          const beznumber = Math.floor((xlen/3) - 1) //integer. using Floor because xlen=4 for the first one.
-          x0[beznumber] = xs[3*beznumber +0]
-          y0[beznumber] = ys[3*beznumber +0]
-          cx0[beznumber] = xs[3*beznumber +1]
-          cy0[beznumber] = ys[3*beznumber +1]
-          cx1[beznumber] = xs[3*beznumber +2]
-          cy1[beznumber] = ys[3*beznumber +2]
-          x1[beznumber] = xs[3*beznumber +3]
-          y1[beznumber] = ys[3*beznumber +3]
+          x0[beztot] = xs[3*beznumber +0]
+          y0[beztot] = ys[3*beznumber +0]
+          cx0[beztot] = xs[3*beznumber +1]
+          cy0[beztot] = ys[3*beznumber +1]
+          cx1[beztot] = xs[3*beznumber +2]
+          cy1[beztot] = ys[3*beznumber +2]
+          x1[beztot] = xs[3*beznumber +3]
+          y1[beztot] = ys[3*beznumber +3]
 
           //draw text to fit curve
           if(mode == "add" || this._drawing == false) { //a new point has been added *or* editing has ended
 
           //calculate coeffcients (per http://www.planetclegg.com/projects/WarpingTextToSplines.html x0=x0, x1=cx0, x2=cx1, x3=x1 etc.)
-          const A = x1[beznumber] - 3*cx1[beznumber] + 3*cx0[beznumber] - x0[beznumber]
-          const B = 3 * cx1[beznumber] - 6 * cx0[beznumber] + 3 * x0[beznumber]
-          const C = 3 * cx0[beznumber] - 3 * x0[beznumber]
-          const D = x0[beznumber]
+          const A = x1[beztot] - 3*cx1[beztot] + 3*cx0[beztot] - x0[beztot]
+          const B = 3 * cx1[beztot] - 6 * cx0[beztot] + 3 * x0[beztot]
+          const C = 3 * cx0[beztot] - 3 * x0[beztot]
+          const D = x0[beztot]
 
-          const E = y1[beznumber] - 3 * cy1[beznumber] + 3 * cy0[beznumber] - y0[beznumber]
-          const F = 3 * cy1[beznumber] - 6 * cy0[beznumber] + 3 * y0[beznumber]
-          const G = 3 * cy0[beznumber] - 3 * y0[beznumber]
-          const H = y0[beznumber]
+          const E = y1[beztot] - 3 * cy1[beztot] + 3 * cy0[beztot] - y0[beztot]
+          const F = 3 * cy1[beztot] - 6 * cy0[beztot] + 3 * y0[beztot]
+          const G = 3 * cy0[beztot] - 3 * y0[beztot]
+          const H = y0[beztot]
 
           //calculate arc-length (approximately)
           const segments = 200 //number of segments
           let temp_x = []
           let temp_y = []
+          let temp2_x = [] //for parallel polyline approximation
+          let temp2_y = []
           let temp_l = [0]
           //Calculating text stamp locations with ' +segments+' segments')
           for(var i=0; i < segments; i+=1)
@@ -165,10 +203,23 @@ export class FrontDrawToolView extends PolyDrawToolView {
               let t = i/segments
               temp_x.push(A*t**3 + B*t**2 +C*t +D) //At³ + Bt² + Ct + D
               temp_y.push(E*t**3 + F*t**2 +G*t +H)
+              let dx = 3*A*t**2 + 2*B*t + C //derivatives of previous
+              let dy = 3*E*t**2 + 2*F*t + G
+              let magnitude = Math.sqrt(dx**2 +dy**2)/30000
+              temp2_x.push(A*t**3 + B*t**2 +C*t +D - dy/magnitude) //At³ + Bt² + Ct + D
+              temp2_y.push(E*t**3 + F*t**2 +G*t +H + dx/magnitude)
               if(i>0){
                  temp_l.push(Math.sqrt((temp_x[temp_x.length-1]-temp_x[temp_x.length-2])**2 + (temp_y[temp_y.length-1]-temp_y[temp_y.length-2])**2)+temp_l[temp_l.length-1])
               }
           }
+          //draw polyline approximating Bezier
+          //const bez2xs = bez2_ds.data[xkey][xidx]
+          //const bez2ys = bez2_ds.data[ykey][xidx]
+          bez2_ds.data[xkey][xidx] = bez2_ds.data[xkey][xidx].concat(temp2_x, [x1[beztot]])
+          bez2_ds.data[ykey][xidx] = bez2_ds.data[ykey][xidx].concat(temp2_y, [y1[beztot]])
+          //bez2xs = temp_x.concat([x1[beztot]])
+          //bez2ys = temp_y.concat([y1[beztot]])
+            
           const total_length = temp_l[temp_l.length-1]
           const spacing = (this.parent.model.y_range.end - this.parent.model.y_range.start)/50
 
@@ -177,10 +228,12 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const ts = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("text_stamp") > -1); })
           //how many figures?
           const figlist = new Set([].concat.apply([],(ts.map(a => a.glyph.tags))).filter(function(tag: string) { return tag.startsWith("fig"); })) //list of figure tags
-          console.log(figlist)
           figlist.forEach(function(figtag: string) { 
           let order=0
           const ts_fig = ts.filter(function(element) { return (element.glyph.tags.indexOf(figtag) > -1); })
+          //add first point to polylines
+          //bez2xs.push(x0[beztot])
+          //bez2ys.push(y0[beztot])
           for(var i=0.0; i < total_length; i+=spacing)
           {
               //i is target arc length
@@ -204,16 +257,18 @@ export class FrontDrawToolView extends PolyDrawToolView {
               let dy = 3*E*t**2 + 2*F*t + G
 
               let text_ds = ts_fig[order % ts_fig.length].data_source
-              text_ds.get_array('x').push(A*t**3 + B*t**2 +C*t +D) //At³ + Bt² + Ct + D
-              text_ds.get_array('y').push(E*t**3 + F*t**2 +G*t +H)
-              text_ds.get_array('angle').push(Math.atan2(dy,dx))
+              const ts_glyph: any = ts_fig[0].glyph
+              const [ts_xkey, ts_ykey, ts_fontsizekey, ts_anglekey] = [ts_glyph.x.field, ts_glyph.y.field, ts_glyph.text_font_size.field, ts_glyph.angle.field]
+              text_ds.get_array(ts_xkey).push(A*t**3 + B*t**2 +C*t +D) //At³ + Bt² + Ct + D
+              text_ds.get_array(ts_ykey).push(E*t**3 + F*t**2 +G*t +H)
+              text_ds.get_array(ts_fontsizekey).push(null)
+              text_ds.get_array('datasize').push(null)
+              text_ds.get_array(ts_anglekey).push(Math.atan2(dy,dx))
+              text_ds.change.emit();
               order++;
           }
+          //add last point to polylines
           //ts.data_source.data = text_ds.data
-          console.log(ts_fig)
-          ts_fig.forEach(function(t) {
-            t.data_source.change.emit()
-          } ) 
           })
          } 
         }

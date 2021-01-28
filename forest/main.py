@@ -240,6 +240,7 @@ def main(argv=None):
     #barc_toolbar=bokeh.models.tools.Toolbar(tools=barc_tools,logo=None)
     if data.FEATURE_FLAGS["BARC"]:
          barc = BARC(figures)
+         tools_panel2.layout.children.append(barc.tool_bar)
          barclab = BARCLab(figures)
          barcreport = BARCReport(figures)
          barclabpanel= tools.ToolsPanel(available_features2)
@@ -248,7 +249,7 @@ def main(argv=None):
          barcreportpanel.connect(store)
          barclabpanel.layout.children.append(barclab.LabBook())
          barcreportpanel.layout.children.append(barcreport.Report())
-         tools_panel2.layout.children.append(barc.ToolBar())
+         #tools_panel2.layout.children.append(barc.ToolBar())
 
     # Navbar components
     navbar = Navbar(show_diagram_button=len(available_features) > 0)

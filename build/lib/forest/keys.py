@@ -69,7 +69,7 @@ class KeyPress(Observable):
         })
         self.source.on_change('data', self._on_change)
         custom_js = bokeh.models.CustomJS(args=dict(source=self.source), code="""
-            if (typeof keyPressOn === 'undefined') {
+            if (typeof window.keyPressOn === 'undefined') {
                 let interval = 150  // Key hold is about 30ms, double-click is about 200ms
                 let throttle = function(callback, miliseconds) {
                     var waiting = false
@@ -94,6 +94,7 @@ class KeyPress(Observable):
 
                 // Global to prevent multiple onkeydown callbacks
                 var keyPressOn = true
+                window.keyPressOn = true
             }
         """)
         self.hidden_button = bokeh.models.Button(

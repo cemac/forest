@@ -23,13 +23,41 @@ applications.
 import os
 import string
 import yaml
-from dataclasses import dataclass
+import forest.drivers
+import forest.state
+from dataclasses import dataclass, field
 from collections import defaultdict
 from collections.abc import Mapping
 from forest.export import export
 
 
 __all__ = []
+
+
+@dataclass
+class Figures:
+    ui: bool = True
+    maximum: int = 3
+
+
+@dataclass
+class Defaults:
+    figures: Figures = field(default_factory=Figures)
+    timeui: bool = True
+    presetui: bool = True
+    viewport: dict = field(default_factory=dict)
+
+    def __post_init__(self):
+        self._assign("figures", Figures)
+
+    def _assign(self, att_name, cls):
+        if isinstance(getattr(self, att_name), dict):
+            obj = cls(**getattr(self, att_name))
+            setattr(self, att_name, obj)
+
+    @classmethod
+    def from_dict(cls, values):
+        return cls(**values)
 
 
 @dataclass
@@ -100,6 +128,7 @@ class Config(object):
     def __init__(self, data):
         self.data = data
         self.plugins = Plugins(self.data.get("plugins", {}))
+        self.state = forest.state.State.from_dict(self.data.get("state", {}))
 
     def __repr__(self):
         return "{}({})".format(
@@ -125,6 +154,10 @@ class Config(object):
                   connection is not available
         """
         return self.data.get("use_web_map_tiles", True)
+
+    @property
+    def defaults(self):
+        return Defaults.from_dict(self.data.get("defaults", {}))
 
     @property
     def default_viewport(self):
@@ -215,6 +248,18 @@ class Config(object):
     def file_groups(self):
         return [FileGroup(**data)
                 for data in self.data["files"]]
+
+    @property
+    def datasets(self):
+        for group in self.file_groups:
+            settings = {
+                "label": group.label,
+                "pattern": group.pattern,
+                "locator": group.locator,
+                "database_path": group.database_path,
+                "directory": group.directory
+            }
+            yield forest.drivers.get_dataset(group.file_type, settings)
 
 
 class FileGroup(object):

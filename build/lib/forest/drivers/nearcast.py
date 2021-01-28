@@ -7,7 +7,7 @@ import glob
 import re
 import datetime as dt
 import numpy as np
-import forest.view
+import forest.map_view
 from forest import geo
 from forest.util import timeout_cache
 from forest.drivers.gridded_forecast import _to_datetime
@@ -26,14 +26,15 @@ NEARCAST_TOOLTIPS = [("Name", "@name"),
 class Dataset:
     def __init__(self, pattern=None, **kwargs):
         self.pattern = pattern
+        self.loader = NearCast(self.pattern)
 
     def navigator(self):
         return Navigator(self.pattern)
 
     def map_view(self, color_mapper):
-        view = forest.view.NearCast(NearCast(self.pattern), color_mapper)
-        view.set_hover_properties(NEARCAST_TOOLTIPS)
-        return view
+        return forest.map_view.map_view(self.loader,
+                                        color_mapper,
+                                        tooltips=NEARCAST_TOOLTIPS)
 
 
 class NearCast(object):
@@ -58,7 +59,10 @@ class NearCast(object):
             return self.empty_image
 
         try:
-            imageData = self.get_grib2_data(paths[0], state.valid_time, state.variable, state.pressure)
+            imageData = self.get_grib2_data(paths[0],
+                                            state.valid_time,
+                                            state.variable,
+                                            state.pressure)
         except ValueError:
             # TODO: Fix this properly
             return self.empty_image
@@ -71,8 +75,9 @@ class NearCast(object):
         return data
 
     def load_image(self, imageData):
-        return geo.stretch_image(
-                imageData["longitude"], imageData["latitude"], imageData["data"])
+        return geo.stretch_image(imageData["longitude"],
+                                 imageData["latitude"],
+                                 imageData["data"])
 
     def get_grib2_data(self, path, valid_time, variable, pressure):
         cache = {}
@@ -134,9 +139,14 @@ class Navigator:
     @staticmethod
     def _valid_times(variable, path):
         messages = pg.index(path, "name")
-        for message in messages.select(name=variable):
-            validTime = "{0:8d}{1:04d}".format(message["validityDate"], message["validityTime"])
-            yield dt.datetime.strptime(validTime, "%Y%m%d%H%M")
+        try:
+            for message in messages.select(name=variable):
+                validTime = "{0:8d}{1:04d}".format(message["validityDate"],
+                                                   message["validityTime"])
+                yield dt.datetime.strptime(validTime, "%Y%m%d%H%M")
+        except ValueError:
+            # messages.select(name=variable) raises ValueError if not found
+            pass
         messages.close()
 
     def pressures(self, pattern, variable, initial_time):
@@ -146,8 +156,12 @@ class Navigator:
     @staticmethod
     def _pressures(variable, path):
         messages = pg.index(path, "name")
-        for message in messages.select(name=variable):
-            yield message["scaledValueOfFirstFixedSurface"]
+        try:
+            for message in messages.select(name=variable):
+                yield message["scaledValueOfFirstFixedSurface"]
+        except ValueError:
+            # messages.select(name=variable) raises ValueError if not found
+            pass
         messages.close()
 
     def _dim(self, method, variable, initial_time):

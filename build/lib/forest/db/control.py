@@ -118,11 +118,20 @@ def time_array_equal(x, y):
         return False
     elif (len(x) == 0) or (len(y) == 0):
         return x == y
+    else:
+        if len(x) != len(y):
+            return False
+        left = _as_datetime_array(x)
+        right = _as_datetime_array(y)
+        return np.all(left == right)
+
+def _as_datetime_array(x):
+    """Either vectorized _to_datetime or pd.to_datetime"""
     try:
-        return np.all(_vto_datetime(x) == _vto_datetime(y))
+        return _vto_datetime(x)
     except TypeError:
         # NOTE: Needed for EarthNetworks DatetimeIndex
-        return np.all(pd.to_datetime(x) == pd.to_datetime(y))
+        return pd.to_datetime(x)
 
 def equal_value(a, b):
     if (a is None) and (b is None):
@@ -172,10 +181,7 @@ def initial_state(navigator, pattern=None):
         return state
     initial_time = max(initial_times)
     state["initial_time"] = initial_time
-    valid_times = navigator.valid_times(
-        variable=variable,
-        pattern=pattern,
-        initial_time=initial_time)
+    valid_times = navigator.valid_times(pattern, variable, initial_time)
     state["valid_times"] = valid_times
     if len(valid_times) > 0:
         state["valid_time"] = min(valid_times)
@@ -261,13 +267,13 @@ def next_previous(store, action):
 
 
 def next_item(items, item):
-    items = list(sorted(items))
+    items = list(sorted(set(items)))
     i = _index(items, item)
     return items[(i + 1) % len(items)]
 
 
 def previous_item(items, item):
-    items = list(sorted(items))
+    items = list(sorted(set(items)))
     i = _index(items, item)
     return items[i - 1]
 
@@ -350,13 +356,12 @@ class Controls(object):
         yield set_value("initial_times", initial_times)
 
         # Set valid_times if pattern, variable and initial_time present
-        kwargs = {
-            "pattern": pattern,
-            "variable": store.state.get("variable"),
-            "initial_time": store.state.get("initial_time"),
-        }
-        if all(kwargs[k] is not None for k in ["variable", "initial_time"]):
-            valid_times = self.navigator.valid_times(**kwargs)
+        variable = store.state.get("variable")
+        initial_time = store.state.get("initial_time")
+        if all(value is not None for value in [variable, initial_time]):
+            valid_times = self.navigator.valid_times(pattern,
+                                                     variable,
+                                                     initial_time)
             yield set_value("valid_times", valid_times)
 
     def _variable(self, store, action):

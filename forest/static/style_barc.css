@@ -116,22 +116,57 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-redo-button button {
 
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-warm-button button {
-  background-image: url("icons/warm.png");
+  background-image: url("icons/splines/warm.png");
   color: transparent !important;
 }
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-cold-button button {
-  background-image: url("icons/cold.png");
+  background-image: url("icons/splines/cold.png");
   color: transparent !important;
 }
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-occluded-button button {
-  background-image: url("icons/occluded.png");
+  background-image: url("icons/splines/occluded.png");
   color: transparent !important;
 }
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-button button {
-  background-image: url("icons/stationary.png");
+  background-image: url("icons/splines/stationary.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryintrusion-button button {
+  background-image: url("icons/splines/dryintrusion.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-convergence-button button {
+  background-image: url("icons/splines/convergence.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-squall-button button {
+  background-image: url("icons/splines/squall.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryadvection-button button {
+  background-image: url("icons/splines/dryadvection.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-warmadvection-button button {
+  background-image: url("icons/splines/warmadvection.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-streamline-button button {
+  background-image: url("icons/splines/streamline.png");
+  color: transparent !important;
+}
+
+div#barcdiagrams.barcdiagrams div.barc-button.barc-lowleveljet-button button {
+  background-image: url("icons/splines/lowleveljet.png");
   color: transparent !important;
 }
 

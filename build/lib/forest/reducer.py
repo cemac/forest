@@ -1,5 +1,8 @@
 """Reducer"""
+import copy
+import forest.state
 from forest import (
+    actions,
     redux,
     db,
     layers,
@@ -9,7 +12,43 @@ from forest import (
     presets,
     dimension)
 from forest.components import (
+    html_ready,
     tiles)
+
+
+def state_reducer(state, action):
+    """Set State"""
+    if isinstance(action, dict):
+        try:
+            action = actions.Action.from_dict(action)
+        except TypeError:
+            # TODO: Support Action throughout codebase
+            return state
+    # Reduce state
+    state = copy.deepcopy(state)
+    if action.kind == actions.SET_STATE:
+        state = copy.deepcopy(action.payload)
+    elif action.kind == actions.UPDATE_STATE:
+        state.update(action.payload)
+    return state
+
+
+def borders_reducer(state, action):
+    """Configure borders, coastlines and lakes"""
+    if isinstance(action, dict):
+        try:
+            action = actions.Action.from_dict(action)
+        except TypeError:
+            # TODO: Support Action throughout codebase
+            return state
+    # Reduce state.borders
+    if isinstance(state, dict):
+        state = forest.state.State.from_dict(state)
+    if action.kind == actions.SET_BORDERS_VISIBLE:
+        state.borders.visible = action.payload
+    elif action.kind == actions.SET_BORDERS_LINE_COLOR:
+        state.borders.line_color = action.payload
+    return state.to_dict()
 
 
 reducer = redux.combine_reducers(
@@ -21,4 +60,7 @@ reducer = redux.combine_reducers(
             colors.limits_reducer,
             presets.reducer,
             tiles.reducer,
-            dimension.reducer)
+            dimension.reducer,
+            html_ready.reducer,
+            state_reducer,
+            borders_reducer)
