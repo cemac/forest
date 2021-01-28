@@ -78,7 +78,7 @@ class BARC:
             start=1.0, value=self.starting_width)
         # colour bar picker
         self.colourPicker = bokeh.models.widgets.ColorPicker(
-            title='Select stamp colour:', width=350, name="barc_colours",
+            title='Stamp colour:', width=50, css_classes=["bk-input-group-sm"],  name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
@@ -120,7 +120,7 @@ class BARC:
                                    )
 
         self.saveButton = bokeh.models.widgets.Button(
-            name="barc_save", width=350, label="Save")
+            name="barc_save", width=50, label="\U0001f4be")
         self.saveButton.js_on_click(
             bokeh.models.CustomJS(args=dict(sources=self.source,
                                             saveArea=self.saveArea), code="""
@@ -500,7 +500,7 @@ class BARC:
 
         starting_font_size=10
         #add definition dict for front<->css mapping, if not already present
-        # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button") 
+        # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button")
         if not hasattr(self, 'frontbuttons'):
             self.frontbuttons = {}
 
@@ -537,7 +537,7 @@ class BARC:
                     baseline = text_baseline
                 render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(col), text=value(each), source=self.source['text'+name+each], tags=['text_stamp','fig'+str(self.figures.index(figure))]))
 
-                self.source['bezier'+name].js_on_change('data', 
+                self.source['bezier'+name].js_on_change('data',
                   bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each],
                   starting_font_size=starting_font_size, figure=self.figures[0],
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
@@ -617,14 +617,14 @@ class BARC:
                 datasource['annotations'].data['forecastnotes'][datasource['annotations'].data['xs'].length -1] = JSON.stringify(annotate.children.reduce(function(map, obj) { map[obj.name] = obj.value; return map; }, {}));
                 """)
         )
-            
+
         tool3 = PointDrawTool(
             renderers=render_lines,
             tags=['barcannotation'],
         )
 
         return tool3'''
-        
+
 
     def display_glyphs(self):
         """Displays the selected glyph buttons
@@ -675,11 +675,11 @@ class BARC:
         for each in self.annotate.children:
             outdict['annotations'][each.name] = each.value
 
-        c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])    
+        c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
         self.conn.commit()
 
     def loadDataSources(self, event):
-        ''' 
+        '''
          loads a JSON datasource and updates current sources
         '''
         print(event.item)
@@ -699,9 +699,9 @@ class BARC:
                except KeyError:
                   pass;
 
-        
-      
-        
+
+
+
 
     def ToolBar(self):
         """Barc Tool Bar
