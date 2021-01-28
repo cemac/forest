@@ -7,12 +7,17 @@ import fnmatch
 import datetime as dt
 import numpy as np
 import netCDF4
+import sqlite3
+import forest.db
+import forest.db.health
 import forest.util
+import forest.map_view
+import forest._profile
+from forest.bases import Reusable
 from forest import (
     db,
     disk,
-    geo,
-    view)
+    geo)
 from forest.exceptions import SearchFail, PressuresNotFound
 from forest.drivers import gridded_forecast
 import bokeh.models
@@ -27,6 +32,56 @@ class NotFound(Exception):
     pass
 
 
+class Sync:
+    """Process to synchronize SQL database"""
+    def __init__(self, database_path, pattern, directory):
+        self.database_path = database_path
+        self.pattern = pattern
+        self.directory = directory
+
+    def __call__(self):
+        print(f"sync: {self.database_path} {self.pattern} {self.directory}")
+
+        # Find S3 objects
+        paths = glob.glob(self.full_path(self.pattern))
+        s3_names = [os.path.basename(path) for path in paths]
+
+        # Find names in database
+        connection = sqlite3.connect(self.database_path)
+        health_db = forest.db.health.HealthDB(connection)
+        sql_names = [os.path.basename(path)
+                     for path in health_db.checked_files(self.pattern)]
+        connection.close()
+
+        # Find extra files
+        extra_names = set(s3_names) - set(sql_names)
+        extra_paths = [self.full_path(name) for name in extra_names]
+
+        # Add NetCDF files to database
+        if len(extra_paths) > 0:
+            print("connecting to: {}".format(self.database_path))
+            with forest.db.Database.connect(self.database_path) as database:
+                health_db = forest.db.health.HealthDB(database.connection)
+                for path in extra_paths:
+                    print("inserting: '{}'".format(path))
+                    try:
+                        database.insert_netcdf(path)
+                    except OSError as e:
+                        # S3 Glacier objects inaccessible via goofys
+                        health_db.insert_error(path, e, dt.datetime.now())
+                        print(e)
+                        print(f"skip file: {path}")
+                        continue
+            print("finished")
+
+    def full_path(self, name):
+        """Prepend directory if available"""
+        if self.directory is None:
+            return name
+        else:
+            return os.path.join(self.directory, name)
+
+
 class Dataset:
     def __init__(self,
                  label=None,
@@ -39,6 +94,9 @@ class Dataset:
         self.pattern = pattern
         self.use_database = locator == "database"
         if self.use_database:
+            self.sync = Sync(database_path,
+                             pattern,
+                             directory)
             self.database = db.get_database(database_path)
             self.locator = db.Locator(self.database.connection,
                                       directory=directory)
@@ -53,7 +111,87 @@ class Dataset:
 
     def map_view(self, color_mapper=None):
         loader = Loader(self.label, self.pattern, self.locator)
-        return view.map_view(loader, color_mapper)
+        return forest.map_view.map_view(loader, color_mapper)
+
+    def profile_view(self, figure):
+        loader = Loader(self.label, self.pattern, self.locator)
+        return ProfileView(figure, loader)
+
+    def series_view(self, figure):
+        return SeriesView(figure)
+
+
+class ProfileView(Reusable):
+    def __init__(self, figure, loader):
+        self.figure = figure
+        self.loader = loader
+        self.source = bokeh.models.ColumnDataSource({
+            "x": [],
+            "y": []
+        })
+        self.renderers = [
+            self.figure.line(x="x", y="y", source=self.source),
+            self.figure.circle(x="x", y="y", source=self.source),
+        ]
+
+    def prepare(self):
+        for renderer in self.renderers:
+            renderer.visible = True
+
+    def reset(self):
+        for renderer in self.renderers:
+            renderer.visible = False
+        self.source.data = {
+            "x": [],
+            "y": []
+        }
+
+    def render_id(self, state, layer_id):
+        print(f"{self.__class__.__name__}.render({layer_id})")
+        lons, lats = geo.plate_carree(state.position.x,
+                                      state.position.y)
+        lon_0 = lons[0]
+        lat_0 = lats[0]
+        self.source.data = self.loader.profile(
+            state.pattern,
+            state.layers.index[layer_id]["variable"],
+            state.initial_time,
+            state.valid_time,
+            state.pressure,
+            lon_0,
+            lat_0)
+
+
+class SeriesView(Reusable):
+    def __init__(self, figure):
+        self.figure = figure
+        self.source = bokeh.models.ColumnDataSource({
+            "x": [],
+            "y": []
+        })
+        self.renderers = [
+            self.figure.line(x="x", y="y", source=self.source),
+            self.figure.circle(x="x", y="y", source=self.source),
+        ]
+
+    def prepare(self):
+        for renderer in self.renderers:
+            renderer.visible = True
+
+    def reset(self):
+        for renderer in self.renderers:
+            renderer.visible = False
+        self.source.data = {
+            "x": [],
+            "y": []
+        }
+
+    def render_id(self, state, layer_id):
+        print(f"{self.__class__.__name__}.render({layer_id})")
+        self.source.data = {
+            "x": [0, 1, 2],
+            "y": [0, layer_id, 2 * layer_id],
+        }
 
 
 class Navigator:
@@ -111,6 +249,49 @@ class Loader:
                                                  state.pressures,
                                                  state.pressure))
         return data
+
+    def profile(self,
+                pattern,
+                variable,
+                initial_time,
+                valid_time,
+                pressure,
+                lon_0,
+                lat_0):
+        """Load Profile from file"""
+        try:
+            path, _ = self.locator.locate(
+                pattern,
+                variable,
+                initial_time,
+                valid_time,
+                pressure)
+        except SearchFail:
+            return {
+                "x": [],
+                "y": []
+            }
+
+        with xarray.open_dataset(path, engine="h5netcdf") as nc:
+            data_array = nc[variable]
+            print(data_array.shape)
+            lons = np.ma.masked_invalid(data_array.longitude)
+            lats = np.ma.masked_invalid(data_array.latitude)
+            i = np.argmin(np.abs(lons - lon_0))
+            j = np.argmin(np.abs(lats - lat_0))
+
+            # Generalised profile slice needed
+            y = np.ma.masked_invalid(data_array.dim0)
+            x = np.ma.masked_invalid(data_array[:, i, j])
+
+            # Convert NaN to masked
+            x = np.ma.masked_array(x, mask=np.isnan(x))
+            y = np.ma.masked_array(y, mask=np.isnan(y))
+
+        return {
+            "x": x,
+            "y": y,
+        }
 
     @lru_cache(maxsize=100)
     def _input_output(self, pattern, variable, initial_time, valid_time,

@@ -105,9 +105,9 @@ def main(argv=None):
         datasets[group.label] = dataset
         datasets_by_pattern[group.pattern] = dataset
         label_to_pattern[group.label] = group.pattern
-        
-        
-        
+
+
+
     # print('\n\n\n\n', datasets, '\n\n\n\n')
 
     '''# Lakes
@@ -224,18 +224,21 @@ def main(argv=None):
     display_names = {
             "time_series": "Display Time Series",
             "profile": "Display Profile",
-            "barc": "BARC Toolkit"
-        }
+            }
+
+    display_names2 = {"barc": "BARC Toolkit"}
     available_features = {k: display_names[k]
                           for k in display_names.keys() if data.FEATURE_FLAGS[k]}
-
+    available_features2 = {k: display_names2[k]
+                          for k in display_names2.keys() if data.FEATURE_FLAGS[k]}
     tools_panel = tools.ToolsPanel(available_features)
+    tools_panel2 = tools.ToolsPanel(available_features2)
     tools_panel.connect(store)
-
+    tools_panel2.connect(store)
     #barc_toolbar=bokeh.models.tools.Toolbar(tools=barc_tools,logo=None)
     if data.FEATURE_FLAGS["BARC"]:
          barc = BARC(figures)
-         tools_panel.layout.children.append(barc.ToolBar())
+         tools_panel2.layout.children.append(barc.tool_bar)
 
     # Navbar components
     navbar = Navbar(show_diagram_button=len(available_features) > 0)
@@ -256,7 +259,7 @@ def main(argv=None):
         tile_picker = forest.components.TilePicker()
         for figure in figures:
             tile_picker.add_figure(figure)
-            
+
         tile_picker.connect(store)
 
     if not data.FEATURE_FLAGS["multiple_colorbars"]:
@@ -341,6 +344,7 @@ def main(argv=None):
         border_ui.layout,
         opacity_slider.layout,
     ]
+
     if not data.FEATURE_FLAGS["multiple_colorbars"]:
         layouts["settings"].append(color_palette.layout)
         layouts["settings"].append(user_limits.layout)
@@ -395,7 +399,18 @@ def main(argv=None):
 
     tool_layout = tools.ToolLayout(**tool_figures)
     tool_layout.connect(store)
-
+    # Set up barc tabs
+    layouts["barc"] = []
+    layouts["barc"].append(tools_panel2.layout)
+    tabs2 = bokeh.models.Tabs(tabs=[
+        bokeh.models.Panel(
+            child=bokeh.layouts.column(*layouts["barc"]),
+            title="BARCTools"
+        ),
+        bokeh.models.Panel(
+            child=bokeh.layouts.column(),
+            title="Report")
+        ])
     for f in figures:
         f.on_event(bokeh.events.Tap, tap_listener.update_xy)
         marker = screen.MarkDraw(f).connect(store)
@@ -421,6 +436,12 @@ def main(argv=None):
             tool_layout.layout,
             width=400,
             name="series"))
+    # Add Barc tool bar
+    document.add_root(
+        bokeh.layouts.column(
+            tabs2,
+            width=400,
+            name="barc"))
     for root in navbar.roots:
         document.add_root(root)
     for root in app.roots:
@@ -451,21 +472,36 @@ class Navbar:
         key = "diagrams_button"
         self.buttons[key] = bokeh.models.Button(
             label = '',# label="Diagrams",# now contains the barc logo
-            css_classes=["float-right",'barc_btn'],
+            css_classes=["float-right"],
             name=key)
-            
+
         custom_js = bokeh.models.CustomJS(code="""
          document.getElementById('diagrams').style.width='310px';
          hide_menus();
         """)
-        
+
         self.buttons[key].js_on_click(custom_js)
-        
+
+        # Add button to control barc drawer
+        key = "barcdiagrams_button"
+        self.buttons[key] = bokeh.models.Button(
+            label = '',# label="Diagrams",# now contains the barc logo
+            css_classes=["float-right",'barc_btn'],
+            name=key)
+
+        custom_js = bokeh.models.CustomJS(code="""
+         document.getElementById('barcdiagrams').style.width='310px';
+         hide_menus();
+        """)
+
+        self.buttons[key].js_on_click(custom_js)
+
         roots = [
             self.buttons["sidenav_button"],
             self.headline.layout,
         ]
         if show_diagram_button:
+            roots.append(self.buttons["barcdiagrams_button"])
             roots.append(self.buttons["diagrams_button"])
         self.roots = roots
 

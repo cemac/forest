@@ -3,6 +3,6 @@ files:
       pattern: forest/tutorial/rdt_201904171245.json
       file_type: rdt
 features:
-    time_series: true  
-    profile: true
+    time_series: false  
+    profile: false
     BARC: true

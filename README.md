@@ -1,54 +1,32 @@
 <h1 align="center">
-  <a href="https://forest-informaticslab.readthedocs.io/en/latest/" style="display: block; margin: 0 auto;">
-   <img src="https://raw.githubusercontent.com/MetOffice/forest/master/forest-logo-small.png"
-        style="max-width: 40%;" alt="FOREST"></a>
+  <a href="https://barc-docs.readthedocs.io/en/latest/" style="display: block; margin: 0 auto;">
+   <img src="https://github.com/cemac/forest-barc/blob/master/forest/barc/icons/barclogo.png"
+        style="max-width: 40%;" alt="BARC logo"></a>
 </h1>
 
-<span><strong>FOREST - </strong> 
-  Forecast and Observation Research and Evaluation Survey Tool
+<span><strong>BARC - </strong> 
+   Bokeh Annotation and Reporting Component
   </span>
 
-[![Build Status](https://travis-ci.com/MetOffice/forest.svg?branch=master)](https://travis-ci.com/MetOffice/forest)
-[![Coverage Status](https://coveralls.io/repos/github/MetOffice/forest/badge.svg?branch=master)](https://coveralls.io/github/MetOffice/forest?branch=master)
-[![Docs Latest](https://img.shields.io/badge/docs-latest-blue)](https://forest-informaticslab.readthedocs.io/en/latest/)
-[![Conda Version](https://img.shields.io/conda/vn/conda-forge/forest.svg)](https://anaconda.org/conda-forge/forest)
+![GitHub](https://img.shields.io/github/license/cemac/forest-barc.svg) [![GitHub top language](https://img.shields.io/github/languages/top/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc) [![GitHub issues](https://img.shields.io/github/issues/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc/issues) [![GitHub last commit](https://img.shields.io/github/last-commit/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc/commits/master) [![GitHub All Releases](https://img.shields.io/github/downloads/cemac/forest-barc/total.svg)](https://github.com/cemac/forest-barc/releases)
+  [![HitCount](http://hits.dwyl.com/{cemac}/{forest-barc}.svg)](http://hits.dwyl.com/{cemac}/{forest-barc})
 
-This repository hosts the code to visualise forecast model output and observation data in a web portal, as well as the scripts and configuration files to deploy the server infrastructure.
+<hr>
 
+## About
 
-## Installation
-
-The easiest way to install forest is with [conda](https://conda.io/miniconda.html):
-
-    conda install -c conda-forge forest
+The Bokeh Annotation and Reporting Component (BARC) is a component integrated into the FOREST visualisation tool. It allows the users to annotate and markup data within FOREST.
 
 ## Documentation
 
-Please read the [docs](https://forest-informaticslab.readthedocs.io), they
-should address all of the most common issues, frequently asked questions, developer
-guides, tutorials, api references. They are a work in progress but should
-quickly become an invaluable resource over time.
+Please read the [docs](https://barc-docs.readthedocs.io/en/latest/) 
+These are a work in progress but include user documentation, developer guides and api references. Hopfully these will become an invaluable resource for getting up and running with BARC.
 
 ## Get in touch
-
-As FOREST is a small code base with a small but dedicated team of developers we have fewer ways to communicate than larger projects. In any case we are very happy to hear from you and always appreciate help wherever we can find it. If you have suggestions for improvements, bugs that need reporting or sage advice to developers feel free to open/comment on [issues](https://github.com/MetOffice/forest/issues).
-
-## Contributor instructions
-
-To contribute to FOREST, please read the [developer guide](https://forest-informaticslab.readthedocs.io/en/latest/guide.html)
-
-To make things easier for ourselves and to allow contributions from as wide an audience as possible we recommend the following steps:
-
- 1. Fork the repository
- 1. Create a branch
- 1. Write some code
- 1. Submit a pull request
- 
-One of the core development team members will review your changes and offer advice to documentation, testing and styling before accepting your contribution. We look forward to hearing from you!
-
+BARC has been developed by a small team of Developers, but we are keen to hear from you with your suggestions for improvements. If you have suggestions for improvements, bugs that need reporting feel free to open/comment on [issues](https://github.com/cemac/forest-barc/issues).
 
 ## License
 
-FOREST is licensed under the BSD 3-clause license
+BARC is licensed under the BSD 3-clause license
 
-© Crown copyright 2019, Met Office. 
+© Crown copyright 2020, NCAS. 
