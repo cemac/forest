@@ -544,29 +544,21 @@ class BARC:
                   starting_font_size=starting_font_size, figure=self.figures[0],
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
-                     for(var g = 0; g < datasource.data['xs'].length; g++)
-                     {
-                         if(!datasource.data['fontsize'][g])
-                         {
-                             datasource.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
-                         }
-
-                         //calculate initial datasize
-                         if(!datasource.data['datasize'][g])
-                         {
-                             var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                             datasource.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
-                         }
-                     }
+                     let fontsize = (widthPicker.value * starting_font_size) +'px';
+                     let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
+                     let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+                    
+                     //set all fontsizes and datasizes 
+                     datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
+                     datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
-                     let gap_in_data_coordinates = datasource.data['datasize'][0]; //they should all be the same
                      for(var h = 0; h < bez2_ds.data['xs'][bez2_ds.data['xs'].length-1].length; h++)
                      {
                        if(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h])
                        {
-                        let magnitude = Math.sqrt(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]**2 +bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]**2)/gap_in_data_coordinates;
+                        let magnitude = Math.sqrt(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]**2 +bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]**2)/datasize;
                         bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] = bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] - bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]/magnitude;
                         bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] = bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] + bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]/magnitude;
                         //only do it once
@@ -751,7 +743,7 @@ class BARC:
                 self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
                 self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
                 self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
-                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="middle", symbols=chr(983593)),
+                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=30),
                 self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="middle", line_colour="red", symbols=chr(983590)),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
                 self.weatherFront(name='lowleveljet', colour="olive", text_baseline="middle", line_colour="olive", symbols=chr(983552)),
