@@ -553,6 +553,8 @@ class BARC:
                      datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
                      datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
+                     datasource.change.emit();
+
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
                      let magnitude = bez2_ds.data['dx'][last].map(function(val,index){ 
