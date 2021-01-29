@@ -554,19 +554,29 @@ class BARC:
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
-                     for(var h = 0; h < bez2_ds.data['xs'][bez2_ds.data['xs'].length-1].length; h++)
-                     {
-                       if(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h])
-                       {
-                        let magnitude = Math.sqrt(bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]**2 +bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]**2)/datasize;
-                        bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] = bez2_ds.data['xs'][bez2_ds.data['xs'].length-1][h] - bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h]/magnitude;
-                        bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] = bez2_ds.data['ys'][bez2_ds.data['ys'].length-1][h] + bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h]/magnitude;
-                        //only do it once
-                        bez2_ds.data['dx'][bez2_ds.data['dx'].length-1][h] =null;
-                        bez2_ds.data['dy'][bez2_ds.data['dy'].length-1][h] =null;
-                       }
+                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){ 
+                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/datasize;
+                     })
+ 
+                     bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
+                        if(bez2_ds.data['dy'][last][index]) {
+                           return val - bez2_ds.data['dy'][last][index]/magnitude[index]
+                        } else {
+                           return val
+                        }
+                     })
+                        
+                     bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
+                        if(bez2_ds.data['dx'][last][index]) {
+                           return val + bez2_ds.data['dx'][last][index]/magnitude[index]
+                        } else {
+                           return val
+                        }
+                     })
 
-                     }
+                     //only offset once
+                     bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
+                     bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
                      bez2_ds.change.emit();
                      """)
                 )
