@@ -472,7 +472,7 @@ class BARC:
 
         return tool4
 
-    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10):
+    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10, line2_scale_factor=1):
         '''
         The weatherfront function of BARC. This draws a Bézier curve and repeats the symbol(s) along it.
 
@@ -495,6 +495,7 @@ class BARC:
         :param str css_class: name of a css class to apply to the button. Defaults to ``barc-<name>-button``, where <name> is the ``name`` parameter.
         :param line_dash: A :py:class:`DashPattern <bokeh.core.properties.DashPattern>` specification.
         :param integer starting_font_size: Initial size of the text stamp. Default 10px.
+        :param float line2_scale_factor: Default offset for line 2 is the fontsize. This scale factor multiples the offset. Default 1.
 
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
@@ -541,7 +542,7 @@ class BARC:
                 self.source['bezier'+name].js_on_change('data', 
                   bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
                   front_ds= self.source['fronts'+name],
-                  starting_font_size=starting_font_size, figure=self.figures[0],
+                  starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
                      let fontsize = (widthPicker.value * starting_font_size) +'px';
@@ -555,7 +556,7 @@ class BARC:
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
                      let magnitude = bez2_ds.data['dx'][last].map(function(val,index){ 
-                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/datasize;
+                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
                      })
  
                      bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
@@ -757,7 +758,7 @@ class BARC:
                 self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="middle", line_colour="red", symbols=chr(983590)),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
                 self.weatherFront(name='lowleveljet', colour="olive", text_baseline="middle", line_colour="olive", symbols=chr(983552)),
-                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586)),
+                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
                 self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
                 self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols="│"),
                 self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", symbols="■"),
