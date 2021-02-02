@@ -757,13 +757,13 @@ class BARC:
                 self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
                 self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
                 self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=30),
-                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="middle", line_colour="red", symbols=chr(983590)),
+                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="alphabetic", line_colour="red", symbols=chr(983590), starting_font_size=30),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
-                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="middle", line_colour="olive", symbols=chr(983552)),
+                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic", line_colour="olive", symbols=chr(983552), starting_font_size=20),
                 self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
                 self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
-                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols="│"),
-                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", symbols="■"),
+                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols="|", starting_font_size=10, line2_scale_factor=0.9),
+                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols="■", starting_font_size=7, line2_scale_factor=0.7),
             )
 
             for glyph in self.allglyphs:
