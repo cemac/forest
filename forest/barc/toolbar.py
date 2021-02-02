@@ -74,32 +74,34 @@ class BARC:
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
         self.widthPicker = bokeh.models.widgets.Slider(
-            title='Select width', name="barc_width", width=350, end=10.0,
+            title='Select width', name="barc_width", width=200,
+            end=10.0,
             start=1.0, value=self.starting_width)
         # colour bar picker
         self.colourPicker = bokeh.models.widgets.ColorPicker(
-            title='Stamp colour:', width=50, css_classes=["bk-input-group-sm"],  name="barc_colours",
+            title='Stamp colour:', width=50,
+            name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
-            bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150),
-            bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150),
-            bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150),
+            bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
         ])
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
                                "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
                                "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
-        self.dropDown = Select(title="Meteorological symbols:", width=350,
+        self.dropDown = Select(title="Meteorological symbols:", width=250,
 
                                value="Group0 - General meteorological symbols",
                                options=self.stamp_categories)
         self.dropDown.on_change("value", self.call)
         # Save area
         self.saveArea = bokeh.models.widgets.inputs.TextAreaInput(
-            cols=20, max_length=20000,height=200)
+            cols=20, max_length=20000,height=200, width=350)
         self.saveArea.js_on_change('value',
                                    bokeh.models.CustomJS(
                                    args=dict(sources=self.source,
@@ -139,7 +141,7 @@ class BARC:
         c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
         menu = c.fetchall()
         self.loadButton = bokeh.models.widgets.Dropdown(
-            name="barc_load", width=350, label="Load", menu=menu )
+            name="barc_load", width=150, label="Load", menu=menu )
         self.loadButton.on_click(self.loadDataSources)
 
         # from BARC.woff take the index dictionary
@@ -712,11 +714,7 @@ class BARC:
             barc_tools = []
             figure.add_tools(
                 bokeh.models.tools.UndoTool(tags=['barcundo']),
-                bokeh.models.tools.RedoTool(tags=['barcredo']),
-                bokeh.models.tools.ZoomInTool(dimensions="both",tags=['barczoom_in']),
-                bokeh.models.tools.ZoomOutTool(dimensions="both",tags=['barczoom_out']),
                 bokeh.models.tools.PanTool(tags=['barcpan']),
-                bokeh.models.tools.WheelZoomTool(tags=['barcwheelzoom']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
                 bokeh.models.tools.ResetTool(tags=['barcreset']),
@@ -754,18 +752,13 @@ class BARC:
         self.toolBarBoxes = toolBarBoxes
         buttonspec1 = {
             'undo': 'undo',
-            'redo': 'redo',
-            'zoom_in': 'zoom_in',
-            'zoom_out': 'zoom_out',
             'pan': "move",
             'boxzoom': "boxzoom",
-            'wheelzoom': "wheelzoom",
             'box_edit': 'box_edit',
             'reset': 'reset',
             'taptool;': 'tap',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
-            'poly_edit': 'poly_edit',
             'textbox': 'textbox',
         }
 
@@ -802,13 +795,14 @@ class BARC:
             """))
             buttons2.append(button)
 
-        self.barcTools.children.append(bokeh.layouts.grid(buttons, ncols=7))
+        self.barcTools.children.append(bokeh.layouts.grid(buttons, ncols=9))
         self.barcTools.children.append(bokeh.layouts.grid(buttons2, ncols=6))
-        self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=5)
+        self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
-        self.barcTools.children.extend(
-            [self.colourPicker, self.widthPicker, self.saveButton, self.loadButton, self.saveArea, self.annotate])
+        self.barcTools.children.append(bokeh.layouts.grid([self.colourPicker, self.widthPicker], ncols=3))
+        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
+        self.barcTools.children.extend([self.saveArea, self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools

@@ -775,18 +775,14 @@ root .bk-toolbar, .bk-root .bk-toolbar * {
 
 .bk-root .bk-btn-group {
   display: flex;
-  width; 400px
+  width; 400px;
 }
 
 .bk-root .bk-input-group {
   display: flex;
-  width: 350px
 }
 
-.bk-root .bk-input-group-sm {
-  display: flex;
-  width: 50px
-}
+
 /* BARC Font */
 @font-face {
   font-family: BARC;
