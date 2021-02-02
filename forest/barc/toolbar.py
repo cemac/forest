@@ -764,6 +764,7 @@ class BARC:
                 self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
                 self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols="|", starting_font_size=10, line2_scale_factor=0.9),
                 self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols="■", starting_font_size=7, line2_scale_factor=0.7),
+                self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
             )
 
             for glyph in self.allglyphs:
