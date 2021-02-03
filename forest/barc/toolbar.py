@@ -54,8 +54,6 @@ class BARC:
 
      It is attached to to the main FOREST instance in the :py:func:`forest.main.main()` function of :py:mod:`forest.main`.
     '''
-    barcTools = None
-    source = {}
 
     def __init__(self, figures):
         self.figures = figures
@@ -64,6 +62,7 @@ class BARC:
         self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
         # initalise sources
+        self.source = {}
         self.source['polyline'] = ColumnDataSource(data.EMPTY)
         self.source['poly_draw'] = ColumnDataSource(data.EMPTY)
         self.source['box_edit'] = ColumnDataSource(data.EMPTY)
@@ -472,6 +471,12 @@ class BARC:
 
         return tool4
 
+    def bezierSource(self):
+        return ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
+
+    def emptySource(self):
+        return ColumnDataSource(data.EMPTY)
+
     def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10, line2_scale_factor=1):
         '''
         The weatherfront function of BARC. This draws a Bézier curve and repeats the symbol(s) along it.
@@ -509,11 +514,13 @@ class BARC:
         self.frontbuttons[name] = css_class if css_class else 'barc-'+name+'-button'
 
         if not 'bezier'+name in self.source:
-            self.source['bezier'+name] = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
+            self.source['bezier'+name] = self.bezierSource()
         if not 'bezier2'+name in self.source:
-            self.source['bezier2'+name] = ColumnDataSource(data=dict(xs=[], ys=[], dx=[], dy=[]))
+            self.source['bezier2'+name] = self.emptySource()
+            self.source['bezier2'+ name].add([], "dx")
+            self.source['bezier2'+ name].add([], "dy")
         if not 'fronts'+name in self.source:
-            self.source['fronts'+name] = ColumnDataSource(data=dict(xs=[], ys=[]))
+            self.source['fronts'+name] = self.emptySource()
 
         render_lines = []
         for figure in self.figures:
@@ -525,7 +532,7 @@ class BARC:
             ])
             for each in symbols:
                 if not 'text' + name+each in self.source:
-                  self.source['text' + name+each] = ColumnDataSource(data.EMPTY)
+                  self.source['text' + name+each] = self.emptySource()
                   self.source['text' + name+each].add([], "datasize")
                   self.source['text' + name+each].add([], "fontsize")
                   self.source['text' + name+each].add([], "angle")
@@ -756,7 +763,7 @@ class BARC:
                 self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
                 self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
                 self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
-                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=30),
+                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=15),
                 self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="alphabetic", line_colour="red", symbols=chr(983590), starting_font_size=30),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
                 self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic", line_colour="olive", symbols=chr(983552), starting_font_size=20),
