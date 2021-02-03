@@ -522,6 +522,12 @@ class BARC:
         if not 'fronts'+name in self.source:
             self.source['fronts'+name] = self.emptySource()
 
+        #if fronts source is changed (e.g. via loadData) trigger bezier redraw
+        self.source['fronts'+name].js_on_change('data',
+            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name]), code="""
+            datasource.change.emit();
+            """))
+
         render_lines = []
         for figure in self.figures:
             render_lines.extend([
