@@ -552,7 +552,7 @@ class BARC:
                   starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
-                     let fontsize = (widthPicker.value * starting_font_size) +'px';
+                     let fontsize = (widthPicker.value * starting_font_size) +'pt';
                      let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
                      let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
                     
@@ -595,7 +595,7 @@ class BARC:
                   figure=self.figures[0]), code="""
                   for(var g = 0; g < datasource.data['fontsize'].length; g++)
                   {
-                     datasource.data['fontsize'][g] = (((datasource.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                     datasource.data['fontsize'][g] = (((datasource.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
                   }
                   datasource.change.emit();
                   """)
@@ -769,8 +769,8 @@ class BARC:
                 self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic", line_colour="olive", symbols=chr(983552), starting_font_size=20),
                 self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
                 self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
-                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols="|", starting_font_size=10, line2_scale_factor=0.9),
-                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols="■", starting_font_size=7, line2_scale_factor=0.7),
+                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
+                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
                 self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
             )
 
