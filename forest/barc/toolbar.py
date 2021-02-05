@@ -73,7 +73,7 @@ class BARC:
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
         self.widthPicker = bokeh.models.widgets.Slider(
-            title='Select width', name="barc_width", width=200,
+            title='Select size', name="barc_width", width=200,
             end=10.0,
             start=1.0, value=self.starting_width)
         # colour bar picker
@@ -100,7 +100,7 @@ class BARC:
         self.dropDown.on_change("value", self.call)
         # Save area
         self.saveArea = bokeh.models.widgets.inputs.TextAreaInput(
-            cols=20, max_length=20000,height=200, width=350)
+            cols=20, max_length=20000,height=10, width=300, visible=False)
         self.saveArea.js_on_change('value',
                                    bokeh.models.CustomJS(
                                    args=dict(sources=self.source,
@@ -843,7 +843,8 @@ class BARC:
         self.barcTools.children.extend([self.dropDown])
         self.barcTools.children.append(bokeh.layouts.grid([ self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
-        self.barcTools.children.extend([self.saveArea, self.annotate])
+        self.barcTools.children.extend([self.annotate])
+        self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
