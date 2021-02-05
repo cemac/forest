@@ -57,6 +57,8 @@ export class FrontDrawToolView extends PolyDrawToolView {
       if (ykey) cds.get_array(ykey).push([y, y])
       if (xkey) bez2_ds.get_array(xkey).push([])
       if (ykey) bez2_ds.get_array(ykey).push([])
+      if (xkey) bez2_ds.get_array('dx').push([])
+      if (ykey) bez2_ds.get_array('dy').push([])
       if (x0key) bez_ds.get_array(x0key).push([null])
       if (y0key) bez_ds.get_array(y0key).push([null])
       if (cx0key) bez_ds.get_array(cx0key).push([null])
@@ -66,7 +68,7 @@ export class FrontDrawToolView extends PolyDrawToolView {
       if (x1key) bez_ds.get_array(x1key).push([null])
       if (y1key) bez_ds.get_array(y1key).push([null])
       this._pad_empty_columns(cds, [xkey, ykey])
-      this._pad_empty_columns(bez2_ds, [xkey, ykey])
+      //this._pad_empty_columns(bez2_ds, [xkey, ykey])
     } else if (mode == 'edit') {
       if (xkey) {
         const xs = cds.data[xkey][cds.data[xkey].length-1]
@@ -194,31 +196,21 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const segments = 200 //number of segments
           let temp_x = []
           let temp_y = []
-          let temp2_x = [] //for parallel polyline approximation
-          let temp2_y = []
           let temp_l = [0]
+          let temp2_x: number[]=[] //for parallel polyline approximation
+          let temp2_y: number[]=[] 
+          let temp2_dx: number[]=[]
+          let temp2_dy: number[]=[]
           //Calculating text stamp locations with ' +segments+' segments')
           for(var i=0; i < segments; i+=1)
           {
               let t = i/segments
               temp_x.push(A*t**3 + B*t**2 +C*t +D) //At³ + Bt² + Ct + D
               temp_y.push(E*t**3 + F*t**2 +G*t +H)
-              let dx = 3*A*t**2 + 2*B*t + C //derivatives of previous
-              let dy = 3*E*t**2 + 2*F*t + G
-              let magnitude = Math.sqrt(dx**2 +dy**2)/30000
-              temp2_x.push(A*t**3 + B*t**2 +C*t +D - dy/magnitude) //At³ + Bt² + Ct + D
-              temp2_y.push(E*t**3 + F*t**2 +G*t +H + dx/magnitude)
               if(i>0){
                  temp_l.push(Math.sqrt((temp_x[temp_x.length-1]-temp_x[temp_x.length-2])**2 + (temp_y[temp_y.length-1]-temp_y[temp_y.length-2])**2)+temp_l[temp_l.length-1])
               }
           }
-          //draw polyline approximating Bezier
-          //const bez2xs = bez2_ds.data[xkey][xidx]
-          //const bez2ys = bez2_ds.data[ykey][xidx]
-          bez2_ds.data[xkey][xidx] = bez2_ds.data[xkey][xidx].concat(temp2_x, [x1[beztot]])
-          bez2_ds.data[ykey][xidx] = bez2_ds.data[ykey][xidx].concat(temp2_y, [y1[beztot]])
-          //bez2xs = temp_x.concat([x1[beztot]])
-          //bez2ys = temp_y.concat([y1[beztot]])
             
           const total_length = temp_l[temp_l.length-1]
           const spacing = (this.parent.model.y_range.end - this.parent.model.y_range.start)/50
@@ -228,12 +220,10 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const ts = this.model.renderers.filter(function(element) { return (element.glyph.tags.indexOf("text_stamp") > -1); })
           //how many figures?
           const figlist = new Set([].concat.apply([],(ts.map(a => a.glyph.tags))).filter(function(tag: string) { return tag.startsWith("fig"); })) //list of figure tags
+          let fignum =0;
           figlist.forEach(function(figtag: string) { 
           let order=0
           const ts_fig = ts.filter(function(element) { return (element.glyph.tags.indexOf(figtag) > -1); })
-          //add first point to polylines
-          //bez2xs.push(x0[beztot])
-          //bez2ys.push(y0[beztot])
           for(var i=0.0; i < total_length; i+=spacing)
           {
               //i is target arc length
@@ -256,7 +246,9 @@ export class FrontDrawToolView extends PolyDrawToolView {
               let dx = 3*A*t**2 + 2*B*t + C //derivatives of previous
               let dy = 3*E*t**2 + 2*F*t + G
 
+            
               let text_ds = ts_fig[order % ts_fig.length].data_source
+              order++; //cycle through input characters/strings (there is 1 CDS each)
               const ts_glyph: any = ts_fig[0].glyph
               const [ts_xkey, ts_ykey, ts_fontsizekey, ts_anglekey] = [ts_glyph.x.field, ts_glyph.y.field, ts_glyph.text_font_size.field, ts_glyph.angle.field]
               text_ds.get_array(ts_xkey).push(A*t**3 + B*t**2 +C*t +D) //At³ + Bt² + Ct + D
@@ -265,11 +257,25 @@ export class FrontDrawToolView extends PolyDrawToolView {
               text_ds.get_array('datasize').push(null)
               text_ds.get_array(ts_anglekey).push(Math.atan2(dy,dx))
               text_ds.change.emit();
-              order++;
+
+              
+              if(fignum==0)
+              {
+                  //draw polyline approximating Bezier, same size as textstamps
+                  temp2_x.push(A*t**3 + B*t**2 +C*t +D) 
+                  temp2_y.push(E*t**3 + F*t**2 +G*t +H)
+                  temp2_dx.push(dx)// [-dy, dx] is the normal vector to the segment
+                  temp2_dy.push(dy)
+              }
           }
-          //add last point to polylines
-          //ts.data_source.data = text_ds.data
+          fignum++;
           })
+          bez2_ds.data['xs'][xidx] = bez2_ds.data['xs'][xidx].concat(temp2_x, [x1[beztot]])
+          bez2_ds.data['ys'][xidx] = bez2_ds.data['ys'][xidx].concat(temp2_y, [y1[beztot]])
+          bez2_ds.data['dx'][xidx] = bez2_ds.data['dx'][xidx].concat(temp2_dx, [3*A + 2*B + C]) //i.e. dy/dx for t=1
+          bez2_ds.data['dy'][xidx] = bez2_ds.data['dy'][xidx].concat(temp2_dy, [3*E + 2*F + G])
+          bez2_ds.change.emit();
+          
          } 
         }
        }
