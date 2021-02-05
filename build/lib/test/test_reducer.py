@@ -1,5 +1,6 @@
 import pytest
 import forest
+from forest.state import State
 
 
 @pytest.mark.parametrize("state,action,expect", [
@@ -40,7 +41,13 @@ import forest
             }
         },
         id="save_layer"
-    )
+    ),
+    pytest.param(
+        {},
+        forest.actions.set_state({"tile": {"name": "Wikimedia"}}).to_dict(),
+        {"tile": {"name": "Wikimedia"}},
+        id="set_state")
 ])
 def test_reducer(state, action, expect):
-    assert forest.reducer(state, action) == expect
+    result = forest.reducer(state, action)
+    assert State.from_dict(result) == State.from_dict(expect)

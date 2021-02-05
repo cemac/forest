@@ -14,21 +14,23 @@ import numpy as np
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Iterable, List
+import forest.mark
+import forest.state
+import forest.actions
 from forest import rx
 from forest.redux import Action, State, Store
 from forest.observe import Observable
 from forest import colors
+from forest.bases import Reusable
 import forest.drivers
-import forest.view
+import forest.mark
 
 
-ADD_LAYER = "LAYERS_ADD_LAYER"
 SAVE_LAYER = "LAYERS_SAVE_LAYER"
 ON_ADD = "LAYERS_ON_ADD"
 ON_EDIT = "LAYERS_ON_EDIT"
 ON_CLOSE = "LAYERS_ON_CLOSE"
 ON_SAVE = "LAYERS_ON_SAVE"
-ON_REMOVE = "LAYERS_ON_REMOVE"
 ON_BUTTON_GROUP = "LAYERS_ON_BUTTON_GROUP"
 SET_FIGURES = "LAYERS_SET_FIGURES"
 SET_ACTIVE = "LAYERS_SET_ACTIVE"
@@ -36,10 +38,6 @@ SET_ACTIVE = "LAYERS_SET_ACTIVE"
 
 def set_figures(n: int) -> Action:
     return {"kind": SET_FIGURES, "payload": n}
-
-
-def add_layer(name) -> Action:
-    return {"kind": ADD_LAYER, "payload": name}
 
 
 def save_layer(index, settings) -> Action:
@@ -124,71 +122,54 @@ def next_index(state):
 def reducer(state: State, action: Action) -> State:
     """Combine state and action to produce new state"""
     state = copy.deepcopy(state)
-    kind = action["kind"]
-    if kind in [
-            ADD_LAYER,
-            SET_FIGURES,
-            ON_REMOVE]:
-        layers = state.get("layers", {})
-        state["layers"] = _layers_reducer(layers, action)
-    elif kind == ON_ADD:
-        # Traverse/build tree
-        node = state
-        for key in ("layers", "mode"):
-            node[key] = node.get(key, {})
-            node = node[key]
-        node.update({"state": "add"})
-    elif kind == ON_CLOSE:
-        # Traverse/build tree
-        index = action["payload"]
-        node = state
-        for key in ("layers", "index"):
-            node = node.get(key, {})
-        del node[index]
-    elif kind == ON_EDIT:
-        # Traverse/build tree
-        index = action["payload"]
-        node = state
-        for key in ("layers", "mode"):
-            node[key] = node.get(key, {})
-            node = node[key]
-        node.update({"state": "edit", "index": index})
-    elif kind == SAVE_LAYER:
-        # Traverse/build tree
-        index = action["payload"]["index"]
-        settings = action["payload"]["settings"]
-        node = state
-        for key in ("layers", "index", index):
-            node[key] = node.get(key, {})
-            node = node[key]
-        node.update(settings)
-    elif kind == SET_ACTIVE:
-        # Traverse/build tree
-        index = action["payload"]["row_index"]
-        settings = {"active": action["payload"]["active"]}
-        node = state
-        for key in ("layers", "index", index):
-            node[key] = node.get(key, {})
-            node = node[key]
-        node.update(settings)
-    return state
+    if isinstance(state, dict):
+        state = forest.state.State.from_dict(state)
+    if isinstance(action, dict):
+        try:
+            action = forest.actions.Action.from_dict(action)
+        except TypeError:
+            return state.to_dict()
 
+    if action.kind == SET_FIGURES:
+        state.layers.figures = action.payload
 
-def _layers_reducer(state, action):
-    kind = action["kind"]
-    if kind == SET_FIGURES:
-        state["figures"] = action["payload"]
+    elif action.kind == ON_ADD:
+        state.layers.mode.state = "add"
 
-    elif kind == ADD_LAYER:
-        labels = state.get("labels", [])
-        labels.append(action["payload"])
-        state["labels"] = labels
+    elif action.kind == ON_CLOSE:
+        row_index = action.payload
+        try:
+            layer_index = sorted(state.layers.index.keys())[row_index]
+            del state.layers.index[layer_index]
+        except IndexError:
+            pass
 
-    elif kind == ON_REMOVE:
-        labels = state.get("labels", [])
-        state["labels"] = labels[:-1]
+    elif action.kind == ON_EDIT:
+        row_index = action.payload
+        layer_index = sorted(state.layers.index.keys())[row_index]
+        state.layers.mode.state = "edit"
+        state.layers.mode.index = layer_index
 
-    return state
+    elif action.kind == SAVE_LAYER:
+        # NOTE: Layer index is stored in payload
+        layer_index = action.payload["index"]
+        settings = action.payload["settings"]
+        if layer_index in state.layers.index:
+            state.layers.index[layer_index].update(settings)
+        else:
+            state.layers.index[layer_index] = settings
+
+    elif action.kind == SET_ACTIVE:
+        active = action.payload["active"]
+        row_index = action.payload["row_index"]
+        row_to_layer = sorted(state.layers.index.keys())
+        try:
+            layer_index = row_to_layer[row_index]
+            state.layers.index[layer_index]["active"] = active
+        except IndexError:
+            pass
+
+    return state.to_dict()
 
 
 def _connect(view, store):
@@ -200,28 +181,52 @@ def _connect(view, store):
     stream.map(lambda props: view.render(*props))
 
 
+@forest.mark.component
 class FigureUI(Observable):
     """Controls how many figures are currently displayed"""
-    def __init__(self):
+    def __init__(self, max_figures=3):
+        self.max_figures = max_figures
         self.labels = [
             "Single figure",
             "Side by side",
-            "3 way comparison"]
+            "3 way comparison"][:self.max_figures]
         self.select = bokeh.models.Select(
             options=self.labels,
-            value="Single figure",
+            value=self.labels[0],
             width=350,
         )
         self.select.on_change("value", self.on_change)
+        self.select.js_on_change("value", self.js_on_change())
         self.layout = bokeh.layouts.column(
             self.select,
         )
         super().__init__()
 
+    def connect(self, store):
+        self.add_subscriber(store.dispatch)
+        store.add_subscriber(self.render)
+
+    def render(self, state):
+        if isinstance(state, dict):
+            state = forest.state.State.from_dict(state)
+        i = state.layers.figures - 1
+        self.select.value = self.labels[i]
+
     def on_change(self, attr, old, new):
         """Emit action to set number of figures in state"""
-        n = self.labels.index(new) + 1 # Select 0-indexed
+        n = self.labels.index(new) + 1  # Select 0-indexed
         self.notify(set_figures(n))
+        
+    def js_on_change(self):
+        """Js to execute on figure change - update number of canvas elements"""
+        js = bokeh.models.CustomJS(args=dict(labels=self.labels),
+         code=""" 
+         document.n = labels.indexOf(document.querySelector('div#sidenav .bk.bk-input-group select.bk.bk-input').value) + 1;
+         console.log('Updated # figures')
+         get_figures(); 
+         """)
+        return js
+
 
 
 class FigureRow:
@@ -302,6 +307,7 @@ class OpacitySlider:
         return isinstance(getattr(renderer, 'glyph', None), bokeh.models.Image)
 
 
+@forest.mark.component
 class LayersUI(Observable):
     """Collection of user interface components to manage layers"""
     def __init__(self):
@@ -321,10 +327,7 @@ class LayersUI(Observable):
             "close": [],
             "add": bokeh.models.Button(label="New layer", width=110),
         }
-        custom_js = bokeh.models.CustomJS(code="""
-            let el = document.getElementById("modal");
-            el.style.visibility = "visible";
-        """)
+        custom_js = bokeh.models.CustomJS(code="openModal()")
         self.buttons["add"].js_on_click(custom_js)
         self.buttons["add"].on_click(self.on_add)
         self.columns = {
@@ -354,10 +357,9 @@ class LayersUI(Observable):
         )
 
     def parse_layers(self, state):
-        node = state
-        for key in ("layers", "index"):
-            node = node.get(key, {})
-        return [value for _, value in sorted(node.items())]
+        if isinstance(state, dict):
+            state = forest.state.State.from_dict(state)
+        return [value for _, value in sorted(state.layers.index.items())]
 
     def render(self, layers, figure_index):
         """Display latest application state in user interface
@@ -424,10 +426,7 @@ class LayersUI(Observable):
 
         # Edit button
         edit_button = bokeh.models.Button(label="Edit", width=widths["button"])
-        custom_js = bokeh.models.CustomJS(code="""
-            let el = document.getElementById("modal");
-            el.style.visibility = "visible";
-        """)
+        custom_js = bokeh.models.CustomJS(code="openModal()")
         edit_button.js_on_click(custom_js)
         edit_button.on_click(self.on_edit(row_index))
         self.buttons["edit"].append(edit_button)
@@ -496,76 +495,7 @@ class LayerSpec:
             self.color_spec = colors.ColorSpec(**self.color_spec)
 
 
-class Gallery:
-    """Orchestration layer for MapViews"""
-    def __init__(self, pools):
-        self.pools = pools
-        self.lock = False
-
-    @classmethod
-    def from_datasets(cls, datasets, factory_class):
-        """Convenient constructor"""
-        pools = {}
-        for label, dataset in datasets.items():
-            if hasattr(dataset, "map_view"):
-                pools[label] = Pool(factory_class(dataset))
-        return cls(pools)
-
-    def connect(self, store):
-        store.add_subscriber(self.render)
-
-    def render(self, state):
-        # Note: lock used to ignore state changes while building layers
-        #       e.g. source limit events
-        if not self.lock:
-            self.lock = True
-            self.render_specs(self.parse_specs(state), state)
-            self.lock = False
-
-    def parse_specs(self, state):
-        # Parse application state
-        node = state
-        for key in ("layers", "index"):
-            node = node.get(key, {})
-        return [LayerSpec(**kwargs) for _, kwargs in sorted(node.items())]
-
-    def render_specs(self, specs, state):
-        # Dynamically build/use layers from object pools
-        used_layers = defaultdict(list)
-        for spec in specs:
-            if spec.dataset == "":
-                continue
-
-            key = spec.dataset
-            layer = self.pools[key].acquire()
-
-            # Unmute layer
-            layer.unmute()
-
-            # Update figure visibility
-            layer.active = spec.active
-
-            # Layer-specific state
-            layer_state = {}
-            layer_state.update(state)
-            if spec.variable != "":
-                layer_state.update(variable=spec.variable,
-                                   colorbar=spec.colorbar)
-            layer.render(layer_state)
-
-            used_layers[key].append(layer)
-
-        # Mute unused layers
-        for pool in self.pools.values():
-            pool.map(lambda layer: layer.mute())
-
-        # Return used layers to pool(s)
-        for key, layers in used_layers.items():
-            pool = self.pools[key]
-            for layer in layers:
-                pool.release(layer)
-
-class Layer:
+class Layer(Reusable):
     """Facade to ease API"""
     def __init__(self, map_view, visible, source_limits):
         self.map_view = map_view
@@ -576,27 +506,36 @@ class Layer:
             for source in self.image_sources:
                 self.source_limits.add_source(source)
 
-    def render(self, state):
-        self.map_view.render(state)
+    def render_id(self, state, layer_id):
+        """Render layer settings"""
+        if isinstance(state, dict):
+            state = forest.state.State.from_dict()
 
-    def mute(self):
+        if layer_id in state.layers.index:
+            spec = LayerSpec(**state.layers.index[layer_id])
+            if spec.dataset == "":
+                return
+
+            self.visible.active = spec.active
+
+            # Layer-specific state
+            layer_state = {}
+            layer_state.update(state.to_dict())
+            if spec.variable != "":
+                layer_state.update(variable=spec.variable,
+                                   colorbar=spec.colorbar)
+            self.map_view.render(layer_state)
+
+    def reset(self):
         self.active = []
         if self.source_limits is not None:
             for source in self.image_sources:
                 self.source_limits.remove_source(source)
 
-    def unmute(self):
+    def prepare(self):
         if self.source_limits is not None:
             for source in self.image_sources:
                 self.source_limits.add_source(source)
-
-    @property
-    def active(self):
-        return self.visible.active
-
-    @active.setter
-    def active(self, value):
-        self.visible.active = value
 
 
 def factory(*args):
@@ -627,7 +566,6 @@ class Factory:
     def __call__(self):
         """Complex construction"""
         self._calls += 1
-        print("Factory.__call__: {}".format(self._calls))
         try:
             map_view = self.dataset.map_view(self.color_mapper)
         except TypeError:
@@ -662,28 +600,3 @@ class Visible:
         for i in range(len(self.renderers)):
             self.renderers[i].visible = i in indices
         self._active = indices
-
-
-class Pool:
-    """Manage reusable objects
-
-    :param factory: function to create new objects
-    """
-    def __init__(self, factory):
-        self.factory = factory
-        self.reusables = deque()
-
-    def map(self, func):
-        """Apply function to objects inside pool"""
-        for reusable in self.reusables:
-            func(reusable)
-
-    def acquire(self):
-        """Select or create an object"""
-        if len(self.reusables) == 0:
-            self.reusables.appendleft(self.factory())
-        return self.reusables.pop()
-
-    def release(self, reusable):
-        """Return object to Pool"""
-        self.reusables.appendleft(reusable)

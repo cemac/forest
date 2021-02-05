@@ -1,6 +1,6 @@
 files:
     - label: NWCSAF
-      pattern: ${HOME}/work/forest-test-data/NWCPY3/test-data/CTTH/S_NWC_CTTH_MSG4_GuineaCoast-VISIR_*
+      pattern: ${HOME}/work/forest-test-data/NWCPY3/S_NWC_CMA_MSG4_Africa-VISIR_20180625T114500Z.nc
       file_type: saf
 features:
     time_series: true  
