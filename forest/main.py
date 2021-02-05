@@ -26,6 +26,8 @@ from forest import (
 import forest.app
 import forest.actions
 from forest.barc.toolbar import BARC
+from forest.barc.labbook import BARCLab
+from forest.barc.reportgenerator import BARCReport
 import forest.components
 import forest.components.borders
 import forest.components.title
@@ -239,6 +241,15 @@ def main(argv=None):
     if data.FEATURE_FLAGS["BARC"]:
          barc = BARC(figures)
          tools_panel2.layout.children.append(barc.tool_bar)
+         barclab = BARCLab(figures)
+         barcreport = BARCReport(figures)
+         barclabpanel= tools.ToolsPanel(available_features2)
+         barcreportpanel=tools.ToolsPanel(available_features2)
+         barclabpanel.connect(store)
+         barcreportpanel.connect(store)
+         barclabpanel.layout.children.append(barclab.LabBook())
+         barcreportpanel.layout.children.append(barcreport.Report())
+         #tools_panel2.layout.children.append(barc.ToolBar())
 
     # Navbar components
     navbar = Navbar(show_diagram_button=len(available_features) > 0)
@@ -402,14 +413,17 @@ def main(argv=None):
     # Set up barc tabs
     layouts["barc"] = []
     layouts["barc"].append(tools_panel2.layout)
+    layouts["barc"].append(barclabpanel.layout)
+    layouts["barcreport"] = []
+    layouts["barcreport"].append(barcreportpanel.layout)
     tabs2 = bokeh.models.Tabs(tabs=[
         bokeh.models.Panel(
             child=bokeh.layouts.column(*layouts["barc"]),
-            title="BARCTools"
+            title="LabBook"
         ),
         bokeh.models.Panel(
-            child=bokeh.layouts.column(),
-            title="Report")
+            child=bokeh.layouts.column(*layouts["barcreport"]),
+            title="Report Generator")
         ])
     for f in figures:
         f.on_event(bokeh.events.Tap, tap_listener.update_xy)
