@@ -507,7 +507,7 @@ class BARC:
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
 
-        
+
         #add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button")
         if not hasattr(self, 'frontbuttons'):
@@ -555,7 +555,7 @@ class BARC:
                 render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(col), text=value(each), source=self.source['text'+name+each], tags=['text_stamp','fig'+str(self.figures.index(figure))]))
 
 
-                self.source['bezier'+name].js_on_change('data', 
+                self.source['bezier'+name].js_on_change('data',
                   bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
                   front_ds= self.source['fronts'+name],
                   starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
@@ -565,8 +565,8 @@ class BARC:
                      let fontsize = (widthPicker.value * starting_font_size) +'pt';
                      let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
                      let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
-                    
-                     //set all fontsizes and datasizes 
+
+                     //set all fontsizes and datasizes
                      datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
                      datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
@@ -574,10 +574,10 @@ class BARC:
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
-                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){ 
+                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){
                         return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
                      })
- 
+
                      bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
                         if(bez2_ds.data['dy'][last][index]) {
                            return val - bez2_ds.data['dy'][last][index]/magnitude[index]
@@ -585,7 +585,7 @@ class BARC:
                            return val
                         }
                      })
-                        
+
                      bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
                         if(bez2_ds.data['dx'][last][index]) {
                            return val + bez2_ds.data['dx'][last][index]/magnitude[index]
@@ -796,15 +796,11 @@ class BARC:
         toolBarBoxes = bokeh.models.layouts.Column(children=toolBarList)
         self.toolBarBoxes = toolBarBoxes
         buttonspec1 = {
-            'undo': 'undo',
             'pan': "move",
             'boxzoom': "boxzoom",
             'box_edit': 'box_edit',
-            'reset': 'reset',
-            'taptool;': 'tap',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
-            'textbox': 'textbox',
         }
 
         buttons = []
@@ -841,7 +837,7 @@ class BARC:
             buttons2.append(button)
 
         self.barcTools.children.append(bokeh.layouts.grid(buttons, ncols=9))
-        self.barcTools.children.append(bokeh.layouts.grid(buttons2, ncols=6))
+        self.barcTools.children.append(bokeh.layouts.grid(buttons2, ncols=8))
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])

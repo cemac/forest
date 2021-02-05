@@ -189,6 +189,10 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-monsoon-trough-button button 
   background-image: url("icons/splines/monsoon-trough.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-nonactive-monsoon-trough-button button {
+  background-image: url("icons/splines/nonactive-monsoon-trough.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-000-button button {
   background-image: url("icons/group0/pw-000.png");

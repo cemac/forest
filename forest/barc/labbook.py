@@ -49,7 +49,7 @@ class BARCLab:
         self.document = bokeh.plotting.curdoc()
         self.barcBook = bokeh.models.layouts.Column(name="barcBook")
         # initalise sources
-        self.text_banner = Paragraph(text='User Title', width=300)
+        self.text_banner = Paragraph(text='', width=300)
 
     def my_text_input_handler(self, attr, old, new):
         myMessage="{0}".format(new)
