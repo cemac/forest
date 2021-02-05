@@ -54,8 +54,6 @@ class BARC:
 
      It is attached to to the main FOREST instance in the :py:func:`forest.main.main()` function of :py:mod:`forest.main`.
     '''
-    barcTools = None
-    source = {}
 
     def __init__(self, figures):
         self.figures = figures
@@ -64,6 +62,7 @@ class BARC:
         self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
         # initalise sources
+        self.source = {}
         self.source['polyline'] = ColumnDataSource(data.EMPTY)
         self.source['poly_draw'] = ColumnDataSource(data.EMPTY)
         self.source['box_edit'] = ColumnDataSource(data.EMPTY)
@@ -472,7 +471,13 @@ class BARC:
 
         return tool4
 
-    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid"):
+    def bezierSource(self):
+        return ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
+
+    def emptySource(self):
+        return ColumnDataSource(data.EMPTY)
+
+    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10, line2_scale_factor=1):
         '''
         The weatherfront function of BARC. This draws a Bézier curve and repeats the symbol(s) along it.
 
@@ -494,11 +499,13 @@ class BARC:
         :param text_baseline: Valid :py:data:`TextBaseline <bokeh.core.enums.TextBaseline>` or list of TextBaselines
         :param str css_class: name of a css class to apply to the button. Defaults to ``barc-<name>-button``, where <name> is the ``name`` parameter.
         :param line_dash: A :py:class:`DashPattern <bokeh.core.properties.DashPattern>` specification.
+        :param integer starting_font_size: Initial size of the text stamp. Default 10px.
+        :param float line2_scale_factor: Default offset for line 2 is the fontsize. This scale factor multiples the offset. Default 1.
 
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
 
-        starting_font_size=10
+        
         #add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button") 
         if not hasattr(self, 'frontbuttons'):
@@ -507,11 +514,19 @@ class BARC:
         self.frontbuttons[name] = css_class if css_class else 'barc-'+name+'-button'
 
         if not 'bezier'+name in self.source:
-            self.source['bezier'+name] = ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
+            self.source['bezier'+name] = self.bezierSource()
         if not 'bezier2'+name in self.source:
-            self.source['bezier2'+name] = ColumnDataSource(data=dict(xs=[], ys=[]))
+            self.source['bezier2'+name] = self.emptySource()
+            self.source['bezier2'+ name].add([], "dx")
+            self.source['bezier2'+ name].add([], "dy")
         if not 'fronts'+name in self.source:
-            self.source['fronts'+name] = ColumnDataSource(data=dict(xs=[], ys=[]))
+            self.source['fronts'+name] = self.emptySource()
+
+        #if fronts source is changed (e.g. via loadData) trigger bezier redraw
+        self.source['fronts'+name].js_on_change('data',
+            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name]), code="""
+            datasource.change.emit();
+            """))
 
         render_lines = []
         for figure in self.figures:
@@ -523,7 +538,7 @@ class BARC:
             ])
             for each in symbols:
                 if not 'text' + name+each in self.source:
-                  self.source['text' + name+each] = ColumnDataSource(data.EMPTY)
+                  self.source['text' + name+each] = self.emptySource()
                   self.source['text' + name+each].add([], "datasize")
                   self.source['text' + name+each].add([], "fontsize")
                   self.source['text' + name+each].add([], "angle")
@@ -538,24 +553,47 @@ class BARC:
                 render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(col), text=value(each), source=self.source['text'+name+each], tags=['text_stamp','fig'+str(self.figures.index(figure))]))
 
                 self.source['bezier'+name].js_on_change('data', 
-                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each],
-                  starting_font_size=starting_font_size, figure=self.figures[0],
+                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
+                  front_ds= self.source['fronts'+name],
+                  starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
-                     for(var g = 0; g < datasource.data['xs'].length; g++)
-                     {
-                         if(!datasource.data['fontsize'][g])
-                         {
-                             datasource.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
-                         }
+                     let fontsize = (widthPicker.value * starting_font_size) +'pt';
+                     let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
+                     let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+                    
+                     //set all fontsizes and datasizes 
+                     datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
+                     datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
-                         //calculate initial datasize
-                         if(!datasource.data['datasize'][g])
-                         {
-                             var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                             datasource.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
-                         }
-                     }
+                     datasource.change.emit();
+
+                     //offset 2nd curve by datasize
+                     let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
+                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){ 
+                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
+                     })
+ 
+                     bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
+                        if(bez2_ds.data['dy'][last][index]) {
+                           return val - bez2_ds.data['dy'][last][index]/magnitude[index]
+                        } else {
+                           return val
+                        }
+                     })
+                        
+                     bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
+                        if(bez2_ds.data['dx'][last][index]) {
+                           return val + bez2_ds.data['dx'][last][index]/magnitude[index]
+                        } else {
+                           return val
+                        }
+                     })
+
+                     //only offset once
+                     bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
+                     bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
+                     bez2_ds.change.emit();
                      """)
                 )
                 self.figures[0].y_range.js_on_change('start',
@@ -563,7 +601,7 @@ class BARC:
                   figure=self.figures[0]), code="""
                   for(var g = 0; g < datasource.data['fontsize'].length; g++)
                   {
-                     datasource.data['fontsize'][g] = (((datasource.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                     datasource.data['fontsize'][g] = (((datasource.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
                   }
                   datasource.change.emit();
                   """)
@@ -728,13 +766,18 @@ class BARC:
                 self.weatherFront(name='cold', colour="blue", symbols=chr(983430)),
                 self.weatherFront(name='occluded', colour="purple", symbols=chr(983431)+chr(983430)),
                 self.weatherFront(name='stationary', text_baseline=['bottom','top'], colour=['#ff0000','#0000ff'], symbols=chr(983431)+chr(983432)),
-                self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", line2_colour="fuchsia", symbols='▮'),
+                self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
                 self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
                 self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
-                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="middle", symbols=chr(983593)),
-                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="middle", line_colour="red", symbols=chr(983590)),
+                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=15),
+                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="alphabetic", line_colour="red", symbols=chr(983590), starting_font_size=30),
                 self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
-                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="middle", line_colour="olive", symbols=chr(983552)),
+                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic", line_colour="olive", symbols=chr(983552), starting_font_size=20),
+                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
+                self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
+                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
+                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
+                self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
             )
 
             for glyph in self.allglyphs:
