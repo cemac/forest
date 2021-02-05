@@ -8,7 +8,19 @@
     background-color: white;
     border-radius: 50%;
 }
+.feedback-icon {
+    margin: 5px;
+    padding: 5px;
+    z-index: 4;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.6);
+    background-color: white;
+    border-radius: 50%;
+}
 .help-icon:hover {
+    color: black;
+}
+.feedback-icon:hover {
     color: black;
 }
 /* Diagrams drawer */
