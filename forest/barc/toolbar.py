@@ -94,7 +94,7 @@ class BARC:
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
                                "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
                                "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
-        self.dropDown = Select(title="Meteorological symbols:", width=250,
+        self.dropDown = Select(title="Meteorological symbols:", width=300,
 
                                value="Group0 - General meteorological symbols",
                                options=self.stamp_categories)
@@ -800,7 +800,7 @@ class BARC:
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
-        self.barcTools.children.append(bokeh.layouts.grid([self.colourPicker, self.widthPicker], ncols=3))
+        self.barcTools.children.append(bokeh.layouts.grid([ self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
         self.barcTools.children.extend([self.saveArea, self.annotate])
         self.barcTools.children.append(toolBarBoxes)
