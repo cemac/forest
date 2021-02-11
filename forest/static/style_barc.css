@@ -8,7 +8,19 @@
     background-color: white;
     border-radius: 50%;
 }
+.feedback-icon {
+    margin: 5px;
+    padding: 5px;
+    z-index: 4;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.6);
+    background-color: white;
+    border-radius: 50%;
+}
 .help-icon:hover {
+    color: black;
+}
+.feedback-icon:hover {
     color: black;
 }
 /* Diagrams drawer */
@@ -40,7 +52,7 @@ div.barc_p div p {
 }
 
 div#barcdiagrams.barcdiagrams div.barc-button {
-  border: solid 1px rgba(0, 0, 0, 0.3);
+  border-style: hidden 1px ;
   display: inline-block;
   color: transparent !important;
 }
@@ -187,6 +199,10 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-quatorial-trough-button butto
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-monsoon-trough-button button {
   background-image: url("icons/splines/monsoon-trough.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-nonactive-monsoon-trough-button button {
+  background-image: url("icons/splines/nonactive-monsoon-trough.png");
   color: transparent !important;
 }
 
@@ -795,13 +811,14 @@ root .bk-toolbar, .bk-root .bk-toolbar * {
 
 .bk-root .bk-btn-group {
   display: flex;
-  width; 400px
+  width; 400px;
 }
 
 .bk-root .bk-input-group {
   display: flex;
-  width: 350px
 }
+
+
 /* BARC Font */
 @font-face {
   font-family: BARC;
