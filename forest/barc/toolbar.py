@@ -72,6 +72,8 @@ class BARC:
         # set intial width and colours
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
+        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(labels=['Show Bézier Guides'], active=[0])
+        self.visibleGuides.on_change('active', self.hideGuides)
         self.widthPicker = bokeh.models.widgets.Slider(
             title='Select size', name="barc_width", width=200,
             end=10.0,
@@ -220,6 +222,12 @@ class BARC:
         elif str(new) == "Group10 - Hurricanes and Typhoons":
             self.glyphs =  glyphcodes[100:110]
 
+    def hideGuides(self, attr,old,new):
+         bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
+         print(self.visibleGuides.active)
+         for guide in bezguides:
+            guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
+        
 
     def call(self, attr, old, new):
         """Call back from dropdown click
@@ -533,8 +541,8 @@ class BARC:
         render_lines = []
         for figure in self.figures:
             render_lines.extend([
+               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['bezierguide']),
                #order matters! Typescript assumes multiline is first
-               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['multiline']),
                figure.bezier(x0='x0', y0='y0', x1='x1', y1='y1', cx0='cx0', cy0='cy0', cx1="cx1", cy1="cy1", source=self.source['bezier'+name], line_color=line_colour, line_dash=line_dash, line_width=2, tags=['bezier']),
                figure.multi_line(xs='xs', ys='ys', source=self.source['bezier2'+name], color=line2_colour, line_width=2, tags=['bezier2'])
             ])
@@ -841,7 +849,7 @@ class BARC:
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
-        self.barcTools.children.append(bokeh.layouts.grid([ self.widthPicker, self.colourPicker], ncols=2))
+        self.barcTools.children.append(bokeh.layouts.grid([self.visibleGuides, self.widthPicker, self.colourPicker], ncols=3))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
         self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
