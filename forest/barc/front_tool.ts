@@ -193,7 +193,7 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const H = y0[beztot]
 
           //calculate arc-length (approximately)
-          const segments = 200 //number of segments
+          const segments = 400 //number of segments
           let temp_x = []
           let temp_y = []
           let temp_l = [0]

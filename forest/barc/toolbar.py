@@ -104,19 +104,19 @@ class BARC:
                                    args=dict(sources=self.source,
                                    saveArea=self.saveArea,
                                    figure=self.figures[0]), code="""
-        Object.entries(JSON.parse(saveArea.value)).forEach(([k,v]) => {
-            sources[k].change.emit();
-            sources[k].data = v;
-            if(k.substring(0,10) == 'text_stamp')
-            {
-                for(var g = 0; g < sources[k].data['fontsize'].length; g++)
-                {
-                    sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
-                }
-            }
-        })
-    """)
-                                   )
+                  Object.entries(JSON.parse(saveArea.value)).forEach(([k,v]) => {
+                     sources[k].change.emit();
+                     sources[k].data = v;
+                     if(k.substring(0,10) == 'text_stamp')
+                     {
+                        for(var g = 0; g < sources[k].data['fontsize'].length; g++)
+                        {
+                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                        }
+                     }
+                  })
+               """)
+        )
 
         self.saveButton = bokeh.models.widgets.Button(
             name="barc_save", width=350, label="Save")
@@ -524,7 +524,7 @@ class BARC:
 
         #if fronts source is changed (e.g. via loadData) trigger bezier redraw
         self.source['fronts'+name].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name]), code="""
+            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name], figure=self.figures[0]), code="""
             datasource.change.emit();
             """))
 
