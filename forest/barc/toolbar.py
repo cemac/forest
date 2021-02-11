@@ -224,7 +224,6 @@ class BARC:
 
     def hideGuides(self, attr,old,new):
          bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
-         print(self.visibleGuides.active)
          for guide in bezguides:
             guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
         
@@ -849,7 +848,8 @@ class BARC:
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
-        self.barcTools.children.append(bokeh.layouts.grid([self.visibleGuides, self.widthPicker, self.colourPicker], ncols=3))
+        self.barcTools.children.extend([self.visibleGuides])
+        self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
         self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
