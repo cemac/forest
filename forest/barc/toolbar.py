@@ -90,6 +90,7 @@ class BARC:
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
+            bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Gin','Whisky','Rum','Tequila'],active=[0,3]),
         ])
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
@@ -715,14 +716,15 @@ class BARC:
         outdict = {}
 
         for (k,v) in self.source.items():
-            try:
-               outdict[k] = v.data
-            except:
-               print(self.source[k])
+            outdict[k] = v.data
 
         outdict['annotations'] = {}
         for each in self.annotate.children:
-            outdict['annotations'][each.name] = each.value
+            print(each.name)
+            try:
+               outdict['annotations'][each.name] = each.value
+            except AttributeError:
+               outdict['annotations'][each.name] = each.active
 
         c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
         self.conn.commit()
@@ -731,7 +733,6 @@ class BARC:
         '''
          loads a JSON datasource and updates current sources
         '''
-        print(event.item)
         c = self.conn.cursor()
 
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
@@ -740,7 +741,11 @@ class BARC:
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
-               n.value = jsonds['annotations'][name]
+               try:
+                  n.value = jsonds['annotations'][name]
+               except AttributeError:
+                  print(name, n)
+                  n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
                try:
