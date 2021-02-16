@@ -85,12 +85,13 @@ class BARC:
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
+        mc = bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
-            bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Gin','Whisky','Rum','Tequila'],active=[0,3]),
+            mc
         ])
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
@@ -720,7 +721,6 @@ class BARC:
 
         outdict['annotations'] = {}
         for each in self.annotate.children:
-            print(each.name)
             try:
                outdict['annotations'][each.name] = each.value
             except AttributeError:
@@ -742,9 +742,9 @@ class BARC:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
                try:
+                  print(name, n.value)
                   n.value = jsonds['annotations'][name]
                except AttributeError:
-                  print(name, n)
                   n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
