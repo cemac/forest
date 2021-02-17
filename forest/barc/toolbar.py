@@ -728,6 +728,10 @@ class BARC:
 
         c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
         self.conn.commit()
+        #repopulate drop-down
+        c = self.conn.cursor()
+        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        self.loadButton.menu = c.fetchall()
 
     def loadDataSources(self, event):
         '''
@@ -742,7 +746,6 @@ class BARC:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
                try:
-                  print(name, n.value)
                   n.value = jsonds['annotations'][name]
                except AttributeError:
                   n.active = jsonds['annotations'][name]
