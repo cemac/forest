@@ -205,10 +205,7 @@ class BARC:
         #copy blank sources for reset button 
         self.blankSource = {}
         for (k,v) in self.source.items():
-            if k != 'annotations':
-               self.blankSource[k] = ColumnDataSource(data=v.data.copy())
-            else:
-               self.blankSource[k] = v
+            self.blankSource[k] = ColumnDataSource(data=v.data.copy())
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -784,9 +781,15 @@ class BARC:
         Blanks the sources back to as initially created
         '''
 
+        for n in self.annotate.children:
+           try:
+              n.value = ''
+           except AttributeError:
+              n.active = []
+         
         for (k,v) in self.source.items():
-            self.source[k].data = self.blankSource[k].data.copy()
-        print(self.source['bezierconvergence'].data)
+            if k != 'annotation':
+               self.source[k].data = self.blankSource[k].data.copy()
    
 
     def ToolBar(self):
