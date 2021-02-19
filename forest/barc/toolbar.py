@@ -29,9 +29,11 @@ This module provides a :class:`BARC` to enable the Barc Tool Bar
 
 """
 import bokeh.models
+import bokeh.io
 import json
 import sqlite3
 import time
+import copy
 import pandas as pd
 
 from os.path import basename
@@ -139,6 +141,12 @@ class BARC:
         )
         self.saveButton.on_click(self.saveDataSources)
 
+        self.exportButton = bokeh.models.widgets.Button(
+            name="barc_export", width=50, label="Export")
+        self.resetButton = bokeh.models.widgets.Button(
+            name="barc_reset", width=50, label="Clear")
+        self.resetButton.on_click(self.clearBarc)
+
         #populate list of saved markups
         c = self.conn.cursor()
         c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
@@ -193,6 +201,14 @@ class BARC:
             self.source['text_stamp' + chr(glyph)].add([], "colour")
 
         self.tool_bar =self.ToolBar()
+
+        #copy blank sources for reset button 
+        self.blankSource = {}
+        for (k,v) in self.source.items():
+            if k != 'annotations':
+               self.blankSource[k] = ColumnDataSource(data=v.data.copy())
+            else:
+               self.blankSource[k] = v
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -583,30 +599,33 @@ class BARC:
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
-                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){
-                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
-                     })
+                     if(last > -1)
+                     {
+                        let magnitude = bez2_ds.data['dx'][last].map(function(val,index){
+                           return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
+                        })
 
-                     bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
-                        if(bez2_ds.data['dy'][last][index]) {
-                           return val - bez2_ds.data['dy'][last][index]/magnitude[index]
-                        } else {
-                           return val
-                        }
-                     })
+                        bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
+                           if(bez2_ds.data['dy'][last][index]) {
+                              return val - bez2_ds.data['dy'][last][index]/magnitude[index]
+                           } else {
+                              return val
+                           }
+                        })
 
-                     bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
-                        if(bez2_ds.data['dx'][last][index]) {
-                           return val + bez2_ds.data['dx'][last][index]/magnitude[index]
-                        } else {
-                           return val
-                        }
-                     })
+                        bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
+                           if(bez2_ds.data['dx'][last][index]) {
+                              return val + bez2_ds.data['dx'][last][index]/magnitude[index]
+                           } else {
+                              return val
+                           }
+                        })
 
-                     //only offset once
-                     bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
-                     bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
-                     bez2_ds.change.emit();
+                        //only offset once
+                        bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
+                        bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
+                        bez2_ds.change.emit();
+                     }
                      """)
                 )
                 self.figures[0].y_range.js_on_change('start',
@@ -757,8 +776,18 @@ class BARC:
                   pass;
 
 
+    def exportReport(self):
+        return bokeh.io.export_png(bokeh.io.curdoc(), filename="plot.png")
 
+    def clearBarc(self):
+        '''
+        Blanks the sources back to as initially created
+        '''
 
+        for (k,v) in self.source.items():
+            self.source[k].data = self.blankSource[k].data.copy()
+        print(self.source['bezierconvergence'].data)
+   
 
     def ToolBar(self):
         """Barc Tool Bar
@@ -773,7 +802,7 @@ class BARC:
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
                 bokeh.models.tools.ResetTool(tags=['barcreset']),
-                bokeh.models.tools.TapTool(tags=['barcreset']),
+                bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
                 self.windBarb(),
@@ -858,7 +887,7 @@ class BARC:
         self.barcTools.children.extend([self.dropDown])
         self.barcTools.children.extend([self.visibleGuides])
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
-        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
+        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
