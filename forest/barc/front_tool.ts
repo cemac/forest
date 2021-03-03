@@ -193,7 +193,7 @@ export class FrontDrawToolView extends PolyDrawToolView {
           const H = y0[beztot]
 
           //calculate arc-length (approximately)
-          const segments = 200 //number of segments
+          const segments = 400 //number of segments
           let temp_x = []
           let temp_y = []
           let temp_l = [0]
@@ -213,7 +213,7 @@ export class FrontDrawToolView extends PolyDrawToolView {
           }
             
           const total_length = temp_l[temp_l.length-1]
-          const spacing = (this.parent.model.y_range.end - this.parent.model.y_range.start)/50
+          const spacing = (this.parent.model.y_range.end - this.parent.model.y_range.start)/15
 
           //drawing text stamps over '+total_length
           //draw points, text glyph at each one
@@ -257,13 +257,32 @@ export class FrontDrawToolView extends PolyDrawToolView {
               text_ds.get_array('datasize').push(null)
               text_ds.get_array(ts_anglekey).push(Math.atan2(dy,dx))
               text_ds.change.emit();
-
+          }
               
+          for(var i=0.0; i < total_length; i+=(spacing/4)) 
+          {
+              //calculate polyline vertices (same as text stamps, but more frequent)
+              //i is target arc length
+              const i_index = temp_l.findIndex(l => l >= i) || 1 //Index of first element larger or equal to i
+              let t = temp_l[i_index] / total_length //default if i is already in the table
+              if(temp_l[i_index] > i) //if not
+              {
+                 //interpolate
+                 const segmentFraction = (i - temp_l[i_index-1]) / (temp_l[i_index] - temp_l[i_index-1])
+                 t = (temp_l[i_index -1] + segmentFraction) / total_length  // 1.x × 
+              }
+              if(t > 1) 
+              {
+                 t= 1;
+              }
+
               if(fignum==0)
               {
                   //draw polyline approximating Bezier, same size as textstamps
                   temp2_x.push(A*t**3 + B*t**2 +C*t +D) 
                   temp2_y.push(E*t**3 + F*t**2 +G*t +H)
+                  let dx = 3*A*t**2 + 2*B*t + C //derivatives of previous
+                  let dy = 3*E*t**2 + 2*F*t + G
                   temp2_dx.push(dx)// [-dy, dx] is the normal vector to the segment
                   temp2_dy.push(dy)
               }

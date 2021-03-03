@@ -57,7 +57,6 @@ class BARCReport:
     def Report(self):
         """Barc Report
         """
-        UserInput=bokeh.models.Div(text="Test")
+        UserInput=bokeh.models.Div(text="<i><b>This feature is coming soon.</b></i> <br>The report generator will provide the capability to combine the annotations and notes from the user into one report. It will feature a comprehensive search and allows users to find previous reports and events from keywords and metadata.")
         self.barcReport.children.append(UserInput)
-        print('test Report')
         return self.barcReport

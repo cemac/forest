@@ -14,3 +14,5 @@ apps/ux-improvements/static/js
 apps/ux-improvements/node_modules
 .DS_Store
 build/
+forest/barc/barc-save.sdb
+*local.yml
