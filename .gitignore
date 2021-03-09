@@ -2,6 +2,7 @@
 .terraform/*
 *~
 *.pyc
+*.log
 __pycache__
 kubeconfig
 *.swp
