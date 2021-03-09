@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>{% block title %}{{ title | e if title else "BARC Plot" }}{% endblock %}</title>
+  </head>
+  <body>
+    <div id="figs">
+    {% for fig in figures %}
+      <figure><img src="{{ fig }}" /></figure>
+      <figcaption>{{ figures[fig] }}</figcaption>
+    {% endfor %}
+   </div>
+   <div id="annotations">
+   </div>
+  </body>
+</html>

@@ -38,6 +38,7 @@ import pandas as pd
 
 from selenium import webdriver
 from os.path import basename, abspath
+from jinja2 import Template
 
 from bokeh.models import ColumnDataSource, Paragraph, Select, Dropdown
 from bokeh.models.glyphs import Text
@@ -783,9 +784,17 @@ class BARC:
         chromeOptions.binary_location = "/usr/bin/chromium"
         chromeOptions.addArgument("register-font-files=forest/barc/barc-font/woff/BARC.woff")
         return bokeh.io.export_png(self.figures[0], filename="plot.png", webdriver=webdriver.Chrome(options=chromeOptions))'''
-        image = get_screenshot_as_png(self.figures[0])
-        filename = "wibble.png"
-        image.save(filename)
+        with open('forest/barc/export.html') as t:
+           template = Template(t.read())
+        figs = {}
+        for each in self.figures:
+           image = get_screenshot_as_png(each)
+           filename = "%s.png" % (each.id,)
+           image.save(filename)
+           figs[filename] = "wibble"
+
+        print(template.render({"figures":figs}))
+        
         return abspath(filename)
         
 
