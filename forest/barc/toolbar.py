@@ -36,7 +36,8 @@ import time
 import copy
 import pandas as pd
 
-from os.path import basename
+from selenium import webdriver
+from os.path import basename, abspath
 
 from bokeh.models import ColumnDataSource, Paragraph, Select, Dropdown
 from bokeh.models.glyphs import Text
@@ -48,6 +49,7 @@ from forest import wind, data, tools, redux
 import forest.middlewares as mws
 #from . import front
 from .front_tool import FrontDrawTool
+from .export import get_layout_html, get_screenshot_as_png
 
 
 class BARC:
@@ -55,6 +57,7 @@ class BARC:
      A class for the BARC features.
 
      It is attached to to the main FOREST instance in the :py:func:`forest.main.main()` function of :py:mod:`forest.main`.
+
     '''
 
     def __init__(self, figures):
@@ -143,6 +146,8 @@ class BARC:
 
         self.exportButton = bokeh.models.widgets.Button(
             name="barc_export", width=50, label="Export")
+        self.exportButton.on_click(self.exportReport)
+
         self.resetButton = bokeh.models.widgets.Button(
             name="barc_reset", width=50, label="Clear")
         self.resetButton.on_click(self.clearBarc)
@@ -774,7 +779,15 @@ class BARC:
 
 
     def exportReport(self):
-        return bokeh.io.export_png(bokeh.io.curdoc(), filename="plot.png")
+        '''chromeOptions =webdriver.ChromeOptions()
+        chromeOptions.binary_location = "/usr/bin/chromium"
+        chromeOptions.addArgument("register-font-files=forest/barc/barc-font/woff/BARC.woff")
+        return bokeh.io.export_png(self.figures[0], filename="plot.png", webdriver=webdriver.Chrome(options=chromeOptions))'''
+        image = get_screenshot_as_png(self.figures[0])
+        filename = "wibble.png"
+        image.save(filename)
+        return abspath(filename)
+        
 
     def clearBarc(self):
         '''

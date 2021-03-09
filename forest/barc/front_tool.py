@@ -13,5 +13,6 @@ class FrontDrawTool(EditTool, Drag, Tap):
     A tool for drawing Beziér curves with Unicode text evenly-spaced along it (e.g. for 
     weather fronts)
     '''
+    __css__ = "forest/static/style_barc.css?v=27"
     __implementation__ = "front_tool.ts"
 
