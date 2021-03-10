@@ -34,10 +34,11 @@ import json
 import sqlite3
 import time
 import copy
-import pandas as pd
+import tempfile
 
 from selenium import webdriver
-from os.path import basename, abspath
+from os.path import basename, abspath, join
+from os import mkdir
 from jinja2 import Template
 
 from bokeh.models import ColumnDataSource, Paragraph, Select, Dropdown
@@ -51,6 +52,8 @@ import forest.middlewares as mws
 #from . import front
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
+from bokeh.io.export import _tmp_html
+from bokeh.util.browser import view
 
 
 class BARC:
@@ -91,7 +94,7 @@ class BARC:
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
-        mc = bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
+        mc = bokeh.models.widgets.CheckboxGroup(name="tags", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
@@ -786,14 +789,27 @@ class BARC:
         return bokeh.io.export_png(self.figures[0], filename="plot.png", webdriver=webdriver.Chrome(options=chromeOptions))'''
         with open('forest/barc/export.html') as t:
            template = Template(t.read())
-        figs = {}
-        for each in self.figures:
-           image = get_screenshot_as_png(each)
-           filename = "%s.png" % (each.id,)
-           image.save(filename)
-           figs[filename] = "wibble"
 
-        print(template.render({"figures":figs}))
+           #with tempfile.TemporaryDirectory(dir='forest/static',prefix="barc") as tempdir:
+           tempdir = "forest/static/wibble"
+           figs = {}
+           for each in self.figures:
+              image = get_screenshot_as_png(each)
+              filename = "%s.png" % (each.id,)
+              image.save(join(tempdir,filename))
+              figs[filename] = "wibble"
+
+           #Get annotations
+           annotations = {}
+           for each in self.annotate.children:
+              try:
+                 annotations[each.title] = each.value
+              except AttributeError:
+                 annotations[each.name] = each.active
+
+           with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
+              f.write(template.render({"figures":figs, "annotations":annotations}))
+           view('http://localhost:5006/'+tempdir+'/barcexport.html', new="tab")
         
         return abspath(filename)
         

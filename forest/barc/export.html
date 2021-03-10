@@ -12,6 +12,12 @@
     {% endfor %}
    </div>
    <div id="annotations">
+   <dl>
+    {% for note in annotations %}
+      <dt>{{ note }}</dt>
+      <dd>{{ annotations[note] }}</dd>
+    {% endfor %}
+   </dl>
    </div>
   </body>
 </html>
