@@ -17,4 +17,4 @@ apps/ux-improvements/node_modules
 build/
 forest/barc/barc-save.sdb
 *local.yml
-forest/barc/wibble
+forest/static/wibble
