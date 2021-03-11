@@ -53,7 +53,6 @@ from forest.observe import Observable
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
 from bokeh.io.export import _tmp_html
-from bokeh.util.browser import view
 
 
 class BARC(Observable):
@@ -147,9 +146,18 @@ class BARC(Observable):
         )
         self.saveButton.on_click(self.saveDataSources)
 
+        self.exportStatus = bokeh.models.widgets.markups.Div(text='', name="exportStatus", width=200, visible=True)
+        self.exportStatus.js_on_change('text', bokeh.models.CustomJS(args=dict(exportStatus=self.exportStatus) ,code="""
+            console.log(exportStatus.text)
+        """))
         self.exportButton = bokeh.models.widgets.Button(
             name="barc_export", width=50, label="Export")
         self.exportButton.on_click(self.exportReport)
+        self.exportButton.js_on_click(
+            bokeh.models.CustomJS(args=dict(exportStatus=self.exportStatus), code="""
+               exportStatus.text ='<i class="fa fa-spinner fa-spin" style="font-size:24px"></i>'
+            """)
+        )
 
         self.resetButton = bokeh.models.widgets.Button(
             name="barc_reset", width=50, label="Clear")
@@ -789,6 +797,7 @@ class BARC(Observable):
         chromeOptions.binary_location = "/usr/bin/chromium"
         chromeOptions.addArgument("register-font-files=forest/barc/barc-font/woff/BARC.woff")
         return bokeh.io.export_png(self.figures[0], filename="plot.png", webdriver=webdriver.Chrome(options=chromeOptions))'''
+        print("Starting export")
         with open('forest/barc/export.html') as t:
            template = Template(t.read())
 
@@ -796,11 +805,11 @@ class BARC(Observable):
            tempdir = "forest/static/wibble"
            figs = {} 
            layers = self.store.state.get('layers')
-           for each in self.figures[0:layers['figures']]:
-              image = get_screenshot_as_png(each)
-              filename = "%s.png" % (each.id,)
+           for index in range(0,layers['figures']):
+              image = get_screenshot_as_png(self.figures[index])
+              filename = "%s.png" % (self.figures[index].id,)
               image.save(join(tempdir,filename))
-              figs[filename] = "%s, %s, %s" % (self.store.state['pattern'], self.store.state['variable'], self.store.state['valid_time'])
+              figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
 
            #Get annotations
            annotations = {}
@@ -812,9 +821,10 @@ class BARC(Observable):
 
            with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
               f.write(template.render({"figures":figs, "annotations":annotations}))
-           view('http://localhost:5006/'+tempdir+'/barcexport.html', new="tab")
-        
-        return abspath(filename)
+
+        self.exportStatus.text = '<a href="/' + tempdir + '/barcexport.html" id="exportlink" target="_blank">Display</a>'
+
+        return "/" + tempdir + '/barcexport.html'
         
 
     def clearBarc(self):
@@ -932,6 +942,7 @@ class BARC(Observable):
         self.barcTools.children.extend([self.visibleGuides])
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
+        self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
         self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
