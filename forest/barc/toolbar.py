@@ -29,9 +29,11 @@ This module provides a :class:`BARC` to enable the Barc Tool Bar
 
 """
 import bokeh.models
+import bokeh.io
 import json
 import sqlite3
 import time
+import copy
 import pandas as pd
 
 from os.path import basename
@@ -72,6 +74,8 @@ class BARC:
         # set intial width and colours
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
+        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(labels=['Show Bézier Guides'], active=[0])
+        self.visibleGuides.on_change('active', self.hideGuides)
         self.widthPicker = bokeh.models.widgets.Slider(
             title='Select size', name="barc_width", width=200,
             end=10.0,
@@ -83,11 +87,13 @@ class BARC:
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
+        mc = bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
+            mc
         ])
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
@@ -106,19 +112,19 @@ class BARC:
                                    args=dict(sources=self.source,
                                    saveArea=self.saveArea,
                                    figure=self.figures[0]), code="""
-        Object.entries(JSON.parse(saveArea.value)).forEach(([k,v]) => {
-            sources[k].change.emit();
-            sources[k].data = v;
-            if(k.substring(0,10) == 'text_stamp')
-            {
-                for(var g = 0; g < sources[k].data['fontsize'].length; g++)
-                {
-                    sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
-                }
-            }
-        })
-    """)
-                                   )
+                  Object.entries(JSON.parse(saveArea.value)).forEach(([k,v]) => {
+                     sources[k].change.emit();
+                     sources[k].data = v;
+                     if(k.substring(0,10) == 'text_stamp')
+                     {
+                        for(var g = 0; g < sources[k].data['fontsize'].length; g++)
+                        {
+                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                        }
+                     }
+                  })
+               """)
+        )
 
         self.saveButton = bokeh.models.widgets.Button(
             name="barc_save", width=50, label="\U0001f4be")
@@ -134,6 +140,12 @@ class BARC:
             """)
         )
         self.saveButton.on_click(self.saveDataSources)
+
+        self.exportButton = bokeh.models.widgets.Button(
+            name="barc_export", width=50, label="Export")
+        self.resetButton = bokeh.models.widgets.Button(
+            name="barc_reset", width=50, label="Clear")
+        self.resetButton.on_click(self.clearBarc)
 
         #populate list of saved markups
         c = self.conn.cursor()
@@ -190,6 +202,11 @@ class BARC:
 
         self.tool_bar =self.ToolBar()
 
+        #copy blank sources for reset button 
+        self.blankSource = {}
+        for (k,v) in self.source.items():
+            self.blankSource[k] = ColumnDataSource(data=v.data.copy())
+
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
         """
@@ -220,6 +237,11 @@ class BARC:
         elif str(new) == "Group10 - Hurricanes and Typhoons":
             self.glyphs =  glyphcodes[100:110]
 
+    def hideGuides(self, attr,old,new):
+         bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
+         for guide in bezguides:
+            guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
+        
 
     def call(self, attr, old, new):
         """Call back from dropdown click
@@ -526,15 +548,15 @@ class BARC:
 
         #if fronts source is changed (e.g. via loadData) trigger bezier redraw
         self.source['fronts'+name].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name]), code="""
+            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name], figure=self.figures[0]), code="""
             datasource.change.emit();
             """))
 
         render_lines = []
         for figure in self.figures:
             render_lines.extend([
+               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['bezierguide']),
                #order matters! Typescript assumes multiline is first
-               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['multiline']),
                figure.bezier(x0='x0', y0='y0', x1='x1', y1='y1', cx0='cx0', cy0='cy0', cx1="cx1", cy1="cy1", source=self.source['bezier'+name], line_color=line_colour, line_dash=line_dash, line_width=2, tags=['bezier']),
                figure.multi_line(xs='xs', ys='ys', source=self.source['bezier2'+name], color=line2_colour, line_width=2, tags=['bezier2'])
             ])
@@ -574,30 +596,33 @@ class BARC:
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
-                     let magnitude = bez2_ds.data['dx'][last].map(function(val,index){
-                        return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
-                     })
+                     if(last > -1)
+                     {
+                        let magnitude = bez2_ds.data['dx'][last].map(function(val,index){
+                           return Math.sqrt(val**2 + bez2_ds.data['dy'][last][index]**2)/ (datasize * line2_scale_factor);
+                        })
 
-                     bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
-                        if(bez2_ds.data['dy'][last][index]) {
-                           return val - bez2_ds.data['dy'][last][index]/magnitude[index]
-                        } else {
-                           return val
-                        }
-                     })
+                        bez2_ds.data['xs'][last] = bez2_ds.data['xs'][last].map( function(val, index){
+                           if(bez2_ds.data['dy'][last][index]) {
+                              return val - bez2_ds.data['dy'][last][index]/magnitude[index]
+                           } else {
+                              return val
+                           }
+                        })
 
-                     bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
-                        if(bez2_ds.data['dx'][last][index]) {
-                           return val + bez2_ds.data['dx'][last][index]/magnitude[index]
-                        } else {
-                           return val
-                        }
-                     })
+                        bez2_ds.data['ys'][last] = bez2_ds.data['ys'][last].map( function(val, index){
+                           if(bez2_ds.data['dx'][last][index]) {
+                              return val + bez2_ds.data['dx'][last][index]/magnitude[index]
+                           } else {
+                              return val
+                           }
+                        })
 
-                     //only offset once
-                     bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
-                     bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
-                     bez2_ds.change.emit();
+                        //only offset once
+                        bez2_ds.data['dx'][last] = bez2_ds.data['dx'][last].map(function(val, index) { return null; })
+                        bez2_ds.data['dy'][last] = bez2_ds.data['dy'][last].map(function(val, index) { return null; })
+                        bez2_ds.change.emit();
+                     }
                      """)
                 )
                 self.figures[0].y_range.js_on_change('start',
@@ -708,23 +733,26 @@ class BARC:
         outdict = {}
 
         for (k,v) in self.source.items():
-            try:
-               outdict[k] = v.data
-            except:
-               print(self.source[k])
+            outdict[k] = v.data
 
         outdict['annotations'] = {}
         for each in self.annotate.children:
-            outdict['annotations'][each.name] = each.value
+            try:
+               outdict['annotations'][each.name] = each.value
+            except AttributeError:
+               outdict['annotations'][each.name] = each.active
 
         c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
         self.conn.commit()
+        #repopulate drop-down
+        c = self.conn.cursor()
+        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        self.loadButton.menu = c.fetchall()
 
     def loadDataSources(self, event):
         '''
          loads a JSON datasource and updates current sources
         '''
-        print(event.item)
         c = self.conn.cursor()
 
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
@@ -733,7 +761,10 @@ class BARC:
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
-               n.value = jsonds['annotations'][name]
+               try:
+                  n.value = jsonds['annotations'][name]
+               except AttributeError:
+                  n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
                try:
@@ -742,8 +773,24 @@ class BARC:
                   pass;
 
 
+    def exportReport(self):
+        return bokeh.io.export_png(bokeh.io.curdoc(), filename="plot.png")
 
+    def clearBarc(self):
+        '''
+        Blanks the sources back to as initially created
+        '''
 
+        for n in self.annotate.children:
+           try:
+              n.value = ''
+           except AttributeError:
+              n.active = []
+         
+        for (k,v) in self.source.items():
+            if k != 'annotation':
+               self.source[k].data = self.blankSource[k].data.copy()
+   
 
     def ToolBar(self):
         """Barc Tool Bar
@@ -758,7 +805,7 @@ class BARC:
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
                 bokeh.models.tools.ResetTool(tags=['barcreset']),
-                bokeh.models.tools.TapTool(tags=['barcreset']),
+                bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
                 self.windBarb(),
@@ -841,8 +888,9 @@ class BARC:
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
-        self.barcTools.children.append(bokeh.layouts.grid([ self.widthPicker, self.colourPicker], ncols=2))
-        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton], ncols=2))
+        self.barcTools.children.extend([self.visibleGuides])
+        self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
+        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
