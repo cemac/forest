@@ -47,8 +47,8 @@ from bokeh.core.properties import value
 from bokeh.models.tools import PolyDrawTool, PolyEditTool, BoxEditTool
 from bokeh.models.tools import PointDrawTool, ToolbarBox, FreehandDrawTool
 from bokeh.events import ButtonClick
-from forest import wind, data, tools, redux
-import forest.middlewares as mws
+from forest import wind, data, tools, state
+from forest.observe import Observable
 #from . import front
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
@@ -56,7 +56,7 @@ from bokeh.io.export import _tmp_html
 from bokeh.util.browser import view
 
 
-class BARC:
+class BARC(Observable):
     '''
      A class for the BARC features.
 
@@ -64,9 +64,8 @@ class BARC:
 
     '''
 
-    def __init__(self, figures):
+    def __init__(self, figures, store):
         self.figures = figures
-        self.document = bokeh.plotting.curdoc()
         #db for saving
         self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
@@ -215,6 +214,9 @@ class BARC:
         self.blankSource = {}
         for (k,v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
+        super().__init__()
+        self.store = store
+        self.add_subscriber(self.store.dispatch)
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -792,7 +794,9 @@ class BARC:
 
            #with tempfile.TemporaryDirectory(dir='forest/static',prefix="barc") as tempdir:
            tempdir = "forest/static/wibble"
-           figs = {}
+           figs = {} 
+           print(self.store.state)
+           return
            for each in self.figures:
               image = get_screenshot_as_png(each)
               filename = "%s.png" % (each.id,)
