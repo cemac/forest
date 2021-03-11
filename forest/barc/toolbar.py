@@ -86,8 +86,8 @@ class BARC:
             name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
-        self.annotate = bokeh.models.layouts.Column()
-        mc = bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
+        self.annotate = bokeh.models.layouts.Column(css_classes=['content'])
+        mc = bokeh.models.widgets.CheckboxGroup(name="boozes", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
@@ -95,6 +95,8 @@ class BARC:
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
             mc
         ])
+        self.ReportButton = bokeh.models.widgets.Button(
+            name="barc_save", width=50, label="Report")
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
                                "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
@@ -202,7 +204,7 @@ class BARC:
 
         self.tool_bar =self.ToolBar()
 
-        #copy blank sources for reset button 
+        #copy blank sources for reset button
         self.blankSource = {}
         for (k,v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
@@ -241,7 +243,7 @@ class BARC:
          bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
          for guide in bezguides:
             guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
-        
+
 
     def call(self, attr, old, new):
         """Call back from dropdown click
@@ -786,11 +788,11 @@ class BARC:
               n.value = ''
            except AttributeError:
               n.active = []
-         
+
         for (k,v) in self.source.items():
             if k != 'annotation':
                self.source[k].data = self.blankSource[k].data.copy()
-   
+
 
     def ToolBar(self):
         """Barc Tool Bar
@@ -804,7 +806,6 @@ class BARC:
                 bokeh.models.tools.PanTool(tags=['barcpan']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
-                bokeh.models.tools.ResetTool(tags=['barcreset']),
                 bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
@@ -848,6 +849,9 @@ class BARC:
             'box_edit': 'box_edit',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
+            'tap':'tap',
+            'undo':'undo'
+
         }
 
         buttons = []
@@ -891,8 +895,9 @@ class BARC:
         self.barcTools.children.extend([self.visibleGuides])
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
-        self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
+
+        self.barcTools.children.extend(bokeh.models.Div([self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
