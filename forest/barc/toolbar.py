@@ -795,13 +795,12 @@ class BARC(Observable):
            #with tempfile.TemporaryDirectory(dir='forest/static',prefix="barc") as tempdir:
            tempdir = "forest/static/wibble"
            figs = {} 
-           print(self.store.state)
-           return
-           for each in self.figures:
+           layers = self.store.state.get('layers')
+           for each in self.figures[0:layers['figures']]:
               image = get_screenshot_as_png(each)
               filename = "%s.png" % (each.id,)
               image.save(join(tempdir,filename))
-              figs[filename] = "wibble"
+              figs[filename] = "%s, %s, %s" % (self.store.state['pattern'], self.store.state['variable'], self.store.state['valid_time'])
 
            #Get annotations
            annotations = {}
