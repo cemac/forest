@@ -1,5 +1,6 @@
 import io
 import os
+import tempfile
 from PIL import Image
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
 
@@ -36,16 +37,17 @@ def get_screenshot_as_png(obj: Union[LayoutDOM, Document], *, driver: "Optional[
 
     '''
 
-    with _tmp_html() as tmp:
+    with tempfile.TemporaryDirectory(prefix="barc", dir=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','static'))) as tmp:
+        print(tmp)
         html = get_layout_html(obj, resources=resources, width=width, height=height)
-        if(not os.path.exists(os.path.join(os.path.dirname(tmp.path),'forest'))):
-            os.symlink(os.path.abspath("forest"),os.path.join(os.path.dirname(tmp.path),'forest'))
-        with open(tmp.path, mode="w", encoding="utf-8") as file:
-            file.write(html)
+        os.symlink(os.path.abspath("forest"),os.path.join(tmp,'forest'))
+        htmlfile = os.path.join(tmp,'barcexport.html')
+        with open(htmlfile, mode="w", encoding="utf-8") as f:
+            f.write(html)
 
         web_driver = driver if driver is not None else webdriver_control.get()
         web_driver.maximize_window()
-        web_driver.get("file:///" + tmp.path)
+        web_driver.get("file:///" + htmlfile)
         wait_until_render_complete(web_driver, timeout)
         [width, height, dpr] = _maximize_viewport(web_driver)
         png = web_driver.get_screenshot_as_png()
