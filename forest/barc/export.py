@@ -1,4 +1,5 @@
 import io
+import os
 from PIL import Image
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
 
@@ -37,6 +38,8 @@ def get_screenshot_as_png(obj: Union[LayoutDOM, Document], *, driver: "Optional[
 
     with _tmp_html() as tmp:
         html = get_layout_html(obj, resources=resources, width=width, height=height)
+        if(not os.path.exists(os.path.join(os.path.dirname(tmp.path),'forest'))):
+            os.symlink(os.path.abspath("forest"),os.path.join(os.path.dirname(tmp.path),'forest'))
         with open(tmp.path, mode="w", encoding="utf-8") as file:
             file.write(html)
 
