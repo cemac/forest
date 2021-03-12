@@ -191,13 +191,9 @@ class BARC:
             self.source['text_stamp' + chr(glyph)].add([], "fontsize")
             self.source['text_stamp' + chr(glyph)].add([], "colour")
 
-        #copy blank sources for reset button
-        self.blankSource = {}
-        for (k,v) in self.source.items():
-            self.blankSource[k] = ColumnDataSource(data=v.data.copy())
-        # Proile checkbox
+
         self.profile_list =['HIW','Synoptic']
-        self.ProfileDropDown = Select(title="Forcaster Profile:", width=300,
+        self.ProfileDropDown = Select(title="Metadata Category:", width=300,
 
                                value="HIW",
                                options=self.profile_list)
@@ -221,7 +217,10 @@ class BARC:
         self.set_meta_data()
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
-        self.mc = bokeh.layouts.grid(bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values)),ncols=3) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112
+        self.mc = bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values))
+        self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
+                console.log('multi_choice: value=' + this.value, this.toString())
+                    """))
         self.annotate.children.extend([
             bokeh.models.widgets.TextInput(title="Title",name='title'),
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
@@ -231,6 +230,11 @@ class BARC:
             self.mc
         ])
         self.tool_bar =self.ToolBar()
+        #copy blank sources for reset button
+        self.blankSource = {}
+        for (k,v) in self.source.items():
+            self.blankSource[k] = ColumnDataSource(data=v.data.copy())
+        # Proile checkbox
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -290,7 +294,10 @@ class BARC:
         """
         self.annotate.children.remove(self.mc)
         self.set_meta_data()
-        self.mc = bokeh.layouts.grid(bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values)),ncols=3) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112
+        self.mc = bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values))
+        self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
+        console.log('multi_choice: value=' + this.value, this.toString())
+        """))
         self.annotate.children.extend([self.mc])
         #self.barcTools.children.insert(-3, self.annotate)
 
@@ -762,11 +769,6 @@ class BARC:
             buttons.append(button)
         return buttons
 
-    def display_metadata(self):
-        """Displays the selected glyph buttons
-        """
-
-        return
 
 # -----------------------------------------------------------------------------
 
@@ -784,7 +786,7 @@ class BARC:
             outdict[k] = v.data
 
         outdict['annotations'] = {}
-        for each in self.annotate.children:
+        for count, n in enumerate(self.annotate.children):
             try:
                outdict['annotations'][each.name] = each.value
             except AttributeError:
@@ -829,11 +831,13 @@ class BARC:
         Blanks the sources back to as initially created
         '''
 
-        for n in self.annotate.children:
-           try:
-              n.value = ''
-           except AttributeError:
-              n.active = []
+        for count, n in enumerate(self.annotate.children):
+            try:
+                n.value = ''
+            except ValueError:
+                n.value=['']
+            except AttributeError:
+                n.active = []
 
         for (k,v) in self.source.items():
             if k != 'annotation':
