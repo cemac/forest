@@ -53,6 +53,7 @@ from forest.observe import Observable
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
 from bokeh.io.export import _tmp_html
+from numpy import datetime_as_string
 
 
 class BARC(Observable):
@@ -745,7 +746,7 @@ class BARC(Observable):
         '''
           saves current datasources to an sqlite db
 
-          create statement: "CREATE TABLE saved_data (id INTEGER PRIMARY KEY, label TEXT, dateTime INTEGER, json TEXT)"
+          create statement: "CREATE TABLE saved_data (id INTEGER PRIMARY KEY, label TEXT, dateTime INTEGER, json TEXT, pattern TEXT, valid_time TEXT)"
         '''
         c = self.conn.cursor()
 
@@ -761,7 +762,9 @@ class BARC(Observable):
             except AttributeError:
                outdict['annotations'][each.name] = each.active
 
-        c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
+        #outdict['metadata'] = self.store.state
+
+        c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, valid_time) VALUES (?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], datetime_as_string(self.store.state['valid_time'])])
         self.conn.commit()
         #repopulate drop-down
         c = self.conn.cursor()
@@ -793,10 +796,13 @@ class BARC(Observable):
 
 
     def exportReport(self):
-        '''chromeOptions =webdriver.ChromeOptions()
-        chromeOptions.binary_location = "/usr/bin/chromium"
-        chromeOptions.addArgument("register-font-files=forest/barc/barc-font/woff/BARC.woff")
-        return bokeh.io.export_png(self.figures[0], filename="plot.png", webdriver=webdriver.Chrome(options=chromeOptions))'''
+        '''
+            A function that creates an HTML file with a PNG screengrab of the figure(s) currently displayed, and the contents of the annotation inputs 
+            displayed in a format suitable for loading into a wordprocessor for further editing. 
+
+        Returns:
+            URL of the export file.    
+        '''
         print("Starting export")
         with open('forest/barc/export.html') as t:
            template = Template(t.read())
@@ -809,7 +815,10 @@ class BARC(Observable):
               image = get_screenshot_as_png(self.figures[index])
               filename = "%s.png" % (self.figures[index].id,)
               image.save(join(tempdir,filename))
-              figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+              try:
+                  figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+              except KeyError:
+                  figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
            #Get annotations
            annotations = {}
