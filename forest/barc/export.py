@@ -8,7 +8,7 @@ from bokeh.resources import INLINE, Resources
 from bokeh.models.layouts import LayoutDOM
 from bokeh.document import Document
 
-from bokeh.io.export import export_png, _TempFile, _tmp_html, wait_until_render_complete, _maximize_viewport
+from bokeh.io.export import export_png, _TempFile, wait_until_render_complete, _maximize_viewport
 from bokeh.io.webdriver import webdriver_control
 from bokeh.embed import file_html
 
@@ -38,10 +38,9 @@ def get_screenshot_as_png(obj: Union[LayoutDOM, Document], *, driver: "Optional[
     '''
 
     with tempfile.TemporaryDirectory(prefix="barc", dir=os.path.abspath(os.path.join(os.path.dirname(__file__),'..','static'))) as tmp:
-        print(tmp)
         html = get_layout_html(obj, resources=resources, width=width, height=height)
         os.symlink(os.path.abspath("forest"),os.path.join(tmp,'forest'))
-        htmlfile = os.path.join(tmp,'barcexport.html')
+        htmlfile = os.path.join(tmp,'barcfigure.html')
         with open(htmlfile, mode="w", encoding="utf-8") as f:
             f.write(html)
 
