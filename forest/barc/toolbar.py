@@ -165,11 +165,9 @@ class BARC(Observable):
         self.resetButton.on_click(self.clearBarc)
 
         #populate list of saved markups
-        c = self.conn.cursor()
-        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
-        menu = c.fetchall()
         self.loadButton = bokeh.models.widgets.Dropdown(
-            name="barc_load", width=150, label="Load", menu=menu )
+            name="barc_load", width=150, label="Load")
+        self.populateLoadList(self.loadButton)
         self.loadButton.on_click(self.loadDataSources)
 
         # from BARC.woff take the index dictionary
@@ -741,6 +739,14 @@ class BARC(Observable):
         return buttons
 
 # -----------------------------------------------------------------------------
+    def populateLoadList(self, loadButton):
+        '''
+            (re)populate drop-down loadButton with the available saved annotation sets.
+        '''
+        c = self.conn.cursor()
+        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        loadButton.menu = c.fetchall()
+
 
     def saveDataSources(self):
         '''
@@ -766,10 +772,7 @@ class BARC(Observable):
 
         c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, valid_time) VALUES (?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], datetime_as_string(self.store.state['valid_time'])])
         self.conn.commit()
-        #repopulate drop-down
-        c = self.conn.cursor()
-        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
-        self.loadButton.menu = c.fetchall()
+        self.populateLoadList(self.loadButton)
 
     def loadDataSources(self, event):
         '''
