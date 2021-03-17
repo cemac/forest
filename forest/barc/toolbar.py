@@ -744,7 +744,7 @@ class BARC(Observable):
             (re)populate drop-down loadButton with the available saved annotation sets.
         '''
         c = self.conn.cursor()
-        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')', CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
         loadButton.menu = c.fetchall()
 
 
