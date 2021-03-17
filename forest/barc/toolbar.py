@@ -68,6 +68,7 @@ class BARC(Observable):
         self.figures = figures
         #db for saving
         self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
+        self.conn.row_factory = sqlite3.Row #switch to column-name-based returns
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
         # initalise sources
         self.source = {}
@@ -744,8 +745,11 @@ class BARC(Observable):
             (re)populate drop-down loadButton with the available saved annotation sets.
         '''
         c = self.conn.cursor()
-        c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')', CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
-        loadButton.menu = c.fetchall()
+        c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')' AS lbl, CAST(id AS TEXT) AS id FROM saved_data ORDER BY dateTime DESC")
+        menu = []
+        for row in c:
+            menu.append((row['lbl'], row['id'])) 
+        self.loadButton.menu=menu
 
 
     def saveDataSources(self):
@@ -782,7 +786,7 @@ class BARC(Observable):
 
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
         sqlds = c.fetchone()
-        jsonds = json.loads(sqlds[3])
+        jsonds = json.loads(sqlds['json'])
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
