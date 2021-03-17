@@ -47,7 +47,7 @@ from bokeh.core.properties import value
 from bokeh.models.tools import PolyDrawTool, PolyEditTool, BoxEditTool
 from bokeh.models.tools import PointDrawTool, ToolbarBox, FreehandDrawTool
 from bokeh.events import ButtonClick
-from forest import wind, data, tools, state
+from forest import wind, data, tools, state, db
 from forest.observe import Observable
 #from . import front
 from .front_tool import FrontDrawTool
@@ -168,7 +168,7 @@ class BARC(Observable):
         #populate list of saved markups
         self.loadButton = bokeh.models.widgets.Dropdown(
             name="barc_load", width=150, label="Load")
-        self.populateLoadList(self.loadButton)
+        self.loadButton.menu = self.populateLoadList()
         self.loadButton.on_click(self.loadDataSources)
 
         # from BARC.woff take the index dictionary
@@ -740,7 +740,7 @@ class BARC(Observable):
         return buttons
 
 # -----------------------------------------------------------------------------
-    def populateLoadList(self, loadButton):
+    def populateLoadList(self):
         '''
             (re)populate drop-down loadButton with the available saved annotation sets.
         '''
@@ -749,7 +749,7 @@ class BARC(Observable):
         menu = []
         for row in c:
             menu.append((row['lbl'], row['id'])) 
-        self.loadButton.menu=menu
+        return menu
 
 
     def saveDataSources(self):
@@ -776,7 +776,7 @@ class BARC(Observable):
 
         c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, valid_time) VALUES (?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], datetime_as_string(self.store.state['valid_time'])])
         self.conn.commit()
-        self.populateLoadList(self.loadButton)
+        self.loadButton.menu = self.populateLoadList()
 
     def loadDataSources(self, event):
         '''
