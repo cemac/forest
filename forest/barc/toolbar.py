@@ -33,6 +33,7 @@ import bokeh.io
 import json
 import sqlite3
 import time
+import datetime
 import copy
 import tempfile
 
@@ -49,6 +50,7 @@ from bokeh.models.tools import PointDrawTool, ToolbarBox, FreehandDrawTool
 from bokeh.events import ButtonClick
 from forest import wind, data, tools, state, db
 from forest.observe import Observable
+from forest.actions import set_valid_time
 #from . import front
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
@@ -319,6 +321,7 @@ class BARC(Observable):
     def polyDraw(self):
         '''
             Creates a poly draw tool for drawing on the Forest maps.
+
             :returns: a :py:class:`PolyDrawTool <bokeh.models.tools.PolyDrawTool>` instance
         '''
         # colour picker means no longer have separate colour line options
@@ -361,7 +364,7 @@ class BARC(Observable):
         '''
             Creates a poly draw tool for drawing on the Forest maps.
 
-            :returns: a PolyDrawTool instance
+            :returns: a :py:class:`PolyDrawTool <bokeh.models.tools.PolyDrawTool>` instance
         '''
         # Not functional yet
         render_lines = []
@@ -743,6 +746,8 @@ class BARC(Observable):
     def populateLoadList(self):
         '''
             (re)populate drop-down loadButton with the available saved annotation sets.
+
+         :returns: List of two-element tuples of the form: ``[(label0, id0),(label1,id1),...,(labeln, idn)]``
         '''
         c = self.conn.cursor()
         c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')' AS lbl, CAST(id AS TEXT) AS id FROM saved_data ORDER BY dateTime DESC")
@@ -801,14 +806,15 @@ class BARC(Observable):
                except KeyError:
                   pass;
 
+        self.store.dispatch(db.set_value('valid_time', datetime.datetime.fromisoformat(sqlds['valid_time'])))
+
 
     def exportReport(self):
         '''
             A function that creates an HTML file with a PNG screengrab of the figure(s) currently displayed, and the contents of the annotation inputs 
             displayed in a format suitable for loading into a wordprocessor for further editing. 
 
-        Returns:
-            URL of the export file.    
+        :returns: Location of the export file.    
         '''
         print("Starting export")
         with open('forest/barc/export.html') as t:
