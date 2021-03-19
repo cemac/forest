@@ -806,7 +806,7 @@ class BARC:
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
         sqlds = c.fetchone()
         jsonds = json.loads(sqlds[3])
-        # Clear data before loading 
+        # Clear data before loading
         self.clearBarc()
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
@@ -948,8 +948,7 @@ class BARC:
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.extend([self.saveArea])
-
-        self.barcTools.children.extend(bokeh.models.Div([self.annotate])
+        self.barcTools.children.extend([self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
