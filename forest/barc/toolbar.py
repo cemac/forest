@@ -194,7 +194,7 @@ class BARC:
 
         self.profile_list =['HIW','Synoptic']
         self.ProfileDropDown = Select(title="Metadata Category:", width=300,
-
+                               name='profile_dropdown',
                                value="HIW",
                                options=self.profile_list)
         self.ProfileDropDown.on_change("value", self.callprofile)
@@ -217,7 +217,7 @@ class BARC:
         self.set_meta_data()
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
-        self.mc = bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values))
+        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values),name="metadata")
         self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
                 console.log('multi_choice: value=' + this.value, this.toString())
                     """))
@@ -294,7 +294,7 @@ class BARC:
         """
         self.annotate.children.remove(self.mc)
         self.set_meta_data()
-        self.mc = bokeh.models.widgets.MultiChoice(value=['select labels'], options=list(self.metadata['labels'].values))
+        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values), name="metadata")
         self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
         console.log('multi_choice: value=' + this.value, this.toString())
         """))
@@ -786,7 +786,7 @@ class BARC:
             outdict[k] = v.data
 
         outdict['annotations'] = {}
-        for count, n in enumerate(self.annotate.children):
+        for count, each in enumerate(self.annotate.children):
             try:
                outdict['annotations'][each.name] = each.value
             except AttributeError:
@@ -808,13 +808,15 @@ class BARC:
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
         sqlds = c.fetchone()
         jsonds = json.loads(sqlds[3])
+        # Clear data before loading 
+        self.clearBarc()
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
                try:
                   n.value = jsonds['annotations'][name]
                except AttributeError:
-                  n.active = jsonds['annotations'][name]
+                   n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
                try:
