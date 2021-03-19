@@ -85,7 +85,6 @@ class BARC:
             title='Stamp colour:', width=50,
             name="barc_colours",
             color=self.starting_colour)
-
         # Dropdown Menu of stamp categories
         self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
                                "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
@@ -190,7 +189,6 @@ class BARC:
             self.source['text_stamp' + chr(glyph)].add([], "datasize")
             self.source['text_stamp' + chr(glyph)].add([], "fontsize")
             self.source['text_stamp' + chr(glyph)].add([], "colour")
-
 
         self.profile_list =['HIW','Synoptic']
         self.ProfileDropDown = Select(title="Metadata Category:", width=300,
@@ -833,6 +831,7 @@ class BARC:
         Blanks the sources back to as initially created
         '''
 
+
         for count, n in enumerate(self.annotate.children):
             try:
                 n.value = ''
@@ -840,6 +839,7 @@ class BARC:
                 n.value=['']
             except AttributeError:
                 n.active = []
+
 
         for (k,v) in self.source.items():
             if k != 'annotation':
@@ -858,7 +858,6 @@ class BARC:
                 bokeh.models.tools.PanTool(tags=['barcpan']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
-                bokeh.models.tools.ResetTool(tags=['barcreset']),
                 bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
@@ -902,6 +901,9 @@ class BARC:
             'box_edit': 'box_edit',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
+            'tap':'tap',
+            'undo':'undo'
+
         }
 
         buttons = []
@@ -945,8 +947,9 @@ class BARC:
         self.barcTools.children.extend([self.visibleGuides])
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
-        self.barcTools.children.extend([self.annotate])
         self.barcTools.children.extend([self.saveArea])
+
+        self.barcTools.children.extend(bokeh.models.Div([self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
