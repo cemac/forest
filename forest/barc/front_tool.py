@@ -10,7 +10,7 @@ from bokeh.models import EditTool, Drag, Tap, CustomJS
 
 class FrontDrawTool(EditTool, Drag, Tap):
     '''
-    A tool for drawing Beziér curves with Unicode text evenly-spaced along it (e.g. for 
+    A tool for drawing Bézier curves with Unicode text evenly-spaced along it (e.g. for 
     weather fronts)
     '''
     __css__ = "forest/static/style_barc.css?v=27"
