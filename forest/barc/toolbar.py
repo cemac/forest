@@ -38,8 +38,8 @@ import copy
 import tempfile
 
 from selenium import webdriver
-from os.path import basename, abspath, join
-from os import mkdir
+from os.path import basename, abspath, join, relpath, dirname
+from os import mkdir, symlink
 from jinja2 import Template
 
 from bokeh.models import ColumnDataSource, Paragraph, Select, Dropdown
@@ -761,10 +761,11 @@ class BARC(Observable):
         '''
           saves current datasources to an sqlite db
 
-          create statement: "CREATE TABLE saved_data (id INTEGER PRIMARY KEY, label TEXT, dateTime INTEGER, json TEXT, pattern TEXT, valid_time TEXT)"
+          create statement: "CREATE TABLE saved_data (id INTEGER PRIMARY KEY, label TEXT, dateTime INTEGER, json TEXT, pattern TEXT, valid_time TEXT, layers TEXT)"
         '''
         c = self.conn.cursor()
 
+        print(self.store.state)
         outdict = {}
 
         for (k,v) in self.source.items():
@@ -779,7 +780,12 @@ class BARC(Observable):
 
         #outdict['metadata'] = self.store.state
 
-        c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, valid_time) VALUES (?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], datetime_as_string(self.store.state['valid_time'])])
+        try:
+            date_for_db = datetime_as_string(self.store.state['valid_time'])
+        except TypeError: # is not a Numpy object. probably python datetime
+            date_for_db = self.store.state['valid_time'].isoformat()
+   
+        c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, layers, valid_time) VALUES (?, ?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], json.dumps(self.store.state['layers']), date_for_db])
         self.conn.commit()
         self.loadButton.menu = self.populateLoadList()
 
@@ -806,7 +812,9 @@ class BARC(Observable):
                except KeyError:
                   pass;
 
+        print(self.store.state)
         self.store.dispatch(db.set_value('valid_time', datetime.datetime.fromisoformat(sqlds['valid_time'])))
+        self.store.dispatch(db.set_value('layers', json.loads(sqlds['layers'])))
 
 
     def exportReport(self):
@@ -820,33 +828,37 @@ class BARC(Observable):
         with open('forest/barc/export.html') as t:
            template = Template(t.read())
 
-           #with tempfile.TemporaryDirectory(dir='forest/static',prefix="barc") as tempdir:
-           tempdir = "forest/static/wibble"
-           figs = {} 
-           layers = self.store.state.get('layers')
-           for index in range(0,layers['figures']):
-              image = get_screenshot_as_png(self.figures[index])
-              filename = "%s.png" % (self.figures[index].id,)
-              image.save(join(tempdir,filename))
-              try:
-                  figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
-              except KeyError:
-                  figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
+           tempdir = tempfile.mkdtemp(prefix="barc")
+           if tempdir:
+              figs = {} 
+              layers = self.store.state.get('layers')
+              for index in range(0,layers['figures']):
+                 image = get_screenshot_as_png(self.figures[index])
+                 filename = "%s.png" % (self.figures[index].id,)
+                 image.save(join(tempdir,filename))
+                 try:
+                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+                 except KeyError:
+                    figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
-           #Get annotations
-           annotations = {}
-           for each in self.annotate.children:
-              try:
-                 annotations[each.title] = each.value
-              except AttributeError:
-                 annotations[each.name] = each.active
+              #Get annotations
+              annotations = {}
+              for each in self.annotate.children:
+                 try:
+                    annotations[each.title] = each.value
+                 except AttributeError:
+                    annotations[each.name] = each.active
 
-           with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
-              f.write(template.render({"figures":figs, "annotations":annotations}))
+              with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
+                 f.write(template.render({"figures":figs, "annotations":annotations}))
 
-        self.exportStatus.text = '<a href="/' + tempdir + '/barcexport.html" id="exportlink" target="_blank">Display</a>'
+              target = relpath(join(dirname(__file__),'..','static',basename(tempdir)))
+              print("Export temp dir %s" % target)
+              symlink(tempdir, target)
 
-        return "/" + tempdir + '/barcexport.html'
+           self.exportStatus.text = '<a href="/' + target + '/barcexport.html" id="exportlink" target="_blank">Display</a>'
+
+           return "/" + target + '/barcexport.html'
         
 
     def clearBarc(self):
