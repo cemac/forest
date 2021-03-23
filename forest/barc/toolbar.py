@@ -759,7 +759,7 @@ class BARC(Observable):
 
     def saveDataSources(self):
         '''
-          saves current datasources to an sqlite db
+          saves current datasources to an sqlite db. Requires Title annotation to be non-empty.
 
           create statement: "CREATE TABLE saved_data (id INTEGER PRIMARY KEY, label TEXT, dateTime INTEGER, json TEXT, pattern TEXT, valid_time TEXT, layers TEXT)"
         '''
@@ -777,6 +777,10 @@ class BARC(Observable):
                outdict['annotations'][each.name] = each.value
             except AttributeError:
                outdict['annotations'][each.name] = each.active
+
+        if(not outdict['annotations']['title']):
+            #don't save if there's no title.
+            return False;
 
         #outdict['metadata'] = self.store.state
 
