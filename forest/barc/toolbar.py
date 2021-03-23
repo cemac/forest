@@ -69,7 +69,7 @@ class BARC(Observable):
     def __init__(self, figures, store):
         self.figures = figures
         #db for saving
-        self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
+        self.conn = sqlite3.connect(relpath(join(dirname(__file__),'../barc/barc-save.sdb')))
         self.conn.row_factory = sqlite3.Row #switch to column-name-based returns
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
         # initalise sources
