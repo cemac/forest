@@ -1,4 +1,5 @@
 """
+                cb_obj.change.emit();
 Barc Tool Bar
 ---------------------
 
@@ -95,7 +96,7 @@ class BARC(Observable):
             name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
-        self.arbitraryText = bokeh.models.widgets.TextInput(title="StampText",name='stamptext')
+        self.arbitraryTextBox = bokeh.models.widgets.TextInput(title="StampText",name='stamptext')
         self.annotate = bokeh.models.layouts.Column()
         title = bokeh.models.widgets.TextInput(title="Title",name='title')
         mc = bokeh.models.widgets.CheckboxGroup(name="tags", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
@@ -507,6 +508,83 @@ class BARC(Observable):
             tags=['barc' + glyph],
         )
         return tool3
+
+    def arbitraryText(self):
+        '''Creates a tool that allows user-specifed Unicode text to be "stamped" on the map. Echos to all figures.
+
+        :param textBox: The widget to get the text from. Defaults to self.arbitraryTextBox.
+
+        :returns: :py:class:`PointDrawTool <bokeh.models.tools.PointDrawTool>`.
+        '''
+        if not 'textbox' in self.source:
+            self.source['textbox'] = ColumnDataSource(data.EMPTY)
+            self.source['textbox'].add([], "text")
+            self.source['textbox'].add([], "datasize")
+            self.source['textbox'].add([], "fontsize")
+            self.source['textbox'].add([], "colour")
+
+        starting_font_size = 15  # in pixels
+        render_lines = []
+        for figure in self.figures:
+            render_lines.append(figure.text_stamp(
+                x="xs",
+                y="ys",
+                source=self.source['textbox'],
+                text="text",
+                text_font='BARC',
+                text_color="colour",
+                text_font_size="fontsize",
+                text_align = 'center',
+                text_baseline = 'middle'
+            )
+            )
+
+        self.source['textbox'].js_on_change('data',
+            bokeh.models.CustomJS(args=dict(starting_font_size=starting_font_size, figure=self.figures[0],
+            colourPicker=self.colourPicker, widthPicker=self.widthPicker, textbox=self.arbitraryTextBox,
+            saveArea=self.saveArea), code="""
+                for(var g = 0; g < cb_obj.data['xs'].length; g++)
+                {
+                    if(!cb_obj.data['colour'][g])
+                    {
+                        cb_obj.data['colour'][g] = colourPicker.color;
+                    }
+
+                    if(!cb_obj.data['fontsize'][g])
+                    {
+                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
+                    }
+
+                    if(!cb_obj.data['text'][g])
+                    {
+                        cb_obj.data['text'][g] = textbox.value;
+                    }
+
+                    //calculate initial datasize
+                    if(!cb_obj.data['datasize'][g])
+                    {
+                        var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
+                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+                    }
+                }
+                cb_obj.change.emit();
+                """)
+        )
+        self.figures[0].y_range.js_on_change('start',
+            bokeh.models.CustomJS(args=dict(render_text_stamp=render_lines[0],
+            figure=self.figures[0]), code="""
+            for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
+            {
+                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+            }
+            render_text_stamp.glyph.change.emit();
+            """)
+        )
+        tool4 = PointDrawTool(
+            renderers=[render_lines[0]],
+            tags=['barctextbox'],
+        )
+        return tool4
 
     def windBarb(self):
         '''
@@ -928,6 +1006,7 @@ class BARC(Observable):
                 self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
                 self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
                 self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
+                self.arbitraryText()
             )
 
             for glyph in self.allglyphs:
@@ -951,6 +1030,7 @@ class BARC(Observable):
             'box_edit': 'box_edit',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
+            'textbox': 'textbox'
         }
 
         buttons = []
@@ -995,7 +1075,7 @@ class BARC(Observable):
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
-        self.barcTools.children.extend([self.arbitraryText, self.annotate])
+        self.barcTools.children.extend([self.arbitraryTextBox, self.annotate])
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
 
