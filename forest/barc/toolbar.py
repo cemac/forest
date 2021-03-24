@@ -1004,7 +1004,7 @@ class BARC(Observable):
         :returns: Location of the export file.    
         '''
         print("Starting export")
-        with open('forest/barc/export.html') as t:
+        with open(join(dirname(__file__),'export.html')) as t:
            template = Template(t.read())
 
            tempdir = tempfile.mkdtemp(prefix="barc", suffix="export-temp")
