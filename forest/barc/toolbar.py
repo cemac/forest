@@ -60,7 +60,7 @@ class BARC:
     def __init__(self, figures):
         self.figures = figures
         self.document = bokeh.plotting.curdoc()
-        #db for saving
+        # db for saving
         self.conn = sqlite3.connect("forest/barc/barc-save.sdb")
         self.barcTools = bokeh.models.layouts.Column(name="barcTools")
         # initalise sources
@@ -74,7 +74,8 @@ class BARC:
         # set intial width and colours
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
-        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(labels=['Show Bézier Guides'], active=[0])
+        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(
+            labels=['Show Bézier Guides'], active=[0])
         self.visibleGuides.on_change('active', self.hideGuides)
         self.widthPicker = bokeh.models.widgets.Slider(
             title='Select size', name="barc_width", width=200,
@@ -86,9 +87,9 @@ class BARC:
             name="barc_colours",
             color=self.starting_colour)
         # Dropdown Menu of stamp categories
-        self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
-                               "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
-                               "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
+        self.stamp_categories = ["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
+                                 "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
+                                 "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
         self.dropDown = Select(title="Meteorological symbols:", width=300,
 
                                value="Group0 - General meteorological symbols",
@@ -96,12 +97,12 @@ class BARC:
         self.dropDown.on_change("value", self.call)
         # Save area
         self.saveArea = bokeh.models.widgets.inputs.TextAreaInput(
-            cols=20, max_length=20000,height=10, width=300, visible=False)
+            cols=20, max_length=20000, height=10, width=300, visible=False)
         self.saveArea.js_on_change('value',
                                    bokeh.models.CustomJS(
-                                   args=dict(sources=self.source,
-                                   saveArea=self.saveArea,
-                                   figure=self.figures[0]), code="""
+                                       args=dict(sources=self.source,
+                                                 saveArea=self.saveArea,
+                                                 figure=self.figures[0]), code="""
                   Object.entries(JSON.parse(saveArea.value)).forEach(([k,v]) => {
                      sources[k].change.emit();
                      sources[k].data = v;
@@ -114,7 +115,7 @@ class BARC:
                      }
                   })
                """)
-        )
+                                   )
 
         self.saveButton = bokeh.models.widgets.Button(
             name="barc_save", width=50, label="\U0001f4be")
@@ -137,12 +138,13 @@ class BARC:
             name="barc_reset", width=50, label="Clear")
         self.resetButton.on_click(self.clearBarc)
 
-        #populate list of saved markups
+        # populate list of saved markups
         c = self.conn.cursor()
-        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        c.execute(
+            "SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
         menu = c.fetchall()
         self.loadButton = bokeh.models.widgets.Dropdown(
-            name="barc_load", width=150, label="Load", menu=menu )
+            name="barc_load", width=150, label="Load", menu=menu)
         self.loadButton.on_click(self.loadDataSources)
 
         # from BARC.woff take the index dictionary
@@ -173,9 +175,9 @@ class BARC:
                          "983360": 90, "983361": 91, "983391": 92, "983392": 93,
                          "983393": 94, "983394": 95, "983395": 96, "983396": 97,
                          "983397": 98, "983398": 99, "983399": 100, "983400": 101,
-                         "983508":114,"983509":115,"983510":116,"983511":117,
-                         "983512":118,"983513":119,"983548":120,"983547":121,
-                         "983549":122,"983550":123}
+                         "983508": 114, "983509": 115, "983510": 116, "983511": 117,
+                         "983512": 118, "983513": 119, "983548": 120, "983547": 121,
+                         "983549": 122, "983550": 123}
         glyphcodes = list(map(int, list(glyphIndexMap.keys())))
         self.allglyphs = glyphcodes
         self.set_glyphs()
@@ -189,48 +191,57 @@ class BARC:
             self.source['text_stamp' + chr(glyph)].add([], "datasize")
             self.source['text_stamp' + chr(glyph)].add([], "fontsize")
             self.source['text_stamp' + chr(glyph)].add([], "colour")
-
-        self.profile_list =['HIW','Synoptic']
+        # Meta data selector from profiles
+        self.profile_list = ['HIW', 'Synoptic']
         self.ProfileDropDown = Select(title="Metadata Category:", width=300,
-                               name='profile_dropdown',
-                               value="HIW",
-                               options=self.profile_list)
+                                      name='profile_dropdown',
+                                      value="HIW",
+                                      options=self.profile_list)
         self.ProfileDropDown.on_change("value", self.callprofile)
         # 2 profiles
         P1 = ["Surface water flooding",  "Rapid response flooding", "River flooding",
               "Coastal flooding",  "Landslide", "Strong winds or gusts",  "Storm / Lightning",
               "Tropical storm / cyclone", "Frost", "Extreme Hot",  "Extreme Cold",
               "Tornado",  "MCS",  "Fog", "Hail", "Snow",  "Storm surge"]
-        P2 = [ "MJO phase 1", "MJO phase 2",  "MJO phase 3",  "MJO phase 4", "MJO phase 5",
-               "MJO phase 6",  "MJO phase 7", "MJO phase 8",  "Weak MJO",  "Kelvin wave activity",
-               "Rossby wave activity",  "Area of low pressure", "Tropical cyclone (directly / indirectly)",
-               "Heat wave",  "Localised convection",  "Meso-scale convection", "ITCZ",
-               "Cold surge",  "South West Monsoon", "African Easterly Wave",  "Sea / lake breeze"]
-        profile1 = ['HIW']*len(P1)
-        profile2 = ['Synoptic']*len(P2)
+        P2 = ["MJO phase 1", "MJO phase 2",  "MJO phase 3",  "MJO phase 4", "MJO phase 5",
+              "MJO phase 6",  "MJO phase 7", "MJO phase 8",  "Weak MJO",  "Kelvin wave activity",
+              "Rossby wave activity",  "Area of low pressure", "Tropical cyclone (directly / indirectly)",
+              "Heat wave",  "Localised convection",  "Meso-scale convection", "ITCZ",
+              "Cold surge",  "South West Monsoon", "African Easterly Wave",  "Sea / lake breeze"]
+        # make datatable  classifying meta data into category
+        profile1 = ['HIW'] * len(P1)
+        profile2 = ['Synoptic'] * len(P2)
         profiles = profile1 + profile2
         varis = P1 + P2
-        metadata = {'labels': varis, 'profile':profiles}
+        metadata = {'labels': varis, 'profile': profiles}
         self.allmetadata = pd.DataFrame(metadata)
+        # Select subset based on category
         self.set_meta_data()
-        #glyph annotation box
+        # glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
-        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values),name="metadata")
+        # multichoice boxes for meta data
+        self.mc = bokeh.models.widgets.MultiChoice(
+            value=[''], options=list(self.metadata['labels'].values), name="metadata")
         self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
                 console.log('multi_choice: value=' + this.value, this.toString())
                     """))
+        # Text inputs
         self.annotate.children.extend([
-            bokeh.models.widgets.TextInput(title="Title",name='title'),
-            bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
-            bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
-            bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
+            bokeh.models.widgets.TextInput(title="Title", name='title'),
+            bokeh.models.widgets.TextAreaInput(
+                title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(
+                title="Brief Description", name="briefdesc", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(
+                title="Further Notes", name="further", height=150, width=350),
             self.ProfileDropDown,
             self.mc
         ])
-        self.tool_bar =self.ToolBar()
-        #copy blank sources for reset button
+        # Create the tool bar
+        self.tool_bar = self.ToolBar()
+        # copy blank sources for reset button
         self.blankSource = {}
-        for (k,v) in self.source.items():
+        for (k, v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
         # Proile checkbox
 
@@ -238,7 +249,7 @@ class BARC:
         """Set Glyphs based on drop down selection
         """
         new = self.dropDown.value
-        glyphcodes =self.allglyphs
+        glyphcodes = self.allglyphs
         # Range of glyphs
         # Fonts and icon mapping to go here
         if str(new) == "Group0 - General meteorological symbols":
@@ -262,42 +273,52 @@ class BARC:
         elif str(new) == "Group9 - Thunderstorms":
             self.glyphs = glyphcodes[90:100]
         elif str(new) == "Group10 - Hurricanes and Typhoons":
-            self.glyphs =  glyphcodes[100:110]
+            self.glyphs = glyphcodes[100:110]
 
     def set_meta_data(self):
-        """Set Glyphs based on drop down selection
+        """Set metadata based on drop down selection
         """
         new = self.ProfileDropDown.value
         metadata = self.allmetadata
-        self.metadata = metadata[metadata.profile==str(new)]
+        # set self.metadata as subset of allmetata based on category selected
+        self.metadata = metadata[metadata.profile == str(new)]
 
-    def hideGuides(self, attr,old,new):
-         bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
-         for guide in bezguides:
-            guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
-
+    def hideGuides(self, attr, old, new):
+        bezguides = list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
+        for guide in bezguides:
+            # checkbox with index of 0, not *value* of 0!
+            guide.line_alpha = (0 in self.visibleGuides.active)
 
     def call(self, attr, old, new):
         """Call back from dropdown click
          Removes and inserts new glyphrow
         """
+        # remove row from toolbar
         self.barcTools.children.remove(self.glyphrow)
+        # set the glyphs
         self.set_glyphs()
+        # create row and reinstert
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=5)
         self.barcTools.children.insert(2, self.glyphrow)
 
     def callprofile(self, attr, old, new):
         """Call back from dropdown click
-         Removes and inserts new glyphrow
+        alters metadata tags displayed
         """
+        # remove row from annotation list
         self.annotate.children.remove(self.mc)
+        # set the metadata to be displayed
         self.set_meta_data()
-        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values), name="metadata")
+        # regenerate multichoice
+        self.mc = bokeh.models.widgets.MultiChoice(value=[''],
+                                                   options=list(
+                                                       self.metadata['labels'].values),
+                                                   name="metadata")
         self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
         console.log('multi_choice: value=' + this.value, this.toString())
         """))
+        # add back into annotations
         self.annotate.children.extend([self.mc])
-        #self.barcTools.children.insert(-3, self.annotate)
 
     def polyLine(self):
         '''
@@ -325,9 +346,9 @@ class BARC:
             name="barcfreehand"
         )
         self.source['polyline'].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['polyline'],
-            colourPicker=self.colourPicker, widthPicker=self.widthPicker,
-            saveArea=self.saveArea, sources=self.source), code="""
+                                             bokeh.models.CustomJS(args=dict(datasource=self.source['polyline'],
+                                                                             colourPicker=self.colourPicker, widthPicker=self.widthPicker,
+                                                                             saveArea=self.saveArea, sources=self.source), code="""
                 for(var g = 0; g < datasource.data['colour'].length; g++)
                 {
                     if(!datasource.data['colour'][g])
@@ -369,7 +390,7 @@ class BARC:
             name="barcpoly_draw"
         )
         self.source['poly_draw'].js_on_change('data',
-                                             bokeh.models.CustomJS(args=dict(datasource=self.source['poly_draw'], colourPicker=self.colourPicker, widthPicker=self.widthPicker, saveArea=self.saveArea, sources=self.source), code="""
+                                              bokeh.models.CustomJS(args=dict(datasource=self.source['poly_draw'], colourPicker=self.colourPicker, widthPicker=self.widthPicker, saveArea=self.saveArea, sources=self.source), code="""
                 for(var g = 0; g < datasource.data['colour'].length; g++)
                 {
                     if(!datasource.data['colour'][g])
@@ -382,7 +403,7 @@ class BARC:
                     }
                 }
                 """)
-        )
+                                              )
         return tool2
 
     def polyEdit(self):
@@ -472,16 +493,17 @@ class BARC:
                 text_font='BARC',
                 text_color="colour",
                 text_font_size="fontsize",
-                text_align = 'center',
-                text_baseline = 'middle'
+                text_align='center',
+                text_baseline='middle'
             )
             )
 
         self.source['text_stamp' + glyph].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['text_stamp' + glyph],
-            starting_font_size=starting_font_size, figure=self.figures[0],
-            colourPicker=self.colourPicker, widthPicker=self.widthPicker,
-            saveArea=self.saveArea), code="""
+                                                       bokeh.models.CustomJS(args=dict(datasource=self.source['text_stamp' + glyph],
+                                                                                       starting_font_size=starting_font_size, figure=self.figures[
+                                                                                           0],
+                                                                                       colourPicker=self.colourPicker, widthPicker=self.widthPicker,
+                                                                                       saveArea=self.saveArea), code="""
                 for(var g = 0; g < datasource.data['xs'].length; g++)
                 {
                     if(!datasource.data['colour'][g])
@@ -502,17 +524,17 @@ class BARC:
                     }
                 }
                 """)
-        )
+                                                       )
         self.figures[0].y_range.js_on_change('start',
-            bokeh.models.CustomJS(args=dict(render_text_stamp=render_lines[0],
-            figure=self.figures[0]), code="""
+                                             bokeh.models.CustomJS(args=dict(render_text_stamp=render_lines[0],
+                                                                             figure=self.figures[0]), code="""
             for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
             {
                  render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
             }
             render_text_stamp.glyph.change.emit();
             """)
-        )
+                                             )
         tool3 = PointDrawTool(
             renderers=[render_lines[0]],
             tags=['barc' + glyph],
@@ -548,7 +570,7 @@ class BARC:
     def emptySource(self):
         return ColumnDataSource(data.EMPTY)
 
-    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0,0,0,0), css_class=None, line_dash="solid", starting_font_size=10, line2_scale_factor=1):
+    def weatherFront(self, name="warm", symbols=chr(983431), colour="red", text_baseline="bottom", line_colour="black", line2_colour=(0, 0, 0, 0), css_class=None, line_dash="solid", starting_font_size=10, line2_scale_factor=1):
         '''
         The weatherfront function of BARC. This draws a Bézier curve and repeats the symbol(s) along it.
 
@@ -576,43 +598,46 @@ class BARC:
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
 
-
-        #add definition dict for front<->css mapping, if not already present
+        # add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button")
         if not hasattr(self, 'frontbuttons'):
             self.frontbuttons = {}
 
-        self.frontbuttons[name] = css_class if css_class else 'barc-'+name+'-button'
+        self.frontbuttons[name] = css_class if css_class else 'barc-' + \
+            name + '-button'
 
-        if not 'bezier'+name in self.source:
-            self.source['bezier'+name] = self.bezierSource()
-        if not 'bezier2'+name in self.source:
-            self.source['bezier2'+name] = self.emptySource()
-            self.source['bezier2'+ name].add([], "dx")
-            self.source['bezier2'+ name].add([], "dy")
-        if not 'fronts'+name in self.source:
-            self.source['fronts'+name] = self.emptySource()
+        if not 'bezier' + name in self.source:
+            self.source['bezier' + name] = self.bezierSource()
+        if not 'bezier2' + name in self.source:
+            self.source['bezier2' + name] = self.emptySource()
+            self.source['bezier2' + name].add([], "dx")
+            self.source['bezier2' + name].add([], "dy")
+        if not 'fronts' + name in self.source:
+            self.source['fronts' + name] = self.emptySource()
 
-        #if fronts source is changed (e.g. via loadData) trigger bezier redraw
-        self.source['fronts'+name].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['bezier'+name], figure=self.figures[0]), code="""
+        # if fronts source is changed (e.g. via loadData) trigger bezier redraw
+        self.source['fronts' + name].js_on_change('data',
+                                                  bokeh.models.CustomJS(args=dict(datasource=self.source['bezier' + name], figure=self.figures[0]), code="""
             datasource.change.emit();
             """))
 
         render_lines = []
         for figure in self.figures:
             render_lines.extend([
-               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['bezierguide']),
-               #order matters! Typescript assumes multiline is first
-               figure.bezier(x0='x0', y0='y0', x1='x1', y1='y1', cx0='cx0', cy0='cy0', cx1="cx1", cy1="cy1", source=self.source['bezier'+name], line_color=line_colour, line_dash=line_dash, line_width=2, tags=['bezier']),
-               figure.multi_line(xs='xs', ys='ys', source=self.source['bezier2'+name], color=line2_colour, line_width=2, tags=['bezier2'])
+                figure.multi_line(xs='xs', ys='ys', color="#aaaaaa", line_width=1,
+                                  source=self.source['fronts' + name], tags=['bezierguide']),
+                # order matters! Typescript assumes multiline is first
+                figure.bezier(x0='x0', y0='y0', x1='x1', y1='y1', cx0='cx0', cy0='cy0', cx1="cx1", cy1="cy1",
+                              source=self.source['bezier' + name], line_color=line_colour, line_dash=line_dash, line_width=2, tags=['bezier']),
+                figure.multi_line(
+                    xs='xs', ys='ys', source=self.source['bezier2' + name], color=line2_colour, line_width=2, tags=['bezier2'])
             ])
             for each in symbols:
-                if not 'text' + name+each in self.source:
-                  self.source['text' + name+each] = self.emptySource()
-                  self.source['text' + name+each].add([], "datasize")
-                  self.source['text' + name+each].add([], "fontsize")
-                  self.source['text' + name+each].add([], "angle")
+                if not 'text' + name + each in self.source:
+                    self.source['text' + name + each] = self.emptySource()
+                    self.source['text' + name + each].add([], "datasize")
+                    self.source['text' + name + each].add([], "fontsize")
+                    self.source['text' + name + each].add([], "angle")
                 if isinstance(colour, type([])):
                     col = colour[symbols.index(each) % len(colour)]
                 else:
@@ -621,16 +646,17 @@ class BARC:
                     baseline = text_baseline[symbols.index(each) % len(colour)]
                 else:
                     baseline = text_baseline
-                render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(col), text=value(each), source=self.source['text'+name+each], tags=['text_stamp','fig'+str(self.figures.index(figure))]))
+                render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(
+                    col), text=value(each), source=self.source['text' + name + each], tags=['text_stamp', 'fig' + str(self.figures.index(figure))]))
 
+                self.source['bezier' + name].js_on_change('data',
+                                                          bokeh.models.CustomJS(args=dict(datasource=self.source['text' + name + each], bez2_ds=self.source['bezier2' + name],
+                                                                                          front_ds=self.source['fronts' + name],
+                                                                                          starting_font_size=starting_font_size, figure=self.figures[
+                                                                                              0], line2_scale_factor=line2_scale_factor,
 
-                self.source['bezier'+name].js_on_change('data',
-                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
-                  front_ds= self.source['fronts'+name],
-                  starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
-
-                  colourPicker=self.colourPicker, widthPicker=self.widthPicker
-                  ), code="""
+                                                                                          colourPicker=self.colourPicker, widthPicker=self.widthPicker
+                                                                                          ), code="""
                      let fontsize = (widthPicker.value * starting_font_size) +'pt';
                      let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
                      let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
@@ -671,33 +697,34 @@ class BARC:
                         bez2_ds.change.emit();
                      }
                      """)
-                )
+                                                          )
                 self.figures[0].y_range.js_on_change('start',
-                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each],
-                  figure=self.figures[0]), code="""
+                                                     bokeh.models.CustomJS(args=dict(datasource=self.source['text' + name + each],
+                                                                                     figure=self.figures[0]), code="""
                   for(var g = 0; g < datasource.data['fontsize'].length; g++)
                   {
                      datasource.data['fontsize'][g] = (((datasource.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
                   }
                   datasource.change.emit();
                   """)
-                )
+                                                     )
 
         try:
             frontTool = FrontDrawTool(
-               renderers=render_lines,
-               tags=['barc' + name],
-               custom_icon=__file__.replace(basename(__file__),'icons/splines/%s.png' % (name,))
+                renderers=render_lines,
+                tags=['barc' + name],
+                custom_icon=__file__.replace(
+                    basename(__file__), 'icons/splines/%s.png' % (name,))
             )
         except FileNotFoundError:
             frontTool = FrontDrawTool(
-               renderers=render_lines,
-               tags=['barc' + name],
+                renderers=render_lines,
+                tags=['barc' + name],
             )
-        self.source['fronts'+name].js_on_change('data',
-                bokeh.models.CustomJS(args=dict(datasource=self.source['fronts'+name]), code="""
+        self.source['fronts' + name].js_on_change('data',
+                                                  bokeh.models.CustomJS(args=dict(datasource=self.source['fronts' + name]), code="""
                     """)
-        )
+                                                  )
 
         return frontTool
 
@@ -739,9 +766,9 @@ class BARC:
 
         return tool3'''
 
-
     def display_glyphs(self):
         """Displays the selected glyph buttons
+        :returns:
         """
         buttonspec = {}
         # self.gyphs is set by the dropDown menu, create a button for
@@ -759,8 +786,8 @@ class BARC:
             )
 
             button.js_on_event(ButtonClick, bokeh.models.CustomJS(args=dict(
-            buttons=list(self.toolBarBoxes.select({'tags': ['barc' + each]}))),
-            code="""
+                buttons=list(self.toolBarBoxes.select({'tags': ['barc' + each]}))),
+                code="""
                 var each;
                 for(each of buttons) { each.active = true; }
             """))
@@ -780,21 +807,23 @@ class BARC:
 
         outdict = {}
 
-        for (k,v) in self.source.items():
+        for (k, v) in self.source.items():
             outdict[k] = v.data
 
         outdict['annotations'] = {}
         for count, each in enumerate(self.annotate.children):
             try:
-               outdict['annotations'][each.name] = each.value
+                outdict['annotations'][each.name] = each.value
             except AttributeError:
-               outdict['annotations'][each.name] = each.active
+                outdict['annotations'][each.name] = each.active
 
-        c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict)])
+        c.execute("INSERT INTO saved_data (label, dateTime, json) VALUES (?, ?, ?)", [
+                  outdict['annotations']['title'], time.time(), json.dumps(outdict)])
         self.conn.commit()
-        #repopulate drop-down
+        # repopulate drop-down
         c = self.conn.cursor()
-        c.execute("SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
+        c.execute(
+            "SELECT label, CAST(id AS TEXT) FROM saved_data ORDER BY dateTime DESC")
         self.loadButton.menu = c.fetchall()
 
     def loadDataSources(self, event):
@@ -811,17 +840,16 @@ class BARC:
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
-               try:
-                  n.value = jsonds['annotations'][name]
-               except AttributeError:
-                   n.active = jsonds['annotations'][name]
+                try:
+                    n.value = jsonds['annotations'][name]
+                except AttributeError:
+                    n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
-               try:
-                  self.source[each].data = jsonds[each]
-               except KeyError:
-                  pass;
-
+                try:
+                    self.source[each].data = jsonds[each]
+                except KeyError:
+                    pass
 
     def exportReport(self):
         return bokeh.io.export_png(bokeh.io.curdoc(), filename="plot.png")
@@ -831,23 +859,21 @@ class BARC:
         Blanks the sources back to as initially created
         '''
 
-
         for count, n in enumerate(self.annotate.children):
             try:
                 n.value = ''
             except ValueError:
-                n.value=['']
+                n.value = ['']
             except AttributeError:
                 n.active = []
 
-
-        for (k,v) in self.source.items():
+        for (k, v) in self.source.items():
             if k != 'annotation':
-               self.source[k].data = self.blankSource[k].data.copy()
-
+                self.source[k].data = self.blankSource[k].data.copy()
 
     def ToolBar(self):
         """Barc Tool Bar
+        :returns:
         """
         toolBarList = []
         # For each figure supplied (if multiple)
@@ -862,24 +888,40 @@ class BARC:
                 self.polyLine(),
                 self.polyDraw(),
                 self.windBarb(),
-                self.weatherFront(name="warm", colour="red", symbols=chr(983431)),
-                self.weatherFront(name='cold', colour="blue", symbols=chr(983430)),
-                self.weatherFront(name='occluded', colour="purple", symbols=chr(983431)+chr(983430)),
-                self.weatherFront(name='stationary', text_baseline=['bottom','top'], colour=['#ff0000','#0000ff'], symbols=chr(983431)+chr(983432)),
-                self.weatherFront(name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
-                self.weatherFront(name='dryadvection', colour="blue", line_dash="dashed", symbols=chr(983430)),
-                self.weatherFront(name='warmadvection', colour="red", line_dash="dashed", symbols=chr(983431)),
-                self.weatherFront(name='convergence', colour="orange", line_colour="orange", text_baseline="alphabetic", symbols=chr(983593), starting_font_size=15),
-                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="alphabetic", line_colour="red", symbols=chr(983590), starting_font_size=30),
-                self.weatherFront(name='streamline', colour="#0000f0", text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
-                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic", line_colour="olive", symbols=chr(983552), starting_font_size=20),
-                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
-                self.weatherFront(name='stationary-dry', colour="blue", line_colour="black",line2_colour="black", symbols=" "),
-                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
-                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
-                self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
+                self.weatherFront(name="warm", colour="red",
+                                  symbols=chr(983431)),
+                self.weatherFront(name='cold', colour="blue",
+                                  symbols=chr(983430)),
+                self.weatherFront(name='occluded', colour="purple",
+                                  symbols=chr(983431) + chr(983430)),
+                self.weatherFront(name='stationary', text_baseline=['bottom', 'top'], colour=[
+                                  '#ff0000', '#0000ff'], symbols=chr(983431) + chr(983432)),
+                self.weatherFront(
+                    name='dryintrusion', colour="#00AAFF", line_colour="#00AAFF", symbols='▮'),
+                self.weatherFront(name='dryadvection', colour="blue",
+                                  line_dash="dashed", symbols=chr(983430)),
+                self.weatherFront(name='warmadvection', colour="red",
+                                  line_dash="dashed", symbols=chr(983431)),
+                self.weatherFront(name='convergence', colour="orange", line_colour="orange",
+                                  text_baseline="alphabetic", symbols=chr(983593), starting_font_size=15),
+                self.weatherFront(name='squall', colour="red", line_dash="dashed", text_baseline="alphabetic",
+                                  line_colour="red", symbols=chr(983590), starting_font_size=30),
+                self.weatherFront(name='streamline', colour="#0000f0",
+                                  text_baseline="middle", line_colour="#00fe00", symbols=chr(9679)),
+                self.weatherFront(name='lowleveljet', colour="olive", text_baseline="alphabetic",
+                                  line_colour="olive", symbols=chr(983552), starting_font_size=20),
+                self.weatherFront(name='upper-trough', colour="blue", line_colour="black",
+                                  line2_colour="black", symbols=chr(983586), starting_font_size=20, line2_scale_factor=0.4),
+                self.weatherFront(name='stationary-dry', colour="blue",
+                                  line_colour="black", line2_colour="black", symbols=" "),
+                self.weatherFront(name='quatorial-trough', colour="black", line_colour="black", line2_colour="black",
+                                  symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
+                self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00", line2_colour="#fe4b00",
+                                  text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
+                self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(
+                    0, 0, 0, 0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
             )
-
+            # Create glyph list
             for glyph in self.allglyphs:
                 glyphtool = self.textStamp(chr(glyph))
                 barc_tools.append(glyphtool)
@@ -901,11 +943,11 @@ class BARC:
             'box_edit': 'box_edit',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
-            'tap':'tap',
-            'undo':'undo'
+            'tap': 'tap',
+            'undo': 'undo'
 
         }
-
+        # generate buttons diplaying icons from custon css barc_style.css
         buttons = []
         for each in buttonspec1:
             button = bokeh.models.widgets.Button(
@@ -916,9 +958,9 @@ class BARC:
                 margin=(0, 0, 0, 0)
             )
             button.js_on_event(ButtonClick,
-            bokeh.models.CustomJS(args=dict(
-            buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))),
-            code="""
+                               bokeh.models.CustomJS(args=dict(
+                                   buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))),
+                                   code="""
                     var each;
                     for(each of buttons) { each.active = true; }
                     """))
@@ -933,22 +975,24 @@ class BARC:
                 margin=(0, 0, 0, 0)
             )
             button.js_on_event(ButtonClick, bokeh.models.CustomJS(
-            args=dict(buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))), code="""
+                args=dict(buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))), code="""
                 var each;
                 for(each of buttons) { each.active = true; }
             """))
             buttons2.append(button)
-
+        # Layout of buttons
         self.barcTools.children.append(bokeh.layouts.grid(buttons, ncols=9))
         self.barcTools.children.append(bokeh.layouts.grid(buttons2, ncols=8))
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
         self.barcTools.children.extend([self.visibleGuides])
-        self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
-        self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
+        self.barcTools.children.append(bokeh.layouts.grid(
+            [self.widthPicker, self.colourPicker], ncols=2))
+        self.barcTools.children.append(bokeh.layouts.grid(
+            [self.saveButton, self.loadButton, self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.extend([self.annotate])
-        self.barcTools.children.append(toolBarBoxes)
+        #self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
