@@ -218,7 +218,7 @@ class BARC:
         # Select subset based on category
         self.set_meta_data()
         # glyph annotation box
-        self.annotate = bokeh.models.layouts.Column()
+        self.annotate = bokeh.models.layouts.Column(css_classes=['bk','bk-input','content'])
         # multichoice boxes for meta data
         self.mc = bokeh.models.widgets.MultiChoice(
             value=[''], options=list(self.metadata['labels'].values), name="metadata")
@@ -980,6 +980,32 @@ class BARC:
                 for(each of buttons) { each.active = true; }
             """))
             buttons2.append(button)
+
+            boxesbutton = bokeh.models.widgets.Button(
+                label='LabBook',
+                css_classes=['collapsible'],
+                aspect_ratio=1,
+                margin=(0, 0, 0, 0),
+            )
+            boxesbutton.js_on_event(ButtonClick, bokeh.models.CustomJS(code="""
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+              coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                  content.style.display = "none";
+                } else {
+                  content.style.display = "block";
+                }
+              });
+}
+            """))
+
+
+
         # Layout of buttons
         self.barcTools.children.append(bokeh.layouts.grid(buttons, ncols=9))
         self.barcTools.children.append(bokeh.layouts.grid(buttons2, ncols=8))
@@ -992,6 +1018,7 @@ class BARC:
         self.barcTools.children.append(bokeh.layouts.grid(
             [self.saveButton, self.loadButton, self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.extend([self.saveArea])
+        self.barcTools.children.extend([boxesbutton])
         self.barcTools.children.extend([self.annotate])
         #self.barcTools.children.append(toolBarBoxes)
 
