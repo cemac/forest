@@ -1,4 +1,4 @@
-bokeh>=2.0.1 # Port to 2.0.0 in future
+bokeh>=2.2.3 # required. Note further update requires code changes
 nodejs>=10.13
 datashader>=0.11.0
 h5netcdf

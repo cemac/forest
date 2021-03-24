@@ -237,12 +237,49 @@ class BARC(Observable):
             self.source['text_stamp' + chr(glyph)].add([], "fontsize")
             self.source['text_stamp' + chr(glyph)].add([], "colour")
 
+        self.profile_list =['HIW','Synoptic']
+        self.ProfileDropDown = Select(title="Metadata Category:", width=300,
+                               name='profile_dropdown',
+                               value="HIW",
+                               options=self.profile_list)
+        self.ProfileDropDown.on_change("value", self.callprofile)
+        # 2 profiles
+        P1 = ["Surface water flooding",  "Rapid response flooding", "River flooding",
+              "Coastal flooding",  "Landslide", "Strong winds or gusts",  "Storm / Lightning",
+              "Tropical storm / cyclone", "Frost", "Extreme Hot",  "Extreme Cold",
+              "Tornado",  "MCS",  "Fog", "Hail", "Snow",  "Storm surge"]
+        P2 = [ "MJO phase 1", "MJO phase 2",  "MJO phase 3",  "MJO phase 4", "MJO phase 5",
+               "MJO phase 6",  "MJO phase 7", "MJO phase 8",  "Weak MJO",  "Kelvin wave activity",
+               "Rossby wave activity",  "Area of low pressure", "Tropical cyclone (directly / indirectly)",
+               "Heat wave",  "Localised convection",  "Meso-scale convection", "ITCZ",
+               "Cold surge",  "South West Monsoon", "African Easterly Wave",  "Sea / lake breeze"]
+        profile1 = ['HIW']*len(P1)
+        profile2 = ['Synoptic']*len(P2)
+        profiles = profile1 + profile2
+        varis = P1 + P2
+        metadata = {'labels': varis, 'profile':profiles}
+        self.allmetadata = pd.DataFrame(metadata)
+        self.set_meta_data()
+        #glyph annotation box
+        self.annotate = bokeh.models.layouts.Column()
+        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values),name="metadata")
+        self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
+                console.log('multi_choice: value=' + this.value, this.toString())
+                    """))
+        self.annotate.children.extend([
+            bokeh.models.widgets.TextInput(title="Title",name='title'),
+            bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
+            bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
+            self.ProfileDropDown,
+            self.mc
+        ])
         self.tool_bar =self.ToolBar()
-
-        #copy blank sources for reset button 
+        #copy blank sources for reset button
         self.blankSource = {}
         for (k,v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
+        # Proile checkbox
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -274,11 +311,18 @@ class BARC(Observable):
         elif str(new) == "Group10 - Hurricanes and Typhoons":
             self.glyphs =  glyphcodes[100:110]
 
+    def set_meta_data(self):
+        """Set Glyphs based on drop down selection
+        """
+        new = self.ProfileDropDown.value
+        metadata = self.allmetadata
+        self.metadata = metadata[metadata.profile==str(new)]
+
     def hideGuides(self, attr,old,new):
          bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
          for guide in bezguides:
             guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
-        
+
 
     def call(self, attr, old, new):
         """Call back from dropdown click
@@ -288,6 +332,19 @@ class BARC(Observable):
         self.set_glyphs()
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=5)
         self.barcTools.children.insert(2, self.glyphrow)
+
+    def callprofile(self, attr, old, new):
+        """Call back from dropdown click
+         Removes and inserts new glyphrow
+        """
+        self.annotate.children.remove(self.mc)
+        self.set_meta_data()
+        self.mc = bokeh.models.widgets.MultiChoice(value=[''], options=list(self.metadata['labels'].values), name="metadata")
+        self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
+        console.log('multi_choice: value=' + this.value, this.toString())
+        """))
+        self.annotate.children.extend([self.mc])
+        #self.barcTools.children.insert(-3, self.annotate)
 
     def polyLine(self):
         '''
@@ -834,6 +891,7 @@ class BARC(Observable):
             buttons.append(button)
         return buttons
 
+
 # -----------------------------------------------------------------------------
     def to_pattern(self, state):
         return (state.get('pattern'),)
@@ -882,7 +940,7 @@ class BARC(Observable):
             outdict[k] = v.data
 
         outdict['annotations'] = {}
-        for each in self.annotate.children:
+        for count, each in enumerate(self.annotate.children):
             try:
                outdict['annotations'][each.name] = each.value
             except AttributeError:
@@ -912,13 +970,15 @@ class BARC(Observable):
         c.execute("SELECT * FROM saved_data WHERE id=?", [event.item])
         sqlds = c.fetchone()
         jsonds = json.loads(sqlds['json'])
+        # Clear data before loading
+        self.clearBarc()
         for name in jsonds['annotations']:
             annotes = self.annotate.select({'name': name})
             for n in annotes:
                try:
                   n.value = jsonds['annotations'][name]
                except AttributeError:
-                  n.active = jsonds['annotations'][name]
+                   n.active = jsonds['annotations'][name]
         for each in self.source:
             if each != 'annotations':
                try:
@@ -980,16 +1040,20 @@ class BARC(Observable):
         Blanks the sources back to as initially created
         '''
 
-        for n in self.annotate.children:
-           try:
-              n.value = ''
-           except AttributeError:
-              n.active = []
-         
+
+        for count, n in enumerate(self.annotate.children):
+            try:
+                n.value = ''
+            except ValueError:
+                n.value=['']
+            except AttributeError:
+                n.active = []
+
+
         for (k,v) in self.source.items():
             if k != 'annotation':
                self.source[k].data = self.blankSource[k].data.copy()
-   
+
 
     def ToolBar(self):
         """Barc Tool Bar
@@ -1003,7 +1067,6 @@ class BARC(Observable):
                 bokeh.models.tools.PanTool(tags=['barcpan']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
-                bokeh.models.tools.ResetTool(tags=['barcreset']),
                 bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
@@ -1049,6 +1112,8 @@ class BARC(Observable):
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
             'textbox': 'textbox'
+            'tap':'tap',
+            'undo':'undo'
         }
 
         buttons = []
@@ -1095,6 +1160,7 @@ class BARC(Observable):
         self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
         self.barcTools.children.extend([self.arbitraryTextBox, self.annotate])
         self.barcTools.children.extend([self.saveArea])
+        self.barcTools.children.extend([self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
