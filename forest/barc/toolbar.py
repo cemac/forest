@@ -987,6 +987,11 @@ class BARC(Observable):
                except KeyError:
                   pass;
 
+        #Trigger the text_stamp resize functions to they are the correct size relative to data
+        # i.e. if they are loaded at a different zoom level than they were saved at.
+        self.figures[0].y_range.start = self.figures[0].y_range.start + 1
+        self.figures[0].y_range.start = self.figures[0].y_range.start - 1
+
         self.store.dispatch(db.set_value('valid_time', datetime.datetime.fromisoformat(sqlds['valid_time'])))
         self.store.dispatch(db.set_value('layers', json.loads(sqlds['layers'])))
 
