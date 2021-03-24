@@ -38,6 +38,8 @@ import datetime
 import copy
 import tempfile
 
+import pandas as pd
+
 from selenium import webdriver
 from os.path import basename, abspath, join, relpath, dirname
 from os import mkdir, symlink
@@ -100,20 +102,18 @@ class BARC(Observable):
             color=self.starting_colour)
         #glyph annotation box
         self.arbitraryTextBox = bokeh.models.widgets.TextInput(title="StampText",name='stamptext')
-        self.annotate = bokeh.models.layouts.Column()
-        title = bokeh.models.widgets.TextInput(title="Title",name='title')
-        mc = bokeh.models.widgets.CheckboxGroup(name="tags", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
-        self.annotate.children.extend([
-            title,
-            bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
-            bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
-            bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
-            mc
-        ])
         # Dropdown Menu of stamp categories
-        self.stamp_categories=["Group0 - General meteorological symbols", "Group1 - General meteorological symbols", "Group2 - Precipitation fog ice fog or thunderstorm", "Group3 - Duststorm sandstorm drifting or blowing snow",
-                               "Group4 - Fog or ice fog at the time of observation", "Group5 - Drizzle", "Group6 - Rain", "Group7 - Solid precipitation not in showers",
-                               "Group8 - Showery precipitation or precipitation with recent thunderstorm", "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"]
+        self.stamp_categories=[
+            "Group0 - General meteorological symbols",
+            "Group1 - General meteorological symbols",
+            "Group2 - Precipitation fog ice fog or thunderstorm",
+            "Group3 - Duststorm sandstorm drifting or blowing snow",
+            "Group4 - Fog or ice fog at the time of observation",
+            "Group5 - Drizzle", "Group6 - Rain",
+            "Group7 - Solid precipitation not in showers",
+            "Group8 - Showery precipitation or precipitation with recent thunderstorm",
+            "Group9 - Thunderstorms", "Group10 - Hurricanes and Typhoons"
+        ]
         self.dropDown = Select(title="Meteorological symbols:", width=300,
 
                                value="Group0 - General meteorological symbols",
@@ -143,19 +143,6 @@ class BARC(Observable):
 
         self.saveButton = bokeh.models.widgets.Button(
             name="barc_save", width=50, label="\U0001f4be", disabled=True)
-        #only enables saveButton when there is a title set.
-        title.js_on_change('value',
-            bokeh.models.CustomJS(
-               args=dict(saveButton=self.saveButton), code="""
-            if(cb_obj.value)
-            {
-               saveButton.disabled = false;
-            } else {
-               saveButton.disabled = true;
-            }
-
-        """)
-        )
         self.saveButton.js_on_click(
             bokeh.models.CustomJS(args=dict(sources=self.source,
                                             saveArea=self.saveArea), code="""
@@ -266,14 +253,27 @@ class BARC(Observable):
         self.mc.js_on_change("value", bokeh.models.CustomJS(code="""
                 console.log('multi_choice: value=' + this.value, this.toString())
                     """))
+        titleBox = bokeh.models.widgets.TextInput(title="Title",name='title')
         self.annotate.children.extend([
-            bokeh.models.widgets.TextInput(title="Title",name='title'),
+            titleBox,
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
             self.ProfileDropDown,
             self.mc
         ])
+        #only enables saveButton when there is a title set.
+        titleBox.js_on_change('value',
+            bokeh.models.CustomJS(
+               args=dict(saveButton=self.saveButton), code="""
+            if(cb_obj.value)
+            {
+               saveButton.disabled = false;
+            } else {
+               saveButton.disabled = true;
+            }
+        """)
+        )
         self.tool_bar =self.ToolBar()
         #copy blank sources for reset button
         self.blankSource = {}
@@ -548,6 +548,7 @@ class BARC(Observable):
                         cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
                     }
                 }
+                cb_obj.change.emit();
                 """)
         )
         self.figures[0].y_range.js_on_change('start',
@@ -986,7 +987,6 @@ class BARC(Observable):
                except KeyError:
                   pass;
 
-        print(self.store.state)
         self.store.dispatch(db.set_value('valid_time', datetime.datetime.fromisoformat(sqlds['valid_time'])))
         self.store.dispatch(db.set_value('layers', json.loads(sqlds['layers'])))
 
@@ -1111,7 +1111,7 @@ class BARC(Observable):
             'box_edit': 'box_edit',
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
-            'textbox': 'textbox'
+            'textbox': 'textbox',
             'tap':'tap',
             'undo':'undo'
         }
@@ -1160,7 +1160,6 @@ class BARC(Observable):
         self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
         self.barcTools.children.extend([self.arbitraryTextBox, self.annotate])
         self.barcTools.children.extend([self.saveArea])
-        self.barcTools.children.extend([self.annotate])
         self.barcTools.children.append(toolBarBoxes)
 
         return self.barcTools
