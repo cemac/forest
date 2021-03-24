@@ -846,7 +846,7 @@ class BARC(Observable):
         with open('forest/barc/export.html') as t:
            template = Template(t.read())
 
-           tempdir = tempfile.mkdtemp(prefix="barc")
+           tempdir = tempfile.mkdtemp(prefix="barc", suffix="export-temp")
            if tempdir:
               figs = {} 
               layers = self.store.state.get('layers')
