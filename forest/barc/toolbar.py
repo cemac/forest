@@ -982,18 +982,22 @@ class BARC:
             buttons2.append(button)
 
             boxesbutton = bokeh.models.widgets.Button(
-                label='LabBook',
+                label='LabBook \u21D5',
                 css_classes=['collapsible'],
                 aspect_ratio=1,
                 margin=(0, 0, 0, 0),
             )
             boxesbutton.js_on_event(ButtonClick, bokeh.models.CustomJS(code="""
-            var coll = document.getElementsByClassName("collapsible");
+            var acc = document.getElementsByClassName("collapsible");
             var i;
 
-            for (i = 0; i < coll.length; i++) {
-              coll[i].addEventListener("click", function() {
+            for (i = 0; i < acc.length; i++) {
+              acc[i].addEventListener("click", function() {
+                /* Toggle between adding and removing the "active" class,
+                to highlight the button that controls the panel */
                 this.classList.toggle("active");
+
+                /* Toggle between hiding and showing the active panel */
                 var content = this.nextElementSibling;
                 if (content.style.display === "block") {
                   content.style.display = "none";
@@ -1001,7 +1005,8 @@ class BARC:
                   content.style.display = "block";
                 }
               });
-}
+            }
+
             """))
 
 
