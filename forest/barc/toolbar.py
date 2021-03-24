@@ -95,6 +95,7 @@ class BARC(Observable):
             name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
+        self.arbitraryText = bokeh.models.widgets.TextInput(title="StampText",name='stamptext')
         self.annotate = bokeh.models.layouts.Column()
         title = bokeh.models.widgets.TextInput(title="Title",name='title')
         mc = bokeh.models.widgets.CheckboxGroup(name="tags", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
@@ -467,27 +468,26 @@ class BARC(Observable):
             )
 
         self.source['text_stamp' + glyph].js_on_change('data',
-            bokeh.models.CustomJS(args=dict(datasource=self.source['text_stamp' + glyph],
-            starting_font_size=starting_font_size, figure=self.figures[0],
+            bokeh.models.CustomJS(args=dict(starting_font_size=starting_font_size, figure=self.figures[0],
             colourPicker=self.colourPicker, widthPicker=self.widthPicker,
             saveArea=self.saveArea), code="""
-                for(var g = 0; g < datasource.data['xs'].length; g++)
+                for(var g = 0; g < cb_obj.data['xs'].length; g++)
                 {
-                    if(!datasource.data['colour'][g])
+                    if(!cb_obj.data['colour'][g])
                     {
-                        datasource.data['colour'][g] = colourPicker.color;
+                        cb_obj.data['colour'][g] = colourPicker.color;
                     }
 
-                    if(!datasource.data['fontsize'][g])
+                    if(!cb_obj.data['fontsize'][g])
                     {
-                        datasource.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
+                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
                     }
 
                     //calculate initial datasize
-                    if(!datasource.data['datasize'][g])
+                    if(!cb_obj.data['datasize'][g])
                     {
                         var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                        datasource.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
                     }
                 }
                 """)
@@ -995,7 +995,7 @@ class BARC(Observable):
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
-        self.barcTools.children.extend([self.annotate])
+        self.barcTools.children.extend([self.arbitraryText, self.annotate])
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.append(toolBarBoxes)
 
