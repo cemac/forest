@@ -96,9 +96,10 @@ class BARC(Observable):
             color=self.starting_colour)
         #glyph annotation box
         self.annotate = bokeh.models.layouts.Column()
+        title = bokeh.models.widgets.TextInput(title="Title",name='title')
         mc = bokeh.models.widgets.CheckboxGroup(name="tags", labels=['Tropical Storm','Blocking High','Low','Rain of Frogs']) #can't use MultiChoice until bokeh 2.2 https://github.com/bokeh/bokeh/pull/10112 
         self.annotate.children.extend([
-            bokeh.models.widgets.TextInput(title="Title",name='title'),
+            title,
             bokeh.models.widgets.TextAreaInput(title="Forecaster's Comments", name="forecastnotes", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Brief Description", name="briefdesc", height=150, width=350),
             bokeh.models.widgets.TextAreaInput(title="Further Notes", name="further", height=150, width=350),
@@ -136,7 +137,20 @@ class BARC(Observable):
         )
 
         self.saveButton = bokeh.models.widgets.Button(
-            name="barc_save", width=50, label="\U0001f4be")
+            name="barc_save", width=50, label="\U0001f4be", disabled=True)
+        #only enables saveButton when there is a title set.
+        title.js_on_change('value',
+            bokeh.models.CustomJS(
+               args=dict(saveButton=self.saveButton), code="""
+            if(cb_obj.value)
+            {
+               saveButton.disabled = false;
+            } else {
+               saveButton.disabled = true;
+            }
+
+        """)
+        )
         self.saveButton.js_on_click(
             bokeh.models.CustomJS(args=dict(sources=self.source,
                                             saveArea=self.saveArea), code="""
