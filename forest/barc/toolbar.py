@@ -49,7 +49,7 @@ from bokeh.core.properties import value
 from bokeh.models.tools import PolyDrawTool, PolyEditTool, BoxEditTool
 from bokeh.models.tools import PointDrawTool, ToolbarBox, FreehandDrawTool
 from bokeh.events import ButtonClick
-from forest import wind, data, tools, state, db
+from forest import wind, data, tools, state, db, rx
 from forest.observe import Observable
 from forest.actions import set_valid_time
 #from . import front
@@ -68,6 +68,9 @@ class BARC(Observable):
     '''
 
     def __init__(self, figures, store):
+        super().__init__()
+        self.store = store
+        self.add_subscriber(self.store.dispatch)
         self.figures = figures
         #db for saving
         self.conn = sqlite3.connect(relpath(join(dirname(__file__),'../barc/barc-save.sdb')))
@@ -186,7 +189,7 @@ class BARC(Observable):
         #populate list of saved markups
         self.loadButton = bokeh.models.widgets.Dropdown(
             name="barc_load", width=150, label="Load")
-        self.loadButton.menu = self.populateLoadList()
+        self.populateLoadList()
         self.loadButton.on_click(self.loadDataSources)
 
         # from BARC.woff take the index dictionary
@@ -240,9 +243,6 @@ class BARC(Observable):
         self.blankSource = {}
         for (k,v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
-        super().__init__()
-        self.store = store
-        self.add_subscriber(self.store.dispatch)
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -835,18 +835,36 @@ class BARC(Observable):
         return buttons
 
 # -----------------------------------------------------------------------------
+    def to_pattern(self, state):
+        return (state.get('pattern'),)
+
+    def setLoadList(self, pattern):
+        '''
+            (re)populate drop-down loadButton with the available saved annotation sets that belong to `pattern`.
+
+            :param pattern: Pattern string from the state store.
+        '''
+        
+        menu = []
+        c = self.conn.cursor()
+        c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')' AS lbl, CAST(id AS TEXT) AS id FROM saved_data WHERE pattern = ? ORDER BY dateTime DESC", [pattern])
+        for row in c:
+           menu.append((row['lbl'], row['id'])) 
+        self.loadButton.menu = menu
+        
+   
     def populateLoadList(self):
         '''
-            (re)populate drop-down loadButton with the available saved annotation sets.
-
-         :returns: List of two-element tuples of the form: ``[(label0, id0),(label1,id1),...,(labeln, idn)]``
+            Listens for changes on the 'pattern' property and updates the load list accordingly. 
         '''
-        c = self.conn.cursor()
-        c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')' AS lbl, CAST(id AS TEXT) AS id FROM saved_data ORDER BY dateTime DESC")
-        menu = []
-        for row in c:
-            menu.append((row['lbl'], row['id'])) 
-        return menu
+        stream = (rx.Stream()
+                    .listen_to(self.store)
+                    .map(self.to_pattern)
+                    .distinct())
+
+        stream.map(lambda pattern: self.setLoadList(*pattern))
+
+    
 
 
     def saveDataSources(self):
@@ -883,7 +901,7 @@ class BARC(Observable):
    
         c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, layers, valid_time) VALUES (?, ?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], json.dumps(self.store.state['layers']), date_for_db])
         self.conn.commit()
-        self.loadButton.menu = self.populateLoadList()
+        self.setLoadList(self.store.state['pattern'])
 
     def loadDataSources(self, event):
         '''
