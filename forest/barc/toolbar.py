@@ -321,7 +321,7 @@ class BARC(Observable):
     def hideGuides(self, attr,old,new):
          bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
          for guide in bezguides:
-            guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
+            guide.line_alpha = 1.0 if (0 in self.visibleGuides.active) else 0.0 # checkbox with index of 0, not *value* of 0!
 
 
     def call(self, attr, old, new):
