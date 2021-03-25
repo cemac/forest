@@ -67,6 +67,11 @@
         </div>
       </div>
       {{ safe_embed('barc') }}
+      <div>
+
+      <p style="text-align: center;"><a href="https://github.com/cemac/forest-barc" target="_blank"><i class="fab fa-github"></i></a> <a href="https://zenodo.org/badge/latestdoi/248009615"><img src="https://zenodo.org/badge/248009615.svg" alt="DOI"></a></p>
+
+      </div>
     </div>
 
     <div class="abs-top-left" style="z-index:4;">
@@ -128,6 +133,10 @@
   let elDiagrams = document.getElementById("diagrams-icon")
   elDiagrams.addEventListener("click", () => {
     let el = document.getElementById("diagrams")
+    // close barc panel
+    let elbarc = document.getElementById("barcdiagrams")
+    elbarc.style.width = "0"
+    // open or close the diagrams panel
     let width = "400px"
     if (el.style.width !== width) {
       el.style.width = width
@@ -140,6 +149,10 @@
   let elBarc = document.getElementById("barc-icon")
   elBarc.addEventListener("click", () => {
     let el = document.getElementById("barcdiagrams")
+    // close analysis panel
+    let eldiag = document.getElementById("diagrams")
+    eldiag.style.width = "0"
+    // open or close the barc panel
     let width = "400px"
     if (el.style.width !== width) {
       el.style.width = width
@@ -250,4 +263,22 @@
     }
   }
 </script>
+<!--collapsible report -->
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
 {% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>{% block title %}{{ title | e if title else "BARC Plot" }}{% endblock %}</title>
+      <style>
+         @page { size: A4; }
+         figure { max-width: 100%; }
+         figcaption { font-style: italic; }
+         #annotations h3 { font-weight: bold; width: 99%; margin:0; padding: 0.25rem; color: white; background-color: blue;}
+         #annotations div.note { width: 30%; border: solid 2px blue; float: left; margin: 1%;}
+      </style>
+  </head>
+  <body>
+    <div id="figs">
+    {% for fig in figures %}
+      <figure><img src="{{ fig }}" /></figure>
+      <figcaption>{{ figures[fig] }}</figcaption>
+    {% endfor %}
+   </div>
+   <div id="annotations">
+    {% for note in annotations %}
+      <div class="note"><h3>{{ note }}</h3>
+      <p>{{ annotations[note] }}</p>
+      </div>
+    {% endfor %}
+   </div>
+  </body>
+</html>

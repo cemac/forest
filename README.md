@@ -9,7 +9,9 @@
   </span>
 
 ![GitHub](https://img.shields.io/github/license/cemac/forest-barc.svg) [![GitHub top language](https://img.shields.io/github/languages/top/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc) [![GitHub issues](https://img.shields.io/github/issues/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc/issues) [![GitHub last commit](https://img.shields.io/github/last-commit/cemac/forest-barc.svg)](https://github.com/cemac/forest-barc/commits/master) [![GitHub All Releases](https://img.shields.io/github/downloads/cemac/forest-barc/total.svg)](https://github.com/cemac/forest-barc/releases)
-  [![HitCount](http://hits.dwyl.com/{cemac}/{forest-barc}.svg)](http://hits.dwyl.com/{cemac}/{forest-barc})
+  [![HitCount](http://hits.dwyl.com/{cemac}/{forest-barc}.svg)](http://hits.dwyl.com/{cemac}/{forest-barc}) [![DOI](https://zenodo.org/badge/248009615.svg)](https://zenodo.org/badge/latestdoi/248009615)
+
+
 
 <hr>
 
