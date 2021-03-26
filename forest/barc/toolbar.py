@@ -101,7 +101,7 @@ class BARC(Observable):
             name="barc_colours",
             color=self.starting_colour)
         #glyph annotation box
-        self.arbitraryTextBox = bokeh.models.widgets.TextInput(title="StampText",name='stamptext')
+        self.arbitraryTextBox = bokeh.models.widgets.TextInput(title="StampText",name='stamptext', width=300)
         # Dropdown Menu of stamp categories
         self.stamp_categories=[
             "Group0 - General meteorological symbols",
@@ -933,18 +933,18 @@ class BARC(Observable):
 
             :param pattern: Pattern string from the state store.
         '''
-        
+
         menu = []
         c = self.conn.cursor()
         c.execute("SELECT label || ' (' || DATE(dateTime, 'unixepoch') || ')' AS lbl, CAST(id AS TEXT) AS id FROM saved_data WHERE pattern = ? ORDER BY dateTime DESC", [pattern])
         for row in c:
-           menu.append((row['lbl'], row['id'])) 
+           menu.append((row['lbl'], row['id']))
         self.loadButton.menu = menu
-        
-   
+
+
     def populateLoadList(self):
         '''
-            Listens for changes on the 'pattern' property and updates the load list accordingly. 
+            Listens for changes on the 'pattern' property and updates the load list accordingly.
         '''
         stream = (rx.Stream()
                     .listen_to(self.store)
@@ -953,7 +953,7 @@ class BARC(Observable):
 
         stream.map(lambda pattern: self.setLoadList(*pattern))
 
-    
+
 
 
     def saveDataSources(self):
@@ -988,7 +988,7 @@ class BARC(Observable):
             date_for_db = datetime_as_string(self.store.state['valid_time'])
         except TypeError: # is not a Numpy object. probably python datetime
             date_for_db = self.store.state['valid_time'].isoformat()
-   
+
         c.execute("INSERT INTO saved_data (label, dateTime, json, pattern, layers, valid_time) VALUES (?, ?, ?, ?, ?, ?)", [outdict['annotations']['title'], time.time(), json.dumps(outdict), self.store.state['pattern'], json.dumps(self.store.state['layers']), date_for_db])
         self.conn.commit()
         self.setLoadList(self.store.state['pattern'])
@@ -1032,10 +1032,10 @@ class BARC(Observable):
 
     def exportReport(self):
         '''
-            A function that creates an HTML file with a PNG screengrab of the figure(s) currently displayed, and the contents of the annotation inputs 
-            displayed in a format suitable for loading into a wordprocessor for further editing. 
+            A function that creates an HTML file with a PNG screengrab of the figure(s) currently displayed, and the contents of the annotation inputs
+            displayed in a format suitable for loading into a wordprocessor for further editing.
 
-        :returns: Location of the export file.    
+        :returns: Location of the export file.
         '''
         print("Starting export")
         with open(join(dirname(__file__),'export.html')) as t:
@@ -1043,7 +1043,7 @@ class BARC(Observable):
 
            tempdir = tempfile.mkdtemp(prefix="barc", suffix="export-temp")
            if tempdir:
-              figs = {} 
+              figs = {}
               layers = self.store.state.get('layers')
               for index in range(0,layers['figures']):
                  image = get_screenshot_as_png(self.figures[index], timeout=20)
@@ -1060,7 +1060,7 @@ class BARC(Observable):
                  try:
                     annotations[each.name] = { "label": each.title, "value": each.value }
                  except AttributeError:
-                    annotations[each.name] ={ "label": each.name, "active": each.active } 
+                    annotations[each.name] ={ "label": each.name, "active": each.active }
 
               print(annotations)
 
@@ -1074,7 +1074,7 @@ class BARC(Observable):
            self.exportStatus.text = '<a href="/' + target + '/barcexport.html" id="exportlink" target="_blank">Display</a>'
 
            return "/" + target + '/barcexport.html'
-        
+
 
     def clearBarc(self):
         '''
@@ -1227,13 +1227,15 @@ class BARC(Observable):
         self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.append(self.glyphrow)
         self.barcTools.children.extend([self.dropDown])
+        self.barcTools.children.extend([self.arbitraryTextBox])
         self.barcTools.children.extend([self.visibleGuides])
         self.barcTools.children.append(bokeh.layouts.grid([self.widthPicker, self.colourPicker], ncols=2))
         self.barcTools.children.append(bokeh.layouts.grid([self.saveButton, self.loadButton,self.exportButton, self.resetButton], ncols=4))
         self.barcTools.children.append(bokeh.layouts.column([self.exportStatus]))
-        self.barcTools.children.extend([self.arbitraryTextBox, self.annotate])
         self.barcTools.children.extend([self.saveArea])
-        self.barcTools.children.append(toolBarBoxes)
+        self.barcTools.children.extend([boxesbutton])
+        self.barcTools.children.extend([self.annotate])
+        # self.barcTools.children.append(toolBarBoxes)
 
 
         return self.barcTools
