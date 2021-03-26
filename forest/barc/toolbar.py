@@ -1016,7 +1016,7 @@ class BARC(Observable):
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
                  try:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
                  except KeyError:
                     figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
