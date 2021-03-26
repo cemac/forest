@@ -298,7 +298,7 @@ class BARC:
         # set the glyphs
         self.set_glyphs()
         # create row and reinstert
-        self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=5)
+        self.glyphrow = bokeh.layouts.grid(self.display_glyphs(), ncols=10)
         self.barcTools.children.insert(2, self.glyphrow)
 
     def callprofile(self, attr, old, new):
@@ -563,6 +563,14 @@ class BARC:
         )
 
         return tool4
+
+    def barcundo(self):
+        '''
+            undo button
+            :returns: a :py:class:`UndoTool <bokeh.models.tools.UndoTool>` instance
+        '''
+        undotool = bokeh.models.tools.UndoTool(tags=['barcundo'])
+        return undotool
 
     def bezierSource(self):
         return ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
@@ -880,7 +888,7 @@ class BARC:
         for i, figure in enumerate(self.figures):
             barc_tools = []
             figure.add_tools(
-                bokeh.models.tools.UndoTool(tags=['barcundo']),
+                self.barcundo(),
                 bokeh.models.tools.PanTool(tags=['barcpan']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
