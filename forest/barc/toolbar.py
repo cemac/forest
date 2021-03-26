@@ -1012,7 +1012,7 @@ class BARC(Observable):
               figs = {} 
               layers = self.store.state.get('layers')
               for index in range(0,layers['figures']):
-                 image = get_screenshot_as_png(self.figures[index])
+                 image = get_screenshot_as_png(self.figures[index], timeout=20)
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
                  try:
@@ -1024,12 +1024,14 @@ class BARC(Observable):
               annotations = {}
               for each in self.annotate.children:
                  try:
-                    annotations[each.title] = each.value
+                    annotations[each.name] = { "label": each.title, "value": each.value }
                  except AttributeError:
-                    annotations[each.name] = each.active
+                    annotations[each.name] ={ "label": each.name, "active": each.active } 
+
+              print(annotations)
 
               with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
-                 f.write(template.render({"figures":figs, "annotations":annotations}))
+                 f.write(template.render({"figures":figs, "annotations":annotations, "title":annotations["title"]["value"]}))
 
               target = relpath(join(dirname(__file__),'..','static',basename(tempdir)))
               print("Export temp dir %s" % target)
