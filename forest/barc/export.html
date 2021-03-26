@@ -18,24 +18,6 @@
          .tags { width: 20%%; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-end;} 
          .tag { background-color: #1f77b4; margin-left:0.5em;}
       </style>
-      <script>
-         function exportHTML(){
-       var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
-            "xmlns:w='urn:schemas-microsoft-com:office:word' "+
-            "xmlns='http://www.w3.org/TR/REC-html40'>"+
-            "<head><meta charset='utf-8'><title>{{ title_s }}</title></head><body>";
-       var footer = "</body></html>";
-       var sourceHTML = header+document.getElementById("barcexport").innerHTML+footer;
-       
-       var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-       var fileDownload = document.createElement("a");
-       document.body.appendChild(fileDownload);
-       fileDownload.href = source;
-       fileDownload.download = 'barcexport.doc';
-       fileDownload.click();
-       document.body.removeChild(fileDownload);
-    }
-   </script>
   </head>
   <body>
     <article id="barcexport">
@@ -66,6 +48,5 @@
    </div>
    </main>
    </article>
-   <button id="btn-export" onclick="exportHTML();">Export to word doc</button>
   </body>
 </html>
