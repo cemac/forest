@@ -2,6 +2,7 @@
 .terraform/*
 *~
 *.pyc
+*.log
 __pycache__
 kubeconfig
 *.swp
@@ -16,3 +17,4 @@ apps/ux-improvements/node_modules
 build/
 forest/barc/barc-save.sdb
 *local.yml
+forest/static/barc*export-temp

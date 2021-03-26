@@ -91,7 +91,7 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button {
   background-image: url("icons/navtools/polyedit.png");
   color: transparent !important;
 }
-div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button:hover  {
+div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button:hover {
   background-image: url("icons/navtools/polyedit-h.png");
   color: transparent !important;
 }
@@ -102,6 +102,14 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button:focus
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button {
   background-image: url("icons/navtools/textadd.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button:hover {
+  background-image: url("icons/navtools/textadd-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button:focus {
+  background-image: url("icons/navtools/textadd-h.png");
   color: transparent !important;
 }
 
