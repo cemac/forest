@@ -2,28 +2,58 @@
 <html lang="en">
   <head>
       <meta charset="utf-8">
-      <title>{% block title %}{{ title | e if title else "BARC Plot" }}{% endblock %}</title>
+      {% set title_s %}{% block title %}{{ title | e if title else "BARC Plot" }}{% endblock %}{% endset %}
+      <title>{{ title_s }}</title>
       <style>
          @page { size: A4; }
-         figure { max-width: 100%; }
-         figcaption { font-style: italic; }
-         #annotations h3 { font-weight: bold; width: 99%; margin:0; padding: 0.25rem; color: white; background-color: blue;}
-         #annotations div.note { width: 30%; border: solid 2px blue; float: left; margin: 1%;}
+         html { font-family: "Open Sans", Helvetica, Arial, sans-serif; }
+         figure { max-width: 100%; text-align: center;}
+         figcaption { font-style: italic; text-align: center;}
+         figure img { max-width:100%; }
+         #annotations h3 { font-weight: bold; box-sizing: border-box; margin:0; padding: 0.25rem; color: white; background-color: blue;}
+         #annotations .note { width: 30%; border: solid 2px blue; float: left; margin: 1%; }
+         #annotations p { padding: 0.375em; }
+         header {width: 100%; display:flex; flex-direction: row; justify-content: space-between; }
+         header h1, header h2 { display: inline-block; }
+         header h2, .tag { font-size: 1rem; height: fit-content; padding: 0.375em; border-radius: 5px; color: white; margin: 0;}
+         header h2 { background-color: red; min-width: 25%; text-align: center;}
+         .tags { width: 20%%; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-end;} 
+         .tag { background-color: #1f77b4; margin-left:0.5em;}
+         @media print {
+            article {
+               width: 100%;
+            }
+         }
       </style>
   </head>
   <body>
-    <div id="figs">
+    <article id="barcexport">
+    <header>
+    <h1>{{ title_s }}</h1>
+    <h2>{% if annotations['profile_dropdown'] -%}{{ annotations['profile_dropdown'].value}}{%- endif %}</h2>
+    <div class="tags">
+    {% for tag in annotations['metadata'].value %}
+    <div class="tag">{{ tag }}</div>
+    {% endfor %}
+    </div>
+    </header>
+    <main>
+    <section id="figs">
     {% for fig in figures %}
       <figure><img src="{{ fig }}" /></figure>
       <figcaption>{{ figures[fig] }}</figcaption>
     {% endfor %}
-   </div>
+   </section>
    <div id="annotations">
-    {% for note in annotations %}
-      <div class="note"><h3>{{ note }}</h3>
-      <p>{{ annotations[note] }}</p>
-      </div>
+    {% for id, contents in annotations.items() -%}
+     {% if id not in ['title', 'profile_dropdown','metadata'] -%}
+      <section class="note" id="{{id}}"><h3>{{ contents.label }}</h3>
+      <p>{% if contents.value is defined -%}{{ contents.value }}{% else -%}{{ contents.active }}{%- endif %}</p>
+      </section>
+     {%- endif %}
     {% endfor %}
    </div>
+   </main>
+   </article>
   </body>
 </html>

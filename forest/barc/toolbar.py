@@ -89,8 +89,8 @@ class BARC(Observable):
         # set intial width and colours
         self.starting_colour = "black"  # in CSS-type spec
         self.starting_width = 2
-        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(labels=['Show Bézier Guides'], active=[0])
-        self.visibleGuides.on_change('active', self.hideGuides)
+        self.visibleGuides = bokeh.models.widgets.CheckboxGroup(labels=['Show Bézier Guides'], active=[])
+        self.visibleGuides.on_change('active', self.toggleGuides)
         self.widthPicker = bokeh.models.widgets.Slider(
             title='Select size', name="barc_width", width=200,
             end=10.0,
@@ -318,10 +318,10 @@ class BARC(Observable):
         metadata = self.allmetadata
         self.metadata = metadata[metadata.profile==str(new)]
 
-    def hideGuides(self, attr,old,new):
+    def toggleGuides(self, attr,old,new):
          bezguides=list(self.toolBarBoxes.select({'tags': ['bezierguide']}))
          for guide in bezguides:
-            guide.line_alpha = (0 in self.visibleGuides.active) # checkbox with index of 0, not *value* of 0!
+            guide.line_alpha = 1.0 if (0 in self.visibleGuides.active) else 0.0 # checkbox with index of 0, not *value* of 0!
 
 
     def call(self, attr, old, new):
@@ -727,7 +727,7 @@ class BARC(Observable):
         render_lines = []
         for figure in self.figures:
             render_lines.extend([
-               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, source=self.source['fronts'+name], tags=['bezierguide']),
+               figure.multi_line(xs='xs',ys='ys', color="#aaaaaa", line_width=1, line_alpha=0.0, source=self.source['fronts'+name], tags=['bezierguide']),
                #order matters! Typescript assumes multiline is first
                figure.bezier(x0='x0', y0='y0', x1='x1', y1='y1', cx0='cx0', cy0='cy0', cx1="cx1", cy1="cy1", source=self.source['bezier'+name], line_color=line_colour, line_dash=line_dash, line_width=2, tags=['bezier']),
                figure.multi_line(xs='xs', ys='ys', source=self.source['bezier2'+name], color=line2_colour, line_width=2, tags=['bezier2'])
@@ -1012,11 +1012,11 @@ class BARC(Observable):
               figs = {} 
               layers = self.store.state.get('layers')
               for index in range(0,layers['figures']):
-                 image = get_screenshot_as_png(self.figures[index])
+                 image = get_screenshot_as_png(self.figures[index], timeout=20)
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
                  try:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
                  except KeyError:
                     figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
@@ -1024,12 +1024,14 @@ class BARC(Observable):
               annotations = {}
               for each in self.annotate.children:
                  try:
-                    annotations[each.title] = each.value
+                    annotations[each.name] = { "label": each.title, "value": each.value }
                  except AttributeError:
-                    annotations[each.name] = each.active
+                    annotations[each.name] ={ "label": each.name, "active": each.active } 
+
+              print(annotations)
 
               with open(join(tempdir,"barcexport.html"), mode="w", encoding="utf-8") as f:
-                 f.write(template.render({"figures":figs, "annotations":annotations}))
+                 f.write(template.render({"figures":figs, "annotations":annotations, "title":annotations["title"]["value"]}))
 
               target = relpath(join(dirname(__file__),'..','static',basename(tempdir)))
               print("Export temp dir %s" % target)
@@ -1148,9 +1150,10 @@ class BARC(Observable):
                 margin=(0, 0, 0, 0)
             )
             button.js_on_event(ButtonClick, bokeh.models.CustomJS(
-            args=dict(buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))), code="""
+            args=dict(buttons=list(toolBarBoxes.select({'tags': ['barc' + each]})), visibleGuides=self.visibleGuides), code="""
                 var each;
                 for(each of buttons) { each.active = true; }
+                visibleGuides.active=[0];
             """))
             buttons2.append(button)
 
