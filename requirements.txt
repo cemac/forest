@@ -1,4 +1,4 @@
-bokeh>=2.2.3 # required. Note further update requires code changes
+bokeh==2.2.3 # required. Note further update requires code changes
 nodejs>=10.13
 datashader>=0.11.0
 h5netcdf
@@ -11,3 +11,6 @@ xarray
 cftime
 netcdf4==1.5.3
 geojson
+selenium
+firefox
+geckodriver
