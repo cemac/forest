@@ -18,8 +18,27 @@
          .tags { width: 20%%; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-end;} 
          .tag { background-color: #1f77b4; margin-left:0.5em;}
       </style>
+      <script>
+         function exportHTML(){
+       var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+            "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+            "xmlns='http://www.w3.org/TR/REC-html40'>"+
+            "<head><meta charset='utf-8'><title>{{ title_s }}</title></head><body>";
+       var footer = "</body></html>";
+       var sourceHTML = header+document.getElementById("barcexport").innerHTML+footer;
+       
+       var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+       var fileDownload = document.createElement("a");
+       document.body.appendChild(fileDownload);
+       fileDownload.href = source;
+       fileDownload.download = 'barcexport.doc';
+       fileDownload.click();
+       document.body.removeChild(fileDownload);
+    }
+   </script>
   </head>
   <body>
+    <article id="barcexport">
     <header>
     <h1>{{ title_s }}</h1>
     <h2>{% if annotations['profile_dropdown'] -%}{{ annotations['profile_dropdown'].value}}{%- endif %}</h2>
@@ -29,7 +48,7 @@
     {% endfor %}
     </div>
     </header>
-    <article>
+    <main>
     <section id="figs">
     {% for fig in figures %}
       <figure><img src="{{ fig }}" /></figure>
@@ -38,13 +57,15 @@
    </section>
    <div id="annotations">
     {% for id, contents in annotations.items() -%}
-     {% if id not in ['profile_dropdown','metadata'] -%}
+     {% if id not in ['title', 'profile_dropdown','metadata'] -%}
       <section class="note" id="{{id}}"><h3>{{ contents.label }}</h3>
       <p>{% if contents.value is defined -%}{{ contents.value }}{% else -%}{{ contents.active }}{%- endif %}</p>
       </section>
      {%- endif %}
     {% endfor %}
    </div>
+   </main>
    </article>
+   <button id="btn-export" onclick="exportHTML();">Export to word doc</button>
   </body>
 </html>
