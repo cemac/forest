@@ -533,19 +533,14 @@ class BARC(Observable):
                 {
                     if(!cb_obj.data['colour'][g])
                     {
-                        cb_obj.data['colour'][g] = colourPicker.color;
-                    }
 
-                    if(!cb_obj.data['fontsize'][g])
-                    {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'pt';
-                    }
-
-                    //calculate initial datasize
-                    if(!cb_obj.data['datasize'][g])
-                    {
                         var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+
+                        cb_obj.patch({
+                           ['colour']: [[g, colourPicker.color]],
+                           ['fontsize']: [[g, (widthPicker.value * starting_font_size) + 'pt']],
+                           ['datasize']: [[g, (starting_font_proportion * (figure.y_range.end - figure.y_range.start))]]
+                        })
                     }
                 }
                 cb_obj.change.emit();
@@ -605,24 +600,14 @@ class BARC(Observable):
                 {
                     if(!cb_obj.data['colour'][g])
                     {
-                        cb_obj.data['colour'][g] = colourPicker.color;
-                    }
-
-                    if(!cb_obj.data['fontsize'][g])
-                    {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'pt';
-                    }
-
-                    if(!cb_obj.data['text'][g])
-                    {
-                        cb_obj.data['text'][g] = textbox.value;
-                    }
-
-                    //calculate initial datasize
-                    if(!cb_obj.data['datasize'][g])
-                    {
                         var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+
+                        cb_obj.patch({
+                           ['colour']: [[g, colourPicker.color]],
+                           ['fontsize']: [[g, (widthPicker.value * starting_font_size) + 'pt']],
+                           ['text']: [[g, textbox.value]],
+                           ['datasize']: [[g, (starting_font_proportion * (figure.y_range.end - figure.y_range.start))]]
+                        })
                     }
                 }
                 cb_obj.change.emit();
@@ -1003,7 +988,6 @@ class BARC(Observable):
 
         :returns: Location of the export file.    
         '''
-        print("Starting export")
         with open(join(dirname(__file__),'export.html')) as t:
            template = Template(t.read())
 
