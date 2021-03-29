@@ -134,7 +134,7 @@ class BARC(Observable):
                      {
                         for(var g = 0; g < sources[k].data['fontsize'].length; g++)
                         {
-                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
                         }
                      }
                   })
@@ -538,7 +538,7 @@ class BARC(Observable):
 
                     if(!cb_obj.data['fontsize'][g])
                     {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
+                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'pt';
                     }
 
                     //calculate initial datasize
@@ -556,7 +556,7 @@ class BARC(Observable):
             figure=self.figures[0]), code="""
             for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
             {
-                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
             }
             render_text_stamp.glyph.change.emit();
             """)
@@ -610,7 +610,7 @@ class BARC(Observable):
 
                     if(!cb_obj.data['fontsize'][g])
                     {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
+                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'pt';
                     }
 
                     if(!cb_obj.data['text'][g])
@@ -633,7 +633,7 @@ class BARC(Observable):
             figure=self.figures[0]), code="""
             for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
             {
-                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
             }
             render_text_stamp.glyph.change.emit();
             """)
@@ -808,6 +808,7 @@ class BARC(Observable):
                   """)
                 )
 
+
         try:
             frontTool = FrontDrawTool(
                renderers=render_lines,
@@ -934,7 +935,6 @@ class BARC(Observable):
         '''
         c = self.conn.cursor()
 
-        print(self.store.state)
         outdict = {}
 
         for (k,v) in self.source.items():
@@ -1016,9 +1016,10 @@ class BARC(Observable):
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
                  try:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
+                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
                  except KeyError:
-                    figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
+                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
+                    #figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
               #Get annotations
               annotations = {}
