@@ -738,7 +738,6 @@ class BARC(Observable):
                   bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
                   front_ds= self.source['fronts'+name],
                   starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
-
                   colourPicker=self.colourPicker, widthPicker=self.widthPicker
                   ), code="""
                      let fontsize = (widthPicker.value * starting_font_size) +'pt';
@@ -749,7 +748,7 @@ class BARC(Observable):
                      datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
                      datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
-                     datasource.change.emit();
+                     datasource.data = datasource.data;
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
