@@ -732,7 +732,7 @@ class BARC(Observable):
 
         # if fronts source is changed (e.g. via loadData) trigger bezier redraw
         self.source['fronts' + name].js_on_change('data',
-                                                  bokeh.models.CustomJS(args=dict(datasource=self.source['bezier' + name], figure=self.figures[0]), code="""
+           bokeh.models.CustomJS(args=dict(datasource=self.source['bezier' + name], figure=self.figures[0]), code="""
             datasource.change.emit();
             """))
 
@@ -777,6 +777,7 @@ class BARC(Observable):
                      datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
                      datasource.data = datasource.data;
+                     datasource.change.emit();
 
                      //offset 2nd curve by datasize
                      let last = bez2_ds.data['xs'].length-1; //assume lengths of columns are consistent
@@ -1031,10 +1032,15 @@ class BARC(Observable):
                  image = get_screenshot_as_png(self.figures[index], timeout=20)
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
-                 try:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
-                 except KeyError:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
+                 print(layers)
+                 if(index in layers['index'] or str(index) in layers['index']):
+                     try:
+                        figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+                     except KeyError:
+                        figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
+                 else:
+                    #probably a pane with no data in (empty map)
+                    figs[filename] = "%s" % self.store.state['valid_time']
                     #figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
               #Get annotations
