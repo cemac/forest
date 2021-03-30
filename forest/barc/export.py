@@ -52,6 +52,7 @@ def get_screenshot_as_png(obj: Union[LayoutDOM, Document], *, driver: "Optional[
         wait_until_render_complete(web_driver, timeout)
         [width, height, dpr] = _maximize_viewport(web_driver)
         png = web_driver.get_screenshot_as_png()
+        web_driver.quit()
 
     return (Image.open(io.BytesIO(png))
                  .convert("RGBA")
