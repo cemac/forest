@@ -23,6 +23,8 @@
 .feedback-icon:hover {
     color: black;
 }
+
+
 /* Diagrams drawer */
 .barcdiagrams {
     height: 100%;
@@ -36,6 +38,8 @@
 div.barc_btn {
   width: 50pt !important
 }
+
+
 
 div.barc_btn div button {
   /* reads from static folder as first level dir */
@@ -57,23 +61,16 @@ div#barcdiagrams.barcdiagrams div.barc-button {
   color: transparent !important;
 }
 
-div#barcdiagrams.barcdiagrams div.barc-button.barc-zoom_in-button button {
-  background-image: url("icons/navtools/zoomin.png");
-  color: transparent !important;
-}
-
-div#barcdiagrams.barcdiagrams div.barc-button.barc-zoom_out-button button {
-  background-image: url("icons/navtools/zoomout.png");
-  color: transparent !important;
-}
-
-div#barcdiagrams.barcdiagrams div.barc-button.barc-reset-button button {
-  background-image: url("icons/navtools/reset.png");
-  color: transparent !important;
-}
-
 div#barcdiagrams.barcdiagrams div.barc-button.barc-box_edit-button button {
   background-image: url("icons/navtools/boxadd.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-box_edit-button button:hover {
+  background-image: url("icons/navtools/boxadd-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-box_edit-button button:focus {
+  background-image: url("icons/navtools/boxadd-h.png");
   color: transparent !important;
 }
 
@@ -81,8 +78,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_draw-button button {
   background-image: url("icons/navtools/polyadd.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_draw-button button:hover {
+  background-image: url("icons/navtools/polyadd-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_draw-button button:focus {
+  background-image: url("icons/navtools/polyadd-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button {
   background-image: url("icons/navtools/polyedit.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button:hover {
+  background-image: url("icons/navtools/polyedit-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-poly_edit-button button:focus {
+  background-image: url("icons/navtools/polyedit-h.png");
   color: transparent !important;
 }
 
@@ -90,9 +104,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button {
   background-image: url("icons/navtools/textadd.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button:hover {
+  background-image: url("icons/navtools/textadd-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-textbox-button button:focus {
+  background-image: url("icons/navtools/textadd-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-windbarb-button button {
   background-image: url("barb.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-windbarb-button button:hover {
+  background-image: url("barb-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-windbarb-button button:focus {
+  background-image: url("barb-h.png");
   color: transparent !important;
 }
 
@@ -100,14 +130,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-freehand-button button {
   background-image: url("icons/navtools/freehand.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-freehand-button button:hover {
+  background-image: url("icons/navtools/freehand-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-freehand-button button:focus {
+  background-image: url("icons/navtools/freehand-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-move-button button {
   background-image: url("icons/navtools/move.png");
   color: transparent !important;
 }
-
-div#barcdiagrams.barcdiagrams div.barc-button.barc-wheelzoom-button button {
-  background-image: url("icons/navtools/wheelzoom.png");
+div#barcdiagrams.barcdiagrams div.barc-button.barc-move-button button:hover {
+  background-image: url("icons/navtools/move-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-move-button button:focus {
+  background-image: url("icons/navtools/move-h.png");
   color: transparent !important;
 }
 
@@ -115,20 +156,38 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-boxzoom-button button {
   background-image: url("icons/navtools/boxzoom.png");
   color: transparent !important;
 }
-
+div#barcdiagrams.barcdiagrams div.barc-button.barc-boxzoom-button button:hover {
+  background-image: url("icons/navtools/boxzoom-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-boxzoom-button button:focus {
+  background-image: url("icons/navtools/boxzoom-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-undo-button button {
   background-image: url("icons/navtools/undo.png");
   color: transparent !important;
 }
-div#barcdiagrams.barcdiagrams div.barc-button.barc-redo-button button {
-  background-image: url("icons/navtools/redo.png");
+div#barcdiagrams.barcdiagrams div.barc-button.barc-undo-button button:hover {
+  background-image: url("icons/navtools/undo-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-undo-button button:focus {
+  background-image: url("icons/navtools/undo-h.png");
   color: transparent !important;
 }
 
-
 div#barcdiagrams.barcdiagrams div.barc-button.barc-warm-button button {
   background-image: url("icons/splines/warm.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-warm-button button:hover {
+  background-image: url("icons/splines/warm-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-warm-button button:focus {
+  background-image: url("icons/splines/warm-front-h.png");
   color: transparent !important;
 }
 
@@ -136,9 +195,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-cold-button button {
   background-image: url("icons/splines/cold.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-cold-button button:hover {
+  background-image: url("icons/splines/cold-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-cold-button button:focus {
+  background-image: url("icons/splines/cold-front-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-occluded-button button {
   background-image: url("icons/splines/occluded.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-occluded-button button:hover {
+  background-image: url("icons/splines/occluded-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-occluded-button button:focus {
+  background-image: url("icons/splines/occluded-front-h.png");
   color: transparent !important;
 }
 
@@ -146,9 +221,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-button button {
   background-image: url("icons/splines/stationary.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-button button:hover  {
+  background-image: url("icons/splines/stationary-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-button button:focus {
+  background-image: url("icons/splines/stationary-front-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-dryintrusion-button button {
   background-image: url("icons/splines/dryintrusion.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryintrusion-button button:hover {
+  background-image: url("icons/splines/dry-intrusion-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryintrusion-button button:focus {
+  background-image: url("icons/splines/dry-intrusion-h.png");
   color: transparent !important;
 }
 
@@ -156,9 +247,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-convergence-button button {
   background-image: url("icons/splines/convergence.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-convergence-button button:hover {
+  background-image: url("icons/splines/convergence-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-convergence-button button:focus {
+  background-image: url("icons/splines/convergence-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-squall-button button {
   background-image: url("icons/splines/squall.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-squall-button button:hover {
+  background-image: url("icons/splines/squall-line-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-squall-button button:focus {
+  background-image: url("icons/splines/squall-line-h.png");
   color: transparent !important;
 }
 
@@ -166,9 +273,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-dryadvection-button button {
   background-image: url("icons/splines/dryadvection.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryadvection-button button:hover {
+  background-image: url("icons/splines/pseudo-cold-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-dryadvection-button button:focus {
+  background-image: url("icons/splines/pseudo-cold-front-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-warmadvection-button button {
   background-image: url("icons/splines/warmadvection.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-warmadvection-button button:hover {
+  background-image: url("icons/splines/pseudo-warm-front-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-warmadvection-button button:focus {
+  background-image: url("icons/splines/pseudo-warm-front-h.png");
   color: transparent !important;
 }
 
@@ -176,9 +299,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-streamline-button button {
   background-image: url("icons/splines/streamline.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-streamline-button button:hover {
+  background-image: url("icons/splines/streamline-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-streamline-button button:focus {
+  background-image: url("icons/splines/streamline-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-lowleveljet-button button {
   background-image: url("icons/splines/lowleveljet.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-lowleveljet-button button:hover {
+  background-image: url("icons/splines/lowleveljet-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-lowleveljet-button button:focus {
+  background-image: url("icons/splines/lowleveljet-h.png");
   color: transparent !important;
 }
 
@@ -186,9 +325,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-upper-trough-button button {
   background-image: url("icons/splines/upper-trough.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-upper-trough-button button:hover {
+  background-image: url("icons/splines/upper-trough-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-upper-trough-button button:focus {
+  background-image: url("icons/splines/upper-trough-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-dry-button button {
   background-image: url("icons/splines/stationary-dry.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-dry-button button:hover {
+  background-image: url("icons/splines/stationary-dry-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-stationary-dry-button button:focus {
+  background-image: url("icons/splines/stationary-dry-h.png");
   color: transparent !important;
 }
 
@@ -196,13 +351,38 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-quatorial-trough-button butto
   background-image: url("icons/splines/quatorial-trough.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-quatorial-trough-button button:hover {
+  background-image: url("icons/splines/quatorial-trough-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-quatorial-trough-button button:focus  {
+  background-image: url("icons/splines/quatorial-trough-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-monsoon-trough-button button {
   background-image: url("icons/splines/monsoon-trough.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-monsoon-trough-button button:hover {
+  background-image: url("icons/splines/monsoon-trough-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-monsoon-trough-button button:focus {
+  background-image: url("icons/splines/monsoon-trough-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-nonactive-monsoon-trough-button button {
   background-image: url("icons/splines/nonactive-monsoon-trough.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-nonactive-monsoon-trough-button button:hover {
+  background-image: url("icons/splines/nonactive-monsoon-trough-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-nonactive-monsoon-trough-button button:focus {
+  background-image: url("icons/splines/nonactive-monsoon-trough-h.png");
   color: transparent !important;
 }
 
@@ -210,9 +390,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-000-button button {
   background-image: url("icons/group0/pw-000.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-000-button button:hover {
+  background-image: url("icons/group0/pw-000-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-000-button button:focus {
+  background-image: url("icons/group0/pw-000-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-001-button button {
   background-image: url("icons/group0/pw-001.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-001-button button:hover {
+  background-image: url("icons/group0/pw-001-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-001-button button:focus {
+  background-image: url("icons/group0/pw-001-h.png");
   color: transparent !important;
 }
 
@@ -220,8 +416,24 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-002-button button {
   background-image: url("icons/group0/pw-002.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-002-button button:hover {
+  background-image: url("icons/group0/pw-002-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-002-button button:focus {
+  background-image: url("icons/group0/pw-002-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-003-button button {
+  background-image: url("icons/group0/pw-003.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-003-button button:hover {
+  background-image: url("icons/group0/pw-003.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-003-button button:focus {
   background-image: url("icons/group0/pw-003.png");
   color: transparent !important;
 }
@@ -230,8 +442,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-004-button button {
   background-image: url("icons/group0/pw-004.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-004-button button:hover {
+  background-image: url("icons/group0/pw-004-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-004-button button:focus {
+  background-image: url("icons/group0/pw-004-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-005-button button {
   background-image: url("icons/group0/pw-005.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-005-button button:hover {
+  background-image: url("icons/group0/pw-005-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-005-button button:focus {
+  background-image: url("icons/group0/pw-005-h.png");
   color: transparent !important;
 }
 
@@ -239,9 +468,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-006-button button {
   background-image: url("icons/group0/pw-006.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-006-button button:hover {
+  background-image: url("icons/group0/pw-006-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-006-button button:focus {
+  background-image: url("icons/group0/pw-006-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-007-button button {
   background-image: url("icons/group0/pw-007.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-007-button button:hover {
+  background-image: url("icons/group0/pw-007-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-007-button button:focus {
+  background-image: url("icons/group0/pw-007-h.png");
   color: transparent !important;
 }
 
@@ -249,9 +494,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-008-button button {
   background-image: url("icons/group0/pw-008.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-008-button button:hover {
+  background-image: url("icons/group0/pw-008-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-008-button button:focus {
+  background-image: url("icons/group0/pw-008-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-009-button button {
   background-image: url("icons/group0/pw-009.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-009-button button:hover {
+  background-image: url("icons/group0/pw-009-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-009-button button:focus {
+  background-image: url("icons/group0/pw-009-h.png");
   color: transparent !important;
 }
 
@@ -259,9 +520,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-010-button button {
   background-image: url("icons/group1/pw-010.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-010-button button:hover {
+  background-image: url("icons/group1/pw-010-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-010-button button:focus {
+  background-image: url("icons/group1/pw-010-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-011-button button {
   background-image: url("icons/group1/pw-011.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-011-button button:hover {
+  background-image: url("icons/group1/pw-011-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-011-button button:focus {
+  background-image: url("icons/group1/pw-011-h.png");
   color: transparent !important;
 }
 
@@ -269,9 +546,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-012-button button {
   background-image: url("icons/group1/pw-012.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-012-button button:hover {
+  background-image: url("icons/group1/pw-012-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-012-button button:focus {
+  background-image: url("icons/group1/pw-012-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-013-button button {
   background-image: url("icons/group1/pw-013.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-013-button button:hover {
+  background-image: url("icons/group1/pw-013-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-013-button button:focus {
+  background-image: url("icons/group1/pw-013-h.png");
   color: transparent !important;
 }
 
@@ -279,8 +572,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-014-button button {
   background-image: url("icons/group1/pw-014.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-014-button button:hover {
+  background-image: url("icons/group1/pw-014-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-014-button button:focus {
+  background-image: url("icons/group1/pw-014-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-015-button button {
   background-image: url("icons/group1/pw-015.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-015-button button:hover {
+  background-image: url("icons/group1/pw-015-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-015-button button:focus {
+  background-image: url("icons/group1/pw-015-h.png");
   color: transparent !important;
 }
 
@@ -288,9 +598,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-016-button button {
   background-image: url("icons/group1/pw-016.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-016-button button:hover {
+  background-image: url("icons/group1/pw-016-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-016-button button:focus {
+  background-image: url("icons/group1/pw-016-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-017-button button {
   background-image: url("icons/group1/pw-017.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-017-button button:hover {
+  background-image: url("icons/group1/pw-017-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-017-button button:focus {
+  background-image: url("icons/group1/pw-017-h.png");
   color: transparent !important;
 }
 
@@ -298,9 +624,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-018-button button {
   background-image: url("icons/group1/pw-018.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-018-button button:hover {
+  background-image: url("icons/group1/pw-018-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-018-button button:focus {
+  background-image: url("icons/group1/pw-018-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-019-button button {
   background-image: url("icons/group1/pw-019.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-019-button button:hover {
+  background-image: url("icons/group1/pw-019-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-019-button button:focus {
+  background-image: url("icons/group1/pw-019-h.png");
   color: transparent !important;
 }
 
@@ -308,9 +650,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-020-button button {
   background-image: url("icons/group2/pw-020.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-020-button button:hover {
+  background-image: url("icons/group2/pw-020-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-020-button button:focus {
+  background-image: url("icons/group2/pw-020-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-021-button button {
   background-image: url("icons/group2/pw-021.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-021-button button:hover {
+  background-image: url("icons/group2/pw-021-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-021-button button:focus {
+  background-image: url("icons/group2/pw-021-h.png");
   color: transparent !important;
 }
 
@@ -318,9 +676,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-022-button button {
   background-image: url("icons/group2/pw-022.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-022-button button:hover {
+  background-image: url("icons/group2/pw-022-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-022-button button:focus {
+  background-image: url("icons/group2/pw-022-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-023-button button {
   background-image: url("icons/group2/pw-023.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-023-button button:hover {
+  background-image: url("icons/group2/pw-023-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-023-button button:focus {
+  background-image: url("icons/group2/pw-023-h.png");
   color: transparent !important;
 }
 
@@ -328,8 +702,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-024-button button {
   background-image: url("icons/group2/pw-024.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-024-button button:hover {
+  background-image: url("icons/group2/pw-024-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-024-button button:focus {
+  background-image: url("icons/group2/pw-024-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-025-button button {
   background-image: url("icons/group2/pw-025.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-025-button button:hover {
+  background-image: url("icons/group2/pw-025-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-025-button button:focus {
+  background-image: url("icons/group2/pw-025-h.png");
   color: transparent !important;
 }
 
@@ -337,9 +728,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-026-button button {
   background-image: url("icons/group2/pw-026.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-026-button button:hover {
+  background-image: url("icons/group2/pw-026-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-026-button button:focus {
+  background-image: url("icons/group2/pw-026-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-027-button button {
   background-image: url("icons/group2/pw-027.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-027-button button:hover {
+  background-image: url("icons/group2/pw-027-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-027-button button:focus {
+  background-image: url("icons/group2/pw-027-h.png");
   color: transparent !important;
 }
 
@@ -347,9 +754,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-028-button button {
   background-image: url("icons/group2/pw-028.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-028-button button:hover {
+  background-image: url("icons/group2/pw-028-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-028-button button:focus {
+  background-image: url("icons/group2/pw-028-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-029-button button {
   background-image: url("icons/group2/pw-029.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-029-button button:hover {
+  background-image: url("icons/group2/pw-029-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-029-button button:focus {
+  background-image: url("icons/group2/pw-029-h.png");
   color: transparent !important;
 }
 
@@ -358,9 +781,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-030-button button {
   background-image: url("icons/group3/pw-030.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-030-button button:hover {
+  background-image: url("icons/group3/pw-030-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-030-button button:focus {
+  background-image: url("icons/group3/pw-030-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-031-button button {
   background-image: url("icons/group3/pw-031.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-031-button button:hover {
+  background-image: url("icons/group3/pw-031-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-031-button button:focus {
+  background-image: url("icons/group3/pw-031-h.png");
   color: transparent !important;
 }
 
@@ -368,9 +807,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-032-button button {
   background-image: url("icons/group3/pw-032.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-032-button button:hover {
+  background-image: url("icons/group3/pw-032-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-032-button button:focus {
+  background-image: url("icons/group3/pw-032-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-033-button button {
   background-image: url("icons/group3/pw-033.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-033-button button:hover {
+  background-image: url("icons/group3/pw-033-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-033-button button:focus {
+  background-image: url("icons/group3/pw-033-h.png");
   color: transparent !important;
 }
 
@@ -378,8 +833,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-034-button button {
   background-image: url("icons/group3/pw-034.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-034-button button:hover {
+  background-image: url("icons/group3/pw-034-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-034-button button:focus {
+  background-image: url("icons/group3/pw-034-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-035-button button {
   background-image: url("icons/group3/pw-035.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-035-button button:hover {
+  background-image: url("icons/group3/pw-035-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-035-button button:focus {
+  background-image: url("icons/group3/pw-035-h.png");
   color: transparent !important;
 }
 
@@ -387,9 +859,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-036-button button {
   background-image: url("icons/group3/pw-036.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-036-button button:hover {
+  background-image: url("icons/group3/pw-036-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-036-button button:focus {
+  background-image: url("icons/group3/pw-036-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-037-button button {
   background-image: url("icons/group3/pw-037.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-037-button button:hover {
+  background-image: url("icons/group3/pw-037-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-037-button button:focus {
+  background-image: url("icons/group3/pw-037-h.png");
   color: transparent !important;
 }
 
@@ -397,15 +885,38 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-038-button button {
   background-image: url("icons/group3/pw-038.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-038-button button:hover {
+  background-image: url("icons/group3/pw-038-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-038-button button:focus {
+  background-image: url("icons/group3/pw-038-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-039-button button {
   background-image: url("icons/group3/pw-039.png");
   color: transparent !important;
 }
-
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-039-button button:hover {
+  background-image: url("icons/group3/pw-039-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-039-button button:focus {
+  background-image: url("icons/group3/pw-039-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-040-button button {
   background-image: url("icons/group4/pw-040.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-040-button button:hover {
+  background-image: url("icons/group4/pw-040-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-040-button button:focus {
+  background-image: url("icons/group4/pw-040-h.png");
   color: transparent !important;
 }
 
@@ -413,9 +924,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-041-button button {
   background-image: url("icons/group4/pw-041.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-041-button button:hover {
+  background-image: url("icons/group4/pw-041-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-041-button button:focus {
+  background-image: url("icons/group4/pw-041-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-042-button button {
   background-image: url("icons/group4/pw-042.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-042-button button:hover {
+  background-image: url("icons/group4/pw-042-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-042-button button:focus {
+  background-image: url("icons/group4/pw-042-h.png");
   color: transparent !important;
 }
 
@@ -423,13 +950,38 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-043-button button {
   background-image: url("icons/group4/pw-043.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-043-button button:hover {
+  background-image: url("icons/group4/pw-043-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-043-button button:focus {
+  background-image: url("icons/group4/pw-043-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-044-button button {
   background-image: url("icons/group4/pw-044.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-044-button button:hover {
+  background-image: url("icons/group4/pw-044-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-044-button button:focus {
+  background-image: url("icons/group4/pw-044-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-045-button button {
   background-image: url("icons/group4/pw-045.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-045-button button:hover {
+  background-image: url("icons/group4/pw-045-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-045-button button:focus {
+  background-image: url("icons/group4/pw-045-h.png");
   color: transparent !important;
 }
 
@@ -437,9 +989,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-046-button button {
   background-image: url("icons/group4/pw-046.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-046-button button:hover {
+  background-image: url("icons/group4/pw-046-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-046-button button:focus {
+  background-image: url("icons/group4/pw-046-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-047-button button {
   background-image: url("icons/group4/pw-047.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-047-button button:hover {
+  background-image: url("icons/group4/pw-047-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-047-button button:focus {
+  background-image: url("icons/group4/pw-047-h.png");
   color: transparent !important;
 }
 
@@ -447,9 +1015,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-048-button button {
   background-image: url("icons/group4/pw-048.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-048-button button:hover {
+  background-image: url("icons/group4/pw-048-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-048-button button:focus {
+  background-image: url("icons/group4/pw-048-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-049-button button {
   background-image: url("icons/group4/pw-049.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-049-button button:hover {
+  background-image: url("icons/group4/pw-049-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-049-button button:focus {
+  background-image: url("icons/group4/pw-049-h.png");
   color: transparent !important;
 }
 
@@ -457,9 +1041,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-050-button button {
   background-image: url("icons/group5/pw-050.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-050-button button:hover {
+  background-image: url("icons/group5/pw-050-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-050-button button:focus {
+  background-image: url("icons/group5/pw-050-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-051-button button {
   background-image: url("icons/group5/pw-051.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-051-button button:hover {
+  background-image: url("icons/group5/pw-051-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-051-button button:focus {
+  background-image: url("icons/group5/pw-051-h.png");
   color: transparent !important;
 }
 
@@ -467,9 +1067,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-052-button button {
   background-image: url("icons/group5/pw-052.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-052-button button:hover {
+  background-image: url("icons/group5/pw-052-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-052-button button:focus {
+  background-image: url("icons/group5/pw-052-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-053-button button {
   background-image: url("icons/group5/pw-053.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-053-button button:hover {
+  background-image: url("icons/group5/pw-053-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-053-button button:focus {
+  background-image: url("icons/group5/pw-053-h.png");
   color: transparent !important;
 }
 
@@ -477,8 +1093,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-054-button button {
   background-image: url("icons/group5/pw-054.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-054-button button:hover {
+  background-image: url("icons/group5/pw-054-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-054-button button:focus {
+  background-image: url("icons/group5/pw-054-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-055-button button {
   background-image: url("icons/group5/pw-055.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-055-button button:hover {
+  background-image: url("icons/group5/pw-055-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-055-button button:focus {
+  background-image: url("icons/group5/pw-055-h.png");
   color: transparent !important;
 }
 
@@ -486,9 +1119,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-056-button button {
   background-image: url("icons/group5/pw-056.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-056-button button:hover {
+  background-image: url("icons/group5/pw-056-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-056-button button:focus {
+  background-image: url("icons/group5/pw-056-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-057-button button {
   background-image: url("icons/group5/pw-057.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-057-button button:hover {
+  background-image: url("icons/group5/pw-057-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-057-button button:focus {
+  background-image: url("icons/group5/pw-057-h.png");
   color: transparent !important;
 }
 
@@ -496,9 +1145,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-058-button button {
   background-image: url("icons/group5/pw-058.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-058-button button:hover {
+  background-image: url("icons/group5/pw-058-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-058-button button:focus {
+  background-image: url("icons/group5/pw-058-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-059-button button {
   background-image: url("icons/group5/pw-059.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-059-button button:hover {
+  background-image: url("icons/group5/pw-059-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-059-button button:focus {
+  background-image: url("icons/group5/pw-059-h.png");
   color: transparent !important;
 }
 
@@ -506,9 +1171,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-060-button button {
   background-image: url("icons/group6/pw-060.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-060-button button:hover {
+  background-image: url("icons/group6/pw-060-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-060-button button:focus {
+  background-image: url("icons/group6/pw-060-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-061-button button {
   background-image: url("icons/group6/pw-061.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-061-button button:hover {
+  background-image: url("icons/group6/pw-061-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-061-button button:focus {
+  background-image: url("icons/group6/pw-061-h.png");
   color: transparent !important;
 }
 
@@ -516,9 +1197,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-062-button button {
   background-image: url("icons/group6/pw-062.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-062-button button:hover {
+  background-image: url("icons/group6/pw-062-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-062-button button:focus {
+  background-image: url("icons/group6/pw-062-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-063-button button {
   background-image: url("icons/group6/pw-063.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-063-button button:hover {
+  background-image: url("icons/group6/pw-063-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-063-button button:focus {
+  background-image: url("icons/group6/pw-063-h.png");
   color: transparent !important;
 }
 
@@ -526,8 +1223,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-064-button button {
   background-image: url("icons/group6/pw-064.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-064-button button:hover {
+  background-image: url("icons/group6/pw-064-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-064-button button:focus {
+  background-image: url("icons/group6/pw-064-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-065-button button {
   background-image: url("icons/group6/pw-065.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-065-button button:hover {
+  background-image: url("icons/group6/pw-065-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-065-button button:focus {
+  background-image: url("icons/group6/pw-065-h.png");
   color: transparent !important;
 }
 
@@ -535,9 +1249,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-066-button button {
   background-image: url("icons/group6/pw-066.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-066-button button:hover {
+  background-image: url("icons/group6/pw-066-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-066-button button:focus {
+  background-image: url("icons/group6/pw-066-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-067-button button {
   background-image: url("icons/group6/pw-067.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-067-button button:hover {
+  background-image: url("icons/group6/pw-067-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-067-button button:focus {
+  background-image: url("icons/group6/pw-067-h.png");
   color: transparent !important;
 }
 
@@ -545,9 +1275,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-068-button button {
   background-image: url("icons/group6/pw-068.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-068-button button:hover {
+  background-image: url("icons/group6/pw-068-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-068-button button:focus {
+  background-image: url("icons/group6/pw-068-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-069-button button {
   background-image: url("icons/group6/pw-069.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-069-button button:hover {
+  background-image: url("icons/group6/pw-069-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-069-button button:focus {
+  background-image: url("icons/group6/pw-069-h.png");
   color: transparent !important;
 }
 
@@ -555,9 +1301,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-070-button button {
   background-image: url("icons/group7/pw-070.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-070-button button:hover {
+  background-image: url("icons/group7/pw-070-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-070-button button:focus {
+  background-image: url("icons/group7/pw-070-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-071-button button {
   background-image: url("icons/group7/pw-071.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-071-button button:hover {
+  background-image: url("icons/group7/pw-071-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-071-button button:focus {
+  background-image: url("icons/group7/pw-071-h.png");
   color: transparent !important;
 }
 
@@ -565,9 +1327,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-072-button button {
   background-image: url("icons/group7/pw-072.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-072-button button:hover {
+  background-image: url("icons/group7/pw-072-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-072-button button:focus {
+  background-image: url("icons/group7/pw-072-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-073-button button {
   background-image: url("icons/group7/pw-073.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-073-button button:hover {
+  background-image: url("icons/group7/pw-073-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-073-button button:focus {
+  background-image: url("icons/group7/pw-073-h.png");
   color: transparent !important;
 }
 
@@ -575,8 +1353,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-074-button button {
   background-image: url("icons/group7/pw-074.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-074-button button:hover {
+  background-image: url("icons/group7/pw-074-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-074-button button:focus {
+  background-image: url("icons/group7/pw-074-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-075-button button {
   background-image: url("icons/group7/pw-075.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-075-button button:hover {
+  background-image: url("icons/group7/pw-075-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-075-button button:focus {
+  background-image: url("icons/group7/pw-075-h.png");
   color: transparent !important;
 }
 
@@ -584,9 +1379,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-076-button button {
   background-image: url("icons/group7/pw-076.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-076-button button:hover {
+  background-image: url("icons/group7/pw-076-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-076-button button:focus {
+  background-image: url("icons/group7/pw-076-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-077-button button {
   background-image: url("icons/group7/pw-077.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-077-button button:hover {
+  background-image: url("icons/group7/pw-077-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-077-button button:focus {
+  background-image: url("icons/group7/pw-077-h.png");
   color: transparent !important;
 }
 
@@ -594,9 +1405,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-078-button button {
   background-image: url("icons/group7/pw-078.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-078-button button:hover {
+  background-image: url("icons/group7/pw-078-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-078-button button:focus {
+  background-image: url("icons/group7/pw-078-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-079-button button {
   background-image: url("icons/group7/pw-079.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-079-button button:hover {
+  background-image: url("icons/group7/pw-079-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-079-button button:focus {
+  background-image: url("icons/group7/pw-079-h.png");
   color: transparent !important;
 }
 
@@ -604,9 +1431,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-080-button button {
   background-image: url("icons/group8/pw-080.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-080-button button:hover {
+  background-image: url("icons/group8/pw-080-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-080-button button:focus {
+  background-image: url("icons/group8/pw-080-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-081-button button {
   background-image: url("icons/group8/pw-081.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-081-button button:hover {
+  background-image: url("icons/group8/pw-081-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-081-button button:focus {
+  background-image: url("icons/group8/pw-081-h.png");
   color: transparent !important;
 }
 
@@ -614,9 +1457,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-082-button button {
   background-image: url("icons/group8/pw-082.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-082-button button:hover {
+  background-image: url("icons/group8/pw-082-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-082-button button:focus {
+  background-image: url("icons/group8/pw-082-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-083-button button {
   background-image: url("icons/group8/pw-083.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-083-button button:hover {
+  background-image: url("icons/group8/pw-083-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-083-button button:focus {
+  background-image: url("icons/group8/pw-083-h.png");
   color: transparent !important;
 }
 
@@ -624,8 +1483,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-084-button button {
   background-image: url("icons/group8/pw-084.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-084-button button:hover {
+  background-image: url("icons/group8/pw-084-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-084-button button:focus {
+  background-image: url("icons/group8/pw-084-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-085-button button {
   background-image: url("icons/group8/pw-085.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-085-button button:hover {
+  background-image: url("icons/group8/pw-085-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-085-button button:focus {
+  background-image: url("icons/group8/pw-085-h.png");
   color: transparent !important;
 }
 
@@ -633,9 +1509,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-086-button button {
   background-image: url("icons/group8/pw-086.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-086-button button:hover {
+  background-image: url("icons/group8/pw-086-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-086-button button:focus {
+  background-image: url("icons/group8/pw-086-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-087-button button {
   background-image: url("icons/group8/pw-087.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-087-button button:hover {
+  background-image: url("icons/group8/pw-087-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-087-button button:focus {
+  background-image: url("icons/group8/pw-087-h.png");
   color: transparent !important;
 }
 
@@ -643,9 +1535,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-088-button button {
   background-image: url("icons/group8/pw-088.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-088-button button:hover {
+  background-image: url("icons/group8/pw-088-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-088-button button:focus {
+  background-image: url("icons/group8/pw-088-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-089-button button {
   background-image: url("icons/group8/pw-089.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-089-button button:hover {
+  background-image: url("icons/group8/pw-089-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-089-button button:focus {
+  background-image: url("icons/group8/pw-089-h.png");
   color: transparent !important;
 }
 
@@ -653,9 +1561,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-090-button button {
   background-image: url("icons/group9/pw-090.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-090-button button:hover {
+  background-image: url("icons/group9/pw-090-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-090-button button:focus {
+  background-image: url("icons/group9/pw-090-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-091-button button {
   background-image: url("icons/group9/pw-091.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-091-button button:hover {
+  background-image: url("icons/group9/pw-091-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-091-button button:focus {
+  background-image: url("icons/group9/pw-091-h.png");
   color: transparent !important;
 }
 
@@ -663,9 +1587,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-092-button button {
   background-image: url("icons/group9/pw-092.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-092-button button:hover {
+  background-image: url("icons/group9/pw-092-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-092-button button:focus {
+  background-image: url("icons/group9/pw-092-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-093-button button {
   background-image: url("icons/group9/pw-093.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-093-button button:hover {
+  background-image: url("icons/group9/pw-093-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-093-button button:focus {
+  background-image: url("icons/group9/pw-093-h.png");
   color: transparent !important;
 }
 
@@ -673,8 +1613,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-094-button button {
   background-image: url("icons/group9/pw-094.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-094-button button:hover {
+  background-image: url("icons/group9/pw-094-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-094-button button:focus {
+  background-image: url("icons/group9/pw-094-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-095-button button {
   background-image: url("icons/group9/pw-095.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-095-button button:hover {
+  background-image: url("icons/group9/pw-095-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-095-button button:focus {
+  background-image: url("icons/group9/pw-095-h.png");
   color: transparent !important;
 }
 
@@ -682,9 +1639,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-096-button button {
   background-image: url("icons/group9/pw-096.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-096-button button:hover {
+  background-image: url("icons/group9/pw-096-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-096-button button:focus {
+  background-image: url("icons/group9/pw-096-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-097-button button {
   background-image: url("icons/group9/pw-097.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-097-button button:hover {
+  background-image: url("icons/group9/pw-097-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-097-button button:focus {
+  background-image: url("icons/group9/pw-097-h.png");
   color: transparent !important;
 }
 
@@ -692,9 +1665,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-098-button button {
   background-image: url("icons/group9/pw-098.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-098-button button:hover {
+  background-image: url("icons/group9/pw-098-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-098-button button:focus {
+  background-image: url("icons/group9/pw-098-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-099-button button {
   background-image: url("icons/group9/pw-099.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-099-button button:hover {
+  background-image: url("icons/group9/pw-099-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-099-button button:focus {
+  background-image: url("icons/group9/pw-099-h.png");
   color: transparent !important;
 }
 
@@ -702,9 +1691,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-100-button button {
   background-image: url("icons/group10/pw-100.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-100-button button:hover {
+  background-image: url("icons/group10/pw-100-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-100-button button:focus {
+  background-image: url("icons/group10/pw-100-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-101-button button {
   background-image: url("icons/group10/pw-101.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-101-button button:hover {
+  background-image: url("icons/group10/pw-101-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-101-button button:focus {
+  background-image: url("icons/group10/pw-101-h.png");
   color: transparent !important;
 }
 
@@ -712,9 +1717,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-102-button button {
   background-image: url("icons/group10/pw-102.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-102-button button:hover {
+  background-image: url("icons/group10/pw-102-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-102-button button:focus {
+  background-image: url("icons/group10/pw-102-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-103-button button {
   background-image: url("icons/group10/pw-103.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-103-button button:hover {
+  background-image: url("icons/group10/pw-103-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-103-button button:focus {
+  background-image: url("icons/group10/pw-103-h.png");
   color: transparent !important;
 }
 
@@ -722,9 +1743,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-104-button button {
   background-image: url("icons/group10/pw-104.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-104-button button:hover {
+  background-image: url("icons/group10/pw-104-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-104-button button:focus {
+  background-image: url("icons/group10/pw-104-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-105-button button {
   background-image: url("icons/group10/pw-105.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-105-button button:hover {
+  background-image: url("icons/group10/pw-105-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-105-button button:focus {
+  background-image: url("icons/group10/pw-105-h.png");
   color: transparent !important;
 }
 
@@ -732,9 +1769,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-106-button button {
   background-image: url("icons/group10/pw-106.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-106-button button:hover {
+  background-image: url("icons/group10/pw-106-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-106-button button:focus {
+  background-image: url("icons/group10/pw-106-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-107-button button {
   background-image: url("icons/group10/pw-107.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-107-button button:hover {
+  background-image: url("icons/group10/pw-107-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-107-button button:focus {
+  background-image: url("icons/group10/pw-107-h.png");
   color: transparent !important;
 }
 
@@ -742,9 +1795,25 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-108-button button {
   background-image: url("icons/group10/pw-108.png");
   color: transparent !important;
 }
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-108-button button:hover {
+  background-image: url("icons/group10/pw-108-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-108-button button:focus {
+  background-image: url("icons/group10/pw-108-h.png");
+  color: transparent !important;
+}
 
 div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-109-button button {
   background-image: url("icons/group10/pw-109.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-109-button button:hover {
+  background-image: url("icons/group10/pw-109-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-pw-109-button button:focus {
+  background-image: url("icons/group10/pw-109-h.png");
   color: transparent !important;
 }
 
@@ -878,19 +1947,19 @@ svg path.stationary {
 
 /* collapsible button */
 .collapsible {
-  background-color: #777;
-  color: white;
+  background-color: #eee;
+  color: #444;
   cursor: pointer;
   padding: 18px;
   width: 100%;
-  border: none;
   text-align: left;
+  border: none;
   outline: none;
-  font-size: 15px;
+  transition: 0.4s;
 }
 
 .active, .collapsible:hover {
-  background-color: #555;
+  background-color: #ccc;
 }
 
 .content {
