@@ -1193,7 +1193,8 @@ class BARC(Observable):
                 aspect_ratio=1,
                 margin=(0, 0, 0, 0)
             )
-            button.on_event(ButtonClick,self.updatesource)
+            if each not in ['pan','boxzoom','box_edit']:
+                button.on_event(ButtonClick,self.updatesource)
             button.js_on_event(ButtonClick,
                                bokeh.models.CustomJS(args=dict(
                                    buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))),
