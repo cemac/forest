@@ -8,6 +8,7 @@ class TextStamp(bokeh.models.Text):
     renderer.
     '''
     __implementation__ = "text_stamp.ts"
+    __css__ = "forest/static/style_barc.css?v=27"
     _args = ('value', 'colour', 'fontsize')
     #x = DistanceSpec(units_default="screen")
     #y = DistanceSpec(units_default="screen")
