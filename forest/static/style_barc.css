@@ -178,6 +178,19 @@ div#barcdiagrams.barcdiagrams div.barc-button.barc-undo-button button:focus {
   color: transparent !important;
 }
 
+div#barcdiagrams.barcdiagrams div.barc-button.barc-redo-button button {
+  background-image: url("icons/navtools/redo.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-redo-button button:hover {
+  background-image: url("icons/navtools/redo-h.png");
+  color: transparent !important;
+}
+div#barcdiagrams.barcdiagrams div.barc-button.barc-redo-button button:focus {
+  background-image: url("icons/navtools/redo-h.png");
+  color: transparent !important;
+}
+
 div#barcdiagrams.barcdiagrams div.barc-button.barc-warm-button button {
   background-image: url("icons/splines/warm.png");
   color: transparent !important;

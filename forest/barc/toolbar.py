@@ -37,14 +37,11 @@ import time
 import datetime
 import copy
 import tempfile
-
 import pandas as pd
-
 from selenium import webdriver
 from os.path import basename, abspath, join, relpath, dirname
 from os import mkdir, symlink
 from jinja2 import Template
-
 from bokeh.models import ColumnDataSource, Paragraph, Select, Dropdown
 from bokeh.models.glyphs import Text
 from bokeh.core.properties import value
@@ -54,7 +51,6 @@ from bokeh.events import ButtonClick
 from forest import wind, data, tools, state, db, rx
 from forest.observe import Observable
 from forest.actions import set_valid_time
-#from . import front
 from .front_tool import FrontDrawTool
 from .export import get_layout_html, get_screenshot_as_png
 from bokeh.io.export import _tmp_html
@@ -74,6 +70,8 @@ class BARC(Observable):
         self.store = store
         self.add_subscriber(self.store.dispatch)
         self.figures = figures
+        self.PreviousSource = {}
+        self.redoPreviousSource = {}
         #db for saving
         self.conn = sqlite3.connect(relpath(join(dirname(__file__),'../barc/barc-save.sdb')))
         self.conn.row_factory = sqlite3.Row #switch to column-name-based returns
@@ -278,11 +276,13 @@ class BARC(Observable):
         """)
         )
         self.tool_bar =self.ToolBar()
-        #copy blank sources for reset button
+        # copy blank sources for reset button
+        # must be called after toolar as some sources yet to be initialised
+        # initalise empty sources
         self.blankSource = {}
         for (k, v) in self.source.items():
             self.blankSource[k] = ColumnDataSource(data=v.data.copy())
-        # Proile checkbox
+            self.redoPreviousSource[k] = ColumnDataSource(data=v.data.copy())
 
     def set_glyphs(self):
         """Set Glyphs based on drop down selection
@@ -369,6 +369,12 @@ class BARC(Observable):
 
             :returns: a :py:class:`FreehandDrawTool <bokeh.models.tools.FreehandDrawTool>` instance
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                try:
+                    self.PreviousSource[k].data = self.source[k].data.copy()
+                except KeyError:
+                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
         # colour picker means no longer have separate colour line options
         render_lines = []
         self.source['polyline'].add([], "colour")
@@ -414,6 +420,9 @@ class BARC(Observable):
 
             :returns: a :py:class:`PolyDrawTool <bokeh.models.tools.PolyDrawTool>` instance
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                self.PreviousSource[k].data = self.source[k].data.copy()
         # colour picker means no longer have separate colour line options
         render_lines = []
         self.source['poly_draw'].add([], "colour")
@@ -476,12 +485,49 @@ class BARC(Observable):
 
         return tool2
 
+    def barcundo(self):
+        '''
+            undo button
+            :returns: a :py:class:`UndoTool <bokeh.models.tools.UndoTool>` instance
+        '''
+        # The arbitrary bokeh undo button does not work
+        # saves state to allow redo
+        for (k, v) in self.source.items():
+            # save a redo PreviousSource
+            if k != 'annotation':
+                self.redoPreviousSource[k].data = self.source[k].data.copy()
+        # Go though and restore previous state
+        for (k, v) in self.source.items():
+            try:
+                if k != 'annotation':
+                    self.source[k].data = self.PreviousSource[k].data.copy()
+            except AttributeError:
+                continue
+
+        return
+
+    def barcredo(self):
+        '''
+            redo button
+            :returns: a :py:class:`UndoTool <bokeh.models.tools.UndoTool>` instance
+        '''
+        # The arbitrary bokeh redo button copy over backed up data on redo
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                self.source[k].data = self.redoPreviousSource[k].data.copy()
+
+
+        return
+
     def boxEdit(self):
         '''
             Creates a box edit tool for drawing on the Forest maps.
 
             :returns: a :py:class:`BoxEditTool <bokeh.models.tools.BoxEditTool>` instance
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                self.PreviousSource[k].data = self.source[k].data.copy()
         render_lines = []
         self.source['box_edit'].add([], "colour")
         self.source['box_edit'].add([], "width")
@@ -518,6 +564,11 @@ class BARC(Observable):
 
         return tool2
 
+    def updatesource(self, event):
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                    self.PreviousSource[k].data = self.source[k].data.copy()
+
     def textStamp(self, glyph=chr(0x0f0000)):
         '''Creates a tool that allows arbitrary Unicode text to be "stamped" on the map. Echos to all figures.
 
@@ -525,6 +576,9 @@ class BARC(Observable):
 
         :returns: :py:class:`PointDrawTool <bokeh.models.tools.PointDrawTool>` with textStamp functionality.
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
 
         starting_font_size = 15  # in pixels
         render_lines = []
@@ -593,6 +647,13 @@ class BARC(Observable):
 
         :returns: :py:class:`PointDrawTool <bokeh.models.tools.PointDrawTool>`.
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                try:
+                    self.PreviousSource[k].data = self.source[k].data.copy()
+                except KeyError:
+                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
+
         if not 'textbox' in self.source:
             self.source['textbox'] = ColumnDataSource(data.EMPTY)
             self.source['textbox'].add([], "text")
@@ -668,6 +729,10 @@ class BARC(Observable):
             Draws a windbarb based on u and v values in ms¯¹. Currently fixed to 50ms¯¹.
 
         '''
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                self.PreviousSource[k].data = self.source[k].data.copy()
+
         render_lines = []
         for figure in self.figures:
             render_lines.append(figure.barb(
@@ -686,13 +751,7 @@ class BARC(Observable):
 
         return tool4
 
-    def barcundo(self):
-        '''
-            undo button
-            :returns: a :py:class:`UndoTool <bokeh.models.tools.UndoTool>` instance
-        '''
-        undotool = bokeh.models.tools.UndoTool(tags=['barcundo'])
-        return undotool
+
 
     def bezierSource(self):
         return ColumnDataSource(data=dict(x0=[], y0=[], x1=[], y1=[], cx0=[], cy0=[], cx1=[], cy1=[]))
@@ -727,7 +786,12 @@ class BARC(Observable):
 
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
-
+        for (k, v) in self.source.items():
+            if k != 'annotation':
+                try:
+                    self.PreviousSource[k].data = self.source[k].data.copy()
+                except KeyError:
+                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
         # add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button")
         if not hasattr(self, 'frontbuttons'):
@@ -1102,11 +1166,9 @@ class BARC(Observable):
         for i, figure in enumerate(self.figures):
             barc_tools = []
             figure.add_tools(
-                self.barcundo(),
                 bokeh.models.tools.PanTool(tags=['barcpan']),
                 bokeh.models.tools.BoxZoomTool(tags=['barcboxzoom']),
                 bokeh.models.tools.BoxSelectTool(tags=['barcbox_edit']),
-                bokeh.models.tools.TapTool(tags=['barctap']),
                 self.polyLine(),
                 self.polyDraw(),
                 self.windBarb(),
@@ -1126,7 +1188,7 @@ class BARC(Observable):
                 self.weatherFront(name='quatorial-trough', colour="black", line_colour="black",line2_colour="black", symbols=chr(983591), text_baseline="alphabetic", starting_font_size=20, line2_scale_factor=0.3),
                 self.weatherFront(name='monsoon-trough', colour="#fe4b00", line_colour="#fe4b00",line2_colour="#fe4b00", text_baseline="alphabetic", symbols=chr(983592), starting_font_size=20, line2_scale_factor=0.3),
                 self.weatherFront(name='nonactive-monsoon-trough', colour="#db6b00", line_colour=(0,0,0,0), text_baseline="alphabetic", symbols=chr(983551), starting_font_size=15),
-                self.arbitraryText()
+                self.arbitraryText(),
 
             )
             # Create glyph list
@@ -1134,7 +1196,6 @@ class BARC(Observable):
                 glyphtool = self.textStamp(chr(glyph))
                 barc_tools.append(glyphtool)
             figure.add_tools(*barc_tools)
-
             toolBarList.append(
                 ToolbarBox(
                     toolbar=figure.toolbar,
@@ -1152,8 +1213,7 @@ class BARC(Observable):
             'freehand': "freehand",
             'poly_draw': 'poly_draw',
             'textbox': 'textbox',
-            'tap':'tap',
-            'undo':'undo'
+
         }
         # generate buttons diplaying icons from custon css barc_style.css
         buttons = []
@@ -1165,6 +1225,7 @@ class BARC(Observable):
                 aspect_ratio=1,
                 margin=(0, 0, 0, 0)
             )
+            button.on_event(ButtonClick,self.updatesource)
             button.js_on_event(ButtonClick,
                                bokeh.models.CustomJS(args=dict(
                                    buttons=list(toolBarBoxes.select({'tags': ['barc' + each]}))),
@@ -1173,7 +1234,18 @@ class BARC(Observable):
                     for(each of buttons) { each.active = true; }
                     """))
             buttons.append(button)
-
+        undoButton = bokeh.models.widgets.Button(
+            name="barc_undo", label="undo",css_classes=['barc-undo-button', 'barc-button'],
+            aspect_ratio=1,
+                margin=(0, 0, 0, 0))
+        undoButton.on_click(self.barcundo)
+        redoButton = bokeh.models.widgets.Button(
+            name="barc_redo", label="redo",css_classes=['barc-redo-button', 'barc-button'],
+            aspect_ratio=1,
+                margin=(0, 0, 0, 0))
+        redoButton.on_click(self.barcredo)
+        buttons.append(undoButton)
+        buttons.append(redoButton)
         buttons2 = []
         for each in self.frontbuttons:
             button = bokeh.models.widgets.Button(
@@ -1182,6 +1254,7 @@ class BARC(Observable):
                 aspect_ratio=1,
                 margin=(0, 0, 0, 0)
             )
+            button.on_event(ButtonClick,self.updatesource)
             button.js_on_event(ButtonClick, bokeh.models.CustomJS(
             args=dict(buttons=list(toolBarBoxes.select({'tags': ['barc' + each]})), visibleGuides=self.visibleGuides), code="""
 
@@ -1235,7 +1308,7 @@ class BARC(Observable):
         self.barcTools.children.extend([self.saveArea])
         self.barcTools.children.extend([boxesbutton])
         self.barcTools.children.extend([self.annotate])
-        # self.barcTools.children.append(toolBarBoxes)
+        #self.barcTools.children.append(toolBarBoxes)
 
 
         return self.barcTools
