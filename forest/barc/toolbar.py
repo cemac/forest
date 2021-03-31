@@ -369,12 +369,6 @@ class BARC(Observable):
 
             :returns: a :py:class:`FreehandDrawTool <bokeh.models.tools.FreehandDrawTool>` instance
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                try:
-                    self.PreviousSource[k].data = self.source[k].data.copy()
-                except KeyError:
-                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
         # colour picker means no longer have separate colour line options
         render_lines = []
         self.source['polyline'].add([], "colour")
@@ -420,9 +414,6 @@ class BARC(Observable):
 
             :returns: a :py:class:`PolyDrawTool <bokeh.models.tools.PolyDrawTool>` instance
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                self.PreviousSource[k].data = self.source[k].data.copy()
         # colour picker means no longer have separate colour line options
         render_lines = []
         self.source['poly_draw'].add([], "colour")
@@ -525,9 +516,6 @@ class BARC(Observable):
 
             :returns: a :py:class:`BoxEditTool <bokeh.models.tools.BoxEditTool>` instance
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                self.PreviousSource[k].data = self.source[k].data.copy()
         render_lines = []
         self.source['box_edit'].add([], "colour")
         self.source['box_edit'].add([], "width")
@@ -567,7 +555,8 @@ class BARC(Observable):
     def updatesource(self, event):
         for (k, v) in self.source.items():
             if k != 'annotation':
-                    self.PreviousSource[k].data = self.source[k].data.copy()
+                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
+                    #self.PreviousSource[k].data = self.source[k].data.copy()
 
     def textStamp(self, glyph=chr(0x0f0000)):
         '''Creates a tool that allows arbitrary Unicode text to be "stamped" on the map. Echos to all figures.
@@ -576,10 +565,6 @@ class BARC(Observable):
 
         :returns: :py:class:`PointDrawTool <bokeh.models.tools.PointDrawTool>` with textStamp functionality.
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
-
         starting_font_size = 15  # in pixels
         render_lines = []
         for figure in self.figures:
@@ -647,13 +632,6 @@ class BARC(Observable):
 
         :returns: :py:class:`PointDrawTool <bokeh.models.tools.PointDrawTool>`.
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                try:
-                    self.PreviousSource[k].data = self.source[k].data.copy()
-                except KeyError:
-                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
-
         if not 'textbox' in self.source:
             self.source['textbox'] = ColumnDataSource(data.EMPTY)
             self.source['textbox'].add([], "text")
@@ -729,10 +707,6 @@ class BARC(Observable):
             Draws a windbarb based on u and v values in ms¯¹. Currently fixed to 50ms¯¹.
 
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                self.PreviousSource[k].data = self.source[k].data.copy()
-
         render_lines = []
         for figure in self.figures:
             render_lines.append(figure.barb(
@@ -786,12 +760,6 @@ class BARC(Observable):
 
         :returns: :py:class:`FrontDrawTool <forest.barc.front_tool.FrontDrawTool>` instance
         '''
-        for (k, v) in self.source.items():
-            if k != 'annotation':
-                try:
-                    self.PreviousSource[k].data = self.source[k].data.copy()
-                except KeyError:
-                    self.PreviousSource[k] = ColumnDataSource(data=v.data.copy())
         # add definition dict for front<->css mapping, if not already present
         # should be a mapping of name: css_class_name (e.g. "warm":"barc-warm-button")
         if not hasattr(self, 'frontbuttons'):
@@ -976,7 +944,7 @@ class BARC(Observable):
                 aspect_ratio=1,
                 margin=(0, 0, 0, 0)
             )
-
+            button.on_event(ButtonClick,self.updatesource)
             button.js_on_event(ButtonClick, bokeh.models.CustomJS(args=dict(
                 buttons=list(self.toolBarBoxes.select({'tags': ['barc' + each]}))),
                 code="""
