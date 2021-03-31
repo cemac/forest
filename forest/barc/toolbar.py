@@ -132,7 +132,7 @@ class BARC(Observable):
                      {
                         for(var g = 0; g < sources[k].data['fontsize'].length; g++)
                         {
-                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                           sources[k].data['fontsize'][g] = (((sources[k].data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
                         }
                      }
                   })
@@ -591,19 +591,14 @@ class BARC(Observable):
                 {
                     if(!cb_obj.data['colour'][g])
                     {
-                        cb_obj.data['colour'][g] = colourPicker.color;
-                    }
 
-                    if(!cb_obj.data['fontsize'][g])
-                    {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
-                    }
-
-                    //calculate initial datasize
-                    if(!cb_obj.data['datasize'][g])
-                    {
                         var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+
+                        cb_obj.patch({
+                           ['colour']: [[g, colourPicker.color]],
+                           ['fontsize']: [[g, (widthPicker.value * starting_font_size) + 'pt']],
+                           ['datasize']: [[g, (starting_font_proportion * (figure.y_range.end - figure.y_range.start))]]
+                        })
                     }
                 }
                 cb_obj.change.emit();
@@ -614,7 +609,7 @@ class BARC(Observable):
                                                                              figure=self.figures[0]), code="""
             for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
             {
-                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
             }
             render_text_stamp.glyph.change.emit();
             """)
@@ -663,24 +658,14 @@ class BARC(Observable):
                 {
                     if(!cb_obj.data['colour'][g])
                     {
-                        cb_obj.data['colour'][g] = colourPicker.color;
-                    }
-
-                    if(!cb_obj.data['fontsize'][g])
-                    {
-                        cb_obj.data['fontsize'][g] = (widthPicker.value * starting_font_size) +'px';
-                    }
-
-                    if(!cb_obj.data['text'][g])
-                    {
-                        cb_obj.data['text'][g] = textbox.value;
-                    }
-
-                    //calculate initial datasize
-                    if(!cb_obj.data['datasize'][g])
-                    {
                         var starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
-                        cb_obj.data['datasize'][g] = (starting_font_proportion * (figure.y_range.end - figure.y_range.start));
+
+                        cb_obj.patch({
+                           ['colour']: [[g, colourPicker.color]],
+                           ['fontsize']: [[g, (widthPicker.value * starting_font_size) + 'pt']],
+                           ['text']: [[g, textbox.value]],
+                           ['datasize']: [[g, (starting_font_proportion * (figure.y_range.end - figure.y_range.start))]]
+                        })
                     }
                 }
                 cb_obj.change.emit();
@@ -691,7 +676,7 @@ class BARC(Observable):
             figure=self.figures[0]), code="""
             for(var g = 0; g < render_text_stamp.data_source.data['fontsize'].length; g++)
             {
-                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'px';
+                 render_text_stamp.data_source.data['fontsize'][g] = (((render_text_stamp.data_source.data['datasize'][g])/ (figure.y_range.end - figure.y_range.start))*figure.inner_height) + 'pt';
             }
             render_text_stamp.glyph.change.emit();
             """)
@@ -779,7 +764,7 @@ class BARC(Observable):
 
         # if fronts source is changed (e.g. via loadData) trigger bezier redraw
         self.source['fronts' + name].js_on_change('data',
-                                                  bokeh.models.CustomJS(args=dict(datasource=self.source['bezier' + name], figure=self.figures[0]), code="""
+           bokeh.models.CustomJS(args=dict(datasource=self.source['bezier' + name], figure=self.figures[0]), code="""
             datasource.change.emit();
             """))
 
@@ -809,14 +794,12 @@ class BARC(Observable):
                 render_lines.append(figure.text_stamp(x='xs', y='ys', angle='angle', text_font_size='fontsize', text_font='BARC', text_baseline=baseline, color=value(
                     col), text=value(each), source=self.source['text' + name + each], tags=['text_stamp', 'fig' + str(self.figures.index(figure))]))
 
-                self.source['bezier' + name].js_on_change('data',
-                                                          bokeh.models.CustomJS(args=dict(datasource=self.source['text' + name + each], bez2_ds=self.source['bezier2' + name],
-                                                                                          front_ds=self.source['fronts' + name],
-                                                                                          starting_font_size=starting_font_size, figure=self.figures[
-                                                                                              0], line2_scale_factor=line2_scale_factor,
-
-                                                                                          colourPicker=self.colourPicker, widthPicker=self.widthPicker
-                                                                                          ), code="""
+                self.source['bezier'+name].js_on_change('data',
+                  bokeh.models.CustomJS(args=dict(datasource=self.source['text'+name+each], bez2_ds =self.source['bezier2'+name],
+                  front_ds= self.source['fronts'+name],
+                  starting_font_size=starting_font_size, figure=self.figures[0], line2_scale_factor=line2_scale_factor,
+                  colourPicker=self.colourPicker, widthPicker=self.widthPicker
+                  ), code="""
                      let fontsize = (widthPicker.value * starting_font_size) +'pt';
                      let starting_font_proportion = (widthPicker.value * starting_font_size)/(figure.inner_height);
                      let datasize =(starting_font_proportion * (figure.y_range.end - figure.y_range.start));
@@ -825,6 +808,7 @@ class BARC(Observable):
                      datasource.data['fontsize'] = datasource.data['fontsize'].map(function(val, index) { return fontsize; })
                      datasource.data['datasize'] = datasource.data['datasize'].map(function(val,index) { return datasize; });
 
+                     datasource.data = datasource.data;
                      datasource.change.emit();
 
                      //offset 2nd curve by datasize
@@ -868,6 +852,7 @@ class BARC(Observable):
                   datasource.change.emit();
                   """)
                                                      )
+
 
         try:
             frontTool = FrontDrawTool(
@@ -996,7 +981,6 @@ class BARC(Observable):
         '''
         c = self.conn.cursor()
 
-        print(self.store.state)
         outdict = {}
 
         for (k, v) in self.source.items():
@@ -1069,7 +1053,6 @@ class BARC(Observable):
 
         :returns: Location of the export file.
         '''
-        print("Starting export")
         with open(join(dirname(__file__),'export.html')) as t:
            template = Template(t.read())
 
@@ -1081,10 +1064,16 @@ class BARC(Observable):
                  image = get_screenshot_as_png(self.figures[index], timeout=20)
                  filename = "%s.png" % (self.figures[index].id,)
                  image.save(join(tempdir,filename))
-                 try:
-                    figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
-                 except KeyError:
-                    figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
+                 print(layers)
+                 if(index in layers['index'] or str(index) in layers['index']):
+                     try:
+                        figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][index]['label'], layers['index'][index]['dataset'], layers['index'][index]['variable'], self.store.state['valid_time'])
+                     except KeyError:
+                        figs[filename] = "%s, %s:%s:%s, %s" % (self.store.state['pattern'], layers['index'][str(index)]['label'], layers['index'][str(index)]['dataset'], layers['index'][str(index)]['variable'], self.store.state['valid_time'])
+                 else:
+                    #probably a pane with no data in (empty map)
+                    figs[filename] = "%s" % self.store.state['valid_time']
+                    #figs[filename] = "%s, %s" % (self.store.state['pattern'], self.store.state['valid_time'])
 
               #Get annotations
               annotations = {}
