@@ -24,6 +24,18 @@ The Bokeh Annotation and Reporting Component (BARC) is a component integrated in
 Please read the [docs](https://barc-docs.readthedocs.io/en/latest/) 
 These are a work in progress but include user documentation, developer guides and api references. Hopfully these will become an invaluable resource for getting up and running with BARC.
 
+## Installation 
+
+The reccomendend method for installation is using git and anaconda.
+1. `git clone` this repo
+2. run `./install_barc.sh` 
+
+This will install the font submodule, create a blank database file, create a conda environment and install the requirements.
+
+then an example run command would be:
+
+`forest --dev --config-file testbarc.yml --show; pkill -9 python`
+
 ## Get in touch
 BARC has been developed by a small team of Developers, but we are keen to hear from you with your suggestions for improvements. If you have suggestions for improvements, bugs that need reporting feel free to open/comment on [issues](https://github.com/cemac/forest-barc/issues).
 
